@@ -1,0 +1,321 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.plan { padding: 1rem 0; }
+.section { margin-bottom: 2rem; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.section-header i { font-size: 20px; color: var(--color-text-secondary); }
+.section-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.card { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 14px 16px; border: 0.5px solid var(--color-border-tertiary); }
+.card-label { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 6px; letter-spacing: .02em; }
+.card-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.card-sub { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; margin-right: 4px; margin-top: 4px; }
+.badge-blue { background: var(--color-background-info); color: var(--color-text-info); }
+.badge-green { background: var(--color-background-success); color: var(--color-text-success); }
+.badge-amber { background: var(--color-background-warning); color: var(--color-text-warning); }
+.badge-red { background: var(--color-background-danger); color: var(--color-text-danger); }
+.phase { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); margin-bottom: 10px; }
+.phase-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.phase-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+.lib-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.lib-row:last-child { border-bottom: none; }
+.lib-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.lib-use { font-size: 12px; color: var(--color-text-secondary); }
+.screen-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 5px 10px; border-radius: 20px; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); color: var(--color-text-secondary); margin: 3px; cursor: pointer; transition: background .15s; }
+.screen-chip:hover { background: var(--color-background-secondary); }
+.screen-chip i { font-size: 14px; }
+.db-entity { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+.db-header { padding: 8px 12px; font-size: 13px; font-weight: 500; color: var(--color-text-primary); border-bottom: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+.db-field { display: flex; justify-content: space-between; padding: 5px 12px; font-size: 12px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.db-field:last-child { border-bottom: none; }
+.db-field-name { color: var(--color-text-primary); }
+.db-field-type { color: var(--color-text-tertiary); font-family: var(--font-mono); font-size: 11px; }
+.pk { color: var(--color-text-warning); }
+.explore-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; margin-top: 8px; }
+.explore-btn:hover { background: var(--color-background-secondary); }
+</style>
+
+<div class="plan">
+  <h2 class="sr-only">FitApp React Native project plan — Expo + Firebase, full feature set</h2>
+
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-stack" aria-hidden="true"></i>
+      <span class="section-title">Tech stack</span>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <div class="card-label">Framework</div>
+        <div class="card-title">Expo SDK 51+</div>
+        <div class="card-sub">Managed workflow, EAS Build for iOS & Android distribution</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Auth & database</div>
+        <div class="card-title">Firebase</div>
+        <div class="card-sub">Auth, Firestore, Storage, Cloud Functions, Crashlytics</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Navigation</div>
+        <div class="card-title">Expo Router v3</div>
+        <div class="card-sub">File-based routing, tab + stack layout, deep links</div>
+      </div>
+      <div class="card">
+        <div class="card-label">State management</div>
+        <div class="card-title">Zustand + React Query</div>
+        <div class="card-sub">Zustand for global UI state, React Query for server cache</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Styling</div>
+        <div class="card-title">NativeWind + Gluestack</div>
+        <div class="card-sub">Tailwind utility classes + accessible component library</div>
+      </div>
+      <div class="card">
+        <div class="card-label">AI coach</div>
+        <div class="card-title">Anthropic API</div>
+        <div class="card-sub">Via Firebase Cloud Functions — Claude Sonnet for plan suggestions</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-layout" aria-hidden="true"></i>
+      <span class="section-title">Screen map</span>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-label">Auth stack</div>
+        <div style="margin-top:6px">
+          <span class="screen-chip" onclick="sendPrompt('Show me the Login screen code for React Native with Firebase Auth')"><i class="ti ti-lock"></i> Login</span>
+          <span class="screen-chip" onclick="sendPrompt('Show me the Signup screen code for React Native with Firebase Auth')"><i class="ti ti-user-plus"></i> Sign up</span>
+          <span class="screen-chip"><i class="ti ti-brand-google"></i> Social login</span>
+          <span class="screen-chip"><i class="ti ti-refresh"></i> Reset password</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Onboarding stack</div>
+        <div style="margin-top:6px">
+          <span class="screen-chip"><i class="ti ti-user"></i> Profile setup</span>
+          <span class="screen-chip" onclick="sendPrompt('Show me the BMI calculator screen code for React Native')"><i class="ti ti-scale"></i> BMI setup</span>
+          <span class="screen-chip"><i class="ti ti-target"></i> Goal selection</span>
+          <span class="screen-chip"><i class="ti ti-activity"></i> Fitness level</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Home tab</div>
+        <div style="margin-top:6px">
+          <span class="screen-chip"><i class="ti ti-home"></i> Dashboard</span>
+          <span class="screen-chip"><i class="ti ti-flame"></i> Streak widget</span>
+          <span class="screen-chip"><i class="ti ti-droplet"></i> Water tracker</span>
+          <span class="screen-chip"><i class="ti ti-robot"></i> AI coach tip</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Workout tab</div>
+        <div style="margin-top:6px">
+          <span class="screen-chip" onclick="sendPrompt('Show me a workout planner screen for React Native')"><i class="ti ti-calendar"></i> Weekly planner</span>
+          <span class="screen-chip"><i class="ti ti-barbell"></i> Exercise library</span>
+          <span class="screen-chip"><i class="ti ti-player-play"></i> Active workout</span>
+          <span class="screen-chip"><i class="ti ti-clock"></i> Rest timer</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Nutrition tab</div>
+        <div style="margin-top:6px">
+          <span class="screen-chip"><i class="ti ti-apple"></i> Food log</span>
+          <span class="screen-chip"><i class="ti ti-chart-bar"></i> Macro summary</span>
+          <span class="screen-chip"><i class="ti ti-scan"></i> Barcode scan</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Progress tab</div>
+        <div style="margin-top:6px">
+          <span class="screen-chip"><i class="ti ti-chart-line"></i> Weight chart</span>
+          <span class="screen-chip"><i class="ti ti-camera"></i> Progress photos</span>
+          <span class="screen-chip"><i class="ti ti-ruler"></i> Body measurements</span>
+          <span class="screen-chip"><i class="ti ti-scale"></i> BMI history</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Community tab</div>
+        <div style="margin-top:6px">
+          <span class="screen-chip"><i class="ti ti-trophy"></i> Leaderboard</span>
+          <span class="screen-chip"><i class="ti ti-users"></i> Friends</span>
+          <span class="screen-chip"><i class="ti ti-star"></i> Achievements</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Settings tab</div>
+        <div style="margin-top:6px">
+          <span class="screen-chip"><i class="ti ti-user"></i> Profile</span>
+          <span class="screen-chip"><i class="ti ti-device-watch"></i> Wearable sync</span>
+          <span class="screen-chip"><i class="ti ti-bell"></i> Notifications</span>
+          <span class="screen-chip"><i class="ti ti-shield"></i> Privacy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-folder" aria-hidden="true"></i>
+      <span class="section-title">Folder structure</span>
+    </div>
+    <div class="card" style="font-family: var(--font-mono); font-size: 12px; line-height: 2; color: var(--color-text-secondary);">
+      <span style="color:var(--color-text-primary); font-weight:500">fitapp/</span><br>
+      &nbsp;├── <span style="color:var(--color-text-info)">app/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># Expo Router — file = route</span><br>
+      &nbsp;│&nbsp;&nbsp;&nbsp;├── (auth)/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># login, signup, reset</span><br>
+      &nbsp;│&nbsp;&nbsp;&nbsp;├── (onboarding)/&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># profile, goals, BMI setup</span><br>
+      &nbsp;│&nbsp;&nbsp;&nbsp;└── (tabs)/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># home, workout, nutrition…</span><br>
+      &nbsp;├── <span style="color:var(--color-text-info)">components/</span><br>
+      &nbsp;│&nbsp;&nbsp;&nbsp;├── ui/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># Button, Card, Input…</span><br>
+      &nbsp;│&nbsp;&nbsp;&nbsp;├── charts/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># WeightChart, MacroRing…</span><br>
+      &nbsp;│&nbsp;&nbsp;&nbsp;└── workout/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># ExerciseCard, SetLogger…</span><br>
+      &nbsp;├── <span style="color:var(--color-text-info)">hooks/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># useStreak, useBMI, useWorkout…</span><br>
+      &nbsp;├── <span style="color:var(--color-text-info)">stores/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># Zustand stores</span><br>
+      &nbsp;├── <span style="color:var(--color-text-info)">services/</span><br>
+      &nbsp;│&nbsp;&nbsp;&nbsp;├── firebase.ts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># init, auth, firestore</span><br>
+      &nbsp;│&nbsp;&nbsp;&nbsp;├── ai.ts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># AI coach calls</span><br>
+      &nbsp;│&nbsp;&nbsp;&nbsp;└── wearable.ts&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># HealthKit / Health Connect</span><br>
+      &nbsp;├── <span style="color:var(--color-text-info)">utils/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># bmi.ts, streak.ts, nutrition.ts</span><br>
+      &nbsp;├── <span style="color:var(--color-text-info)">types/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># TypeScript interfaces</span><br>
+      &nbsp;└── <span style="color:var(--color-text-info)">functions/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--color-text-tertiary); font-size:11px"># Firebase Cloud Functions</span>
+    </div>
+    <button class="explore-btn" onclick="sendPrompt('Generate the full folder structure with all files for my React Native fitness app using Expo + Firebase')">Generate all files ↗</button>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-database" aria-hidden="true"></i>
+      <span class="section-title">Firestore data model</span>
+    </div>
+    <div class="grid2">
+      <div class="db-entity">
+        <div class="db-header">users/{uid}</div>
+        <div class="db-field"><span class="db-field-name pk">uid</span><span class="db-field-type">string PK</span></div>
+        <div class="db-field"><span class="db-field-name">displayName, email</span><span class="db-field-type">string</span></div>
+        <div class="db-field"><span class="db-field-name">height, weight, age</span><span class="db-field-type">number</span></div>
+        <div class="db-field"><span class="db-field-name">bmi, bmiHistory[]</span><span class="db-field-type">number / array</span></div>
+        <div class="db-field"><span class="db-field-name">streak, lastActiveDate</span><span class="db-field-type">number / timestamp</span></div>
+        <div class="db-field"><span class="db-field-name">waterGoalMl</span><span class="db-field-type">number</span></div>
+        <div class="db-field"><span class="db-field-name">goals, fitnessLevel</span><span class="db-field-type">string[]</span></div>
+      </div>
+      <div class="db-entity">
+        <div class="db-header">users/{uid}/workouts/{id}</div>
+        <div class="db-field"><span class="db-field-name pk">id</span><span class="db-field-type">string PK</span></div>
+        <div class="db-field"><span class="db-field-name">date</span><span class="db-field-type">timestamp</span></div>
+        <div class="db-field"><span class="db-field-name">exercises[]</span><span class="db-field-type">array</span></div>
+        <div class="db-field"><span class="db-field-name">&nbsp;&nbsp;exerciseId, name</span><span class="db-field-type">string</span></div>
+        <div class="db-field"><span class="db-field-name">&nbsp;&nbsp;sets[{reps, weight}]</span><span class="db-field-type">array</span></div>
+        <div class="db-field"><span class="db-field-name">durationMin, calories</span><span class="db-field-type">number</span></div>
+        <div class="db-field"><span class="db-field-name">notes</span><span class="db-field-type">string</span></div>
+      </div>
+      <div class="db-entity">
+        <div class="db-header">exercises/{id}  <span style="font-size:11px;font-weight:400;color:var(--color-text-tertiary)">(global)</span></div>
+        <div class="db-field"><span class="db-field-name">name, category</span><span class="db-field-type">string</span></div>
+        <div class="db-field"><span class="db-field-name">muscleGroups[]</span><span class="db-field-type">string[]</span></div>
+        <div class="db-field"><span class="db-field-name">equipment, difficulty</span><span class="db-field-type">string</span></div>
+        <div class="db-field"><span class="db-field-name">instructions[], videoUrl</span><span class="db-field-type">string[]</span></div>
+      </div>
+      <div class="db-entity">
+        <div class="db-header">users/{uid}/nutrition/{date}</div>
+        <div class="db-field"><span class="db-field-name">meals[]</span><span class="db-field-type">array</span></div>
+        <div class="db-field"><span class="db-field-name">&nbsp;&nbsp;name, calories</span><span class="db-field-type">string / number</span></div>
+        <div class="db-field"><span class="db-field-name">&nbsp;&nbsp;protein, carbs, fat</span><span class="db-field-type">number</span></div>
+        <div class="db-field"><span class="db-field-name">waterMl</span><span class="db-field-type">number</span></div>
+        <div class="db-field"><span class="db-field-name">totalCalories</span><span class="db-field-type">number</span></div>
+      </div>
+    </div>
+    <button class="explore-btn" onclick="sendPrompt('Show me the full Firestore data model with security rules for my fitness app')">View security rules ↗</button>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-package" aria-hidden="true"></i>
+      <span class="section-title">Key libraries</span>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-label">Navigation & UI</div>
+        <div class="lib-row"><span class="lib-name">expo-router</span><span class="lib-use">File-based nav</span></div>
+        <div class="lib-row"><span class="lib-name">@gluestack-ui/themed</span><span class="lib-use">Component library</span></div>
+        <div class="lib-row"><span class="lib-name">react-native-reanimated</span><span class="lib-use">Animations</span></div>
+        <div class="lib-row"><span class="lib-name">react-native-gifted-charts</span><span class="lib-use">Progress charts</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Data & backend</div>
+        <div class="lib-row"><span class="lib-name">firebase / @react-native-firebase</span><span class="lib-use">Auth, Firestore</span></div>
+        <div class="lib-row"><span class="lib-name">@tanstack/react-query</span><span class="lib-use">Server state</span></div>
+        <div class="lib-row"><span class="lib-name">zustand</span><span class="lib-use">Global UI state</span></div>
+        <div class="lib-row"><span class="lib-name">zod</span><span class="lib-use">Schema validation</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Device & sensors</div>
+        <div class="lib-row"><span class="lib-name">expo-camera</span><span class="lib-use">Progress photos</span></div>
+        <div class="lib-row"><span class="lib-name">expo-barcode-scanner</span><span class="lib-use">Food barcode scan</span></div>
+        <div class="lib-row"><span class="lib-name">react-native-health</span><span class="lib-use">Apple HealthKit</span></div>
+        <div class="lib-row"><span class="lib-name">react-native-health-connect</span><span class="lib-use">Android wearables</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Notifications & misc</div>
+        <div class="lib-row"><span class="lib-name">expo-notifications</span><span class="lib-use">Push & local alerts</span></div>
+        <div class="lib-row"><span class="lib-name">expo-haptics</span><span class="lib-use">Streak & timer feedback</span></div>
+        <div class="lib-row"><span class="lib-name">@shopify/flash-list</span><span class="lib-use">Performant lists</span></div>
+        <div class="lib-row"><span class="lib-name">dayjs</span><span class="lib-use">Date handling</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <i class="ti ti-map" aria-hidden="true"></i>
+      <span class="section-title">Build phases</span>
+    </div>
+    <div class="phase">
+      <div class="phase-num" style="background:var(--color-background-info);color:var(--color-text-info)">1</div>
+      <div class="phase-body">
+        <div class="phase-title">Foundation — weeks 1–2</div>
+        <div class="phase-desc">Expo project init, Firebase setup, Expo Router tabs, Auth screens (email + Google), onboarding flow, Firestore schema, user profile. CI with EAS Build.</div>
+        <div style="margin-top:6px"><span class="badge badge-blue">Auth</span><span class="badge badge-blue">Onboarding</span><span class="badge badge-blue">Firebase</span></div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num" style="background:var(--color-background-success);color:var(--color-text-success)">2</div>
+      <div class="phase-body">
+        <div class="phase-title">Core fitness — weeks 3–5</div>
+        <div class="phase-desc">BMI calculator + history, exercise library (seed 100+ exercises), workout planner, active workout logger with rest timer, streak logic + notifications.</div>
+        <div style="margin-top:6px"><span class="badge badge-green">BMI</span><span class="badge badge-green">Exercises</span><span class="badge badge-green">Planner</span><span class="badge badge-green">Streak</span></div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num" style="background:var(--color-background-warning);color:var(--color-text-warning)">3</div>
+      <div class="phase-body">
+        <div class="phase-title">Health tracking — weeks 6–8</div>
+        <div class="phase-desc">Nutrition log + macro charts, water intake tracker, progress photos (camera + Firebase Storage), body measurements log, BMI trend charts.</div>
+        <div style="margin-top:6px"><span class="badge badge-amber">Nutrition</span><span class="badge badge-amber">Photos</span><span class="badge badge-amber">Measurements</span></div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num" style="background:var(--color-background-danger);color:var(--color-text-danger)">4</div>
+      <div class="phase-body">
+        <div class="phase-title">Advanced — weeks 9–11</div>
+        <div class="phase-desc">AI coach via Cloud Functions + Claude API, leaderboard with friend system, wearable sync (HealthKit & Health Connect), barcode scanning for food.</div>
+        <div style="margin-top:6px"><span class="badge badge-red">AI coach</span><span class="badge badge-red">Leaderboard</span><span class="badge badge-red">Wearables</span></div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">5</div>
+      <div class="phase-body">
+        <div class="phase-title">Polish & launch — weeks 12–13</div>
+        <div class="phase-desc">Animations, haptic feedback, offline support, App Store + Play Store submission via EAS Submit, Crashlytics, performance profiling.</div>
+      </div>
+    </div>
+    <button class="explore-btn" onclick="sendPrompt('Generate a detailed week-by-week sprint plan for my fitness app build')">Full sprint breakdown ↗</button>
+  </div>
+</div>

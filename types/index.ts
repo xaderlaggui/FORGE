@@ -1,0 +1,65 @@
+// Shared TypeScript interfaces for FitApp
+
+export interface UserProfile {
+  uid: string;
+  displayName: string;
+  email: string;
+  photoURL?: string;
+  height: number;       // cm
+  weight: number;       // kg
+  age: number;
+  bmi: number;
+  bmiHistory: { value: number; date: string }[];
+  streak: number;
+  lastActiveDate: string;
+  waterGoalMl: number;
+  goals: string[];       // e.g. ['weight_loss', 'muscle_gain']
+  fitnessLevel: 'beginner' | 'intermediate' | 'advanced';
+  createdAt: string;
+}
+
+export interface Exercise {
+  id: string;
+  name: string;
+  category: string;      // e.g. 'chest', 'legs', 'cardio'
+  muscleGroups: string[];
+  equipment: string;     // e.g. 'barbell', 'bodyweight'
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  instructions: string[];
+  videoUrl?: string;
+}
+
+export interface WorkoutSet {
+  reps: number;
+  weight: number;       // kg, 0 for bodyweight
+}
+
+export interface WorkoutExercise {
+  exerciseId: string;
+  name: string;
+  sets: WorkoutSet[];
+}
+
+export interface Workout {
+  id: string;
+  date: string;           // ISO date string
+  exercises: WorkoutExercise[];
+  durationMin: number;
+  calories: number;
+  notes?: string;
+}
+
+export interface Meal {
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+export interface NutritionLog {
+  date: string;           // YYYY-MM-DD
+  meals: Meal[];
+  waterMl: number;
+  totalCalories: number;
+}
