@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function HomeScreen() {
+export default function NutritionScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home / Dashboard</Text>
-      <Text style={styles.subtitle}>Streak widget, water tracker, AI coach coming soon.</Text>
+      <Text style={styles.title}>Nutrition</Text>
+      <Text style={styles.subtitle}>Food log, macro summary, barcode scan coming soon.</Text>
     </View>
   );
 }

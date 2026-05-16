@@ -6,21 +6,18 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 import { useColorScheme } from '@/components/useColorScheme';
-import { auth } from '@/services/firebase';
+import { auth, db } from '@/services/firebase';
 import { useAuthStore } from '@/stores/authStore';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
   initialRouteName: '(auth)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -36,15 +33,23 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    // Listen for Firebase Auth state changes
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // Set basic user data to unblock routing. Later we fetch the full profile from Firestore.
-        setUser({
-          uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || '',
-        } as any);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          // Fetch the user's profile from Firestore to check if they completed onboarding
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+          const userData = userDoc.exists() ? userDoc.data() : {};
+          
+          setUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || '',
+            displayName: firebaseUser.displayName || '',
+            isOnboarded: userData.isOnboarded || false,
+            ...userData
+          } as any);
+        } catch (e) {
+          console.error("Error fetching user data:", e);
+        }
       } else {
         setUser(null);
       }
@@ -60,9 +65,7 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
 
   return <RootLayoutNav />;
 }
@@ -77,23 +80,33 @@ function RootLayoutNav() {
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inOnboardingGroup = segments[0] === '(onboarding)';
 
     if (!user && !inAuthGroup) {
-      // Redirect to login if not logged in
+      // 1. Not logged in -> go to Login
       router.replace('/(auth)/login');
-    } else if (user && inAuthGroup) {
-      // Redirect to tabs if logged in
-      router.replace('/(tabs)');
+    } else if (user) {
+      // 2. Logged in, but hasn't completed onboarding -> go to Onboarding
+      if (!user.isOnboarded && !inOnboardingGroup) {
+        router.replace('/(onboarding)');
+      } 
+      // 3. Logged in, has completed onboarding -> go to Tabs
+      else if (user.isOnboarded && (inAuthGroup || inOnboardingGroup)) {
+        router.replace('/(tabs)');
+      }
     }
   }, [user, isLoading, segments]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(onboarding)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

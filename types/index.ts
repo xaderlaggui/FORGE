@@ -16,6 +16,7 @@ export interface UserProfile {
   goals: string[];       // e.g. ['weight_loss', 'muscle_gain']
   fitnessLevel: 'beginner' | 'intermediate' | 'advanced';
   createdAt: string;
+  isOnboarded?: boolean;
 }
 
 export interface Exercise {
