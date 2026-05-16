@@ -197,8 +197,8 @@ fitapp/
 ---
 
 ### Phase 3 — Health Tracking *(weeks 6–8)*
-- [ ] Nutrition log + macro charts
-- [ ] Water intake tracker
+- [x] Nutrition log + macro charts
+- [x] Water intake tracker
 - [ ] Progress photos (camera + Firebase Storage)
 - [ ] Body measurements log
 - [ ] BMI trend charts

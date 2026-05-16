@@ -7,14 +7,26 @@ export default function ProgressScreen() {
   const { user } = useAuthStore();
   const [timeframe, setTimeframe] = useState('1M');
 
-  // Dummy data mapped for react-native-gifted-charts LineChart
-  const lineData = [
-    { value: 195, label: 'May 1' },
-    { value: 193, label: 'May 8' },
-    { value: 190, label: 'May 15' },
-    { value: 188, label: 'May 22' },
-    { value: 185, label: 'May 29' },
-  ];
+  // Use real user weight history if available, else seed initial data for the design
+  const rawHistory = user?.weightHistory?.length 
+    ? user.weightHistory 
+    : [
+        { value: 195, date: 'May 1' },
+        { value: 193, date: 'May 8' },
+        { value: 190, date: 'May 15' },
+        { value: 188, date: 'May 22' },
+        { value: user?.weight || 185, date: 'May 29' },
+      ];
+
+  const lineData = rawHistory.map(item => ({
+    value: item.value,
+    label: item.date.slice(0, 5) // short date for label
+  }));
+
+  const currentWeight = rawHistory[rawHistory.length - 1].value;
+  const startWeight = rawHistory[0].value;
+  const weightDiff = currentWeight - startWeight;
+  const diffPrefix = weightDiff > 0 ? '+' : '';
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
@@ -44,9 +56,9 @@ export default function ProgressScreen() {
 
         <View style={styles.chartCard}>
           <View style={styles.weightHeader}>
-            <Text style={styles.currentWeight}>185<Text style={styles.weightUnit}>lbs</Text></Text>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>-10 lbs</Text>
+            <Text style={styles.currentWeight}>{currentWeight}<Text style={styles.weightUnit}>lbs</Text></Text>
+            <View style={[styles.badge, weightDiff > 0 && { backgroundColor: 'rgba(239,68,68,0.1)' }]}>
+              <Text style={[styles.badgeText, weightDiff > 0 && { color: '#ef4444' }]}>{diffPrefix}{weightDiff} lbs</Text>
             </View>
           </View>
           

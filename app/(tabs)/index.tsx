@@ -1,11 +1,38 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { useAuthStore } from '../../stores/authStore';
 import { Flame, Droplet, Activity } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Circle } from 'react-native-svg';
+import { useNutrition } from '../../hooks/useNutrition';
 
 export default function HomeScreen() {
   const { user } = useAuthStore();
+  const { data: nutrition, isLoading } = useNutrition();
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#D2FF00" />
+      </View>
+    );
+  }
+
+  const waterLiters = ((nutrition?.waterMl || 0) / 1000).toFixed(1);
+  const activeCals = nutrition?.totalCalories || 0; // Using consumed for now until workout hook is ready
+  
+  // Goals
+  const waterGoal = 2.4;
+  const calGoal = 2400;
+
+  // SVG Ring Calculations
+  const r = 40;
+  const c = 2 * Math.PI * r;
+  const waterPercent = Math.min(parseFloat(waterLiters) / waterGoal, 1);
+  const calPercent = Math.min(activeCals / calGoal, 1);
+  
+  const waterOffset = c - (waterPercent * c);
+  const calOffset = c - (calPercent * c);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
@@ -14,7 +41,7 @@ export default function HomeScreen() {
         <View style={styles.profileRow}>
           <View style={styles.avatarContainer}>
             <Image 
-              source={{ uri: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' }} 
+              source={{ uri: user?.photoURL || 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' }} 
               style={styles.avatar} 
             />
             <View style={styles.onlineDot} />
@@ -59,10 +86,13 @@ export default function HomeScreen() {
           {/* Water Intake */}
           <View style={styles.metricCard}>
             <View style={styles.ringPlaceholder}>
-              {/* In a real app we use react-native-svg for the ring, this is a placeholder */}
-              <View style={[styles.ringOuter, { borderColor: '#3b82f6' }]}>
-                <Droplet size={20} color="#3b82f6" style={{ marginBottom: 4 }} />
-                <Text style={styles.ringValue}>2.4L</Text>
+              <Svg height="96" width="96" viewBox="0 0 100 100" style={{ transform: [{ rotate: '-90deg' }] }}>
+                <Circle cx="50" cy="50" r={r} fill="transparent" stroke="#16161A" strokeWidth="8" />
+                <Circle cx="50" cy="50" r={r} fill="transparent" stroke="#3b82f6" strokeWidth="8" strokeDasharray={c} strokeDashoffset={waterOffset} strokeLinecap="round" />
+              </Svg>
+              <View style={styles.ringCenterText}>
+                <Droplet size={18} color="#3b82f6" style={{ marginBottom: 2 }} />
+                <Text style={styles.ringValue}>{waterLiters}L</Text>
               </View>
             </View>
             <Text style={styles.metricLabel}>WATER</Text>
@@ -71,9 +101,13 @@ export default function HomeScreen() {
           {/* Activity / Calories */}
           <View style={styles.metricCard}>
             <View style={styles.ringPlaceholder}>
-              <View style={[styles.ringOuter, { borderColor: '#D2FF00' }]}>
-                <Activity size={20} color="#D2FF00" style={{ marginBottom: 4 }} />
-                <Text style={styles.ringValue}>840</Text>
+              <Svg height="96" width="96" viewBox="0 0 100 100" style={{ transform: [{ rotate: '-90deg' }] }}>
+                <Circle cx="50" cy="50" r={r} fill="transparent" stroke="#16161A" strokeWidth="8" />
+                <Circle cx="50" cy="50" r={r} fill="transparent" stroke="#D2FF00" strokeWidth="8" strokeDasharray={c} strokeDashoffset={calOffset} strokeLinecap="round" />
+              </Svg>
+              <View style={styles.ringCenterText}>
+                <Activity size={18} color="#D2FF00" style={{ marginBottom: 2 }} />
+                <Text style={styles.ringValue}>{activeCals}</Text>
               </View>
             </View>
             <Text style={styles.metricLabel}>ACTIVE CAL</Text>
@@ -113,8 +147,8 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', gap: 16 },
   metricCard: { flex: 1, backgroundColor: '#16161A', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#242429', alignItems: 'center' },
   
-  ringPlaceholder: { width: 96, height: 96, marginBottom: 12 },
-  ringOuter: { flex: 1, borderRadius: 48, borderWidth: 4, alignItems: 'center', justifyContent: 'center' },
+  ringPlaceholder: { width: 96, height: 96, marginBottom: 12, position: 'relative' },
+  ringCenterText: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' },
   ringValue: { color: '#FFF', fontSize: 16, fontWeight: '800' },
   
   metricLabel: { color: '#8A8A93', fontSize: 11, fontWeight: '700', letterSpacing: 1 }

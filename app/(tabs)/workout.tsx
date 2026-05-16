@@ -1,33 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
+import dayjs from 'dayjs';
 import { db } from '../../services/firebase';
+import { useWorkouts } from '../../hooks/useWorkouts';
 import type { Exercise } from '../../types';
 
 export default function WorkoutScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'planner' | 'library'>('planner');
-  const [activeDay, setActiveDay] = useState(3);
   
-  const days = [
-    { label: "M", date: 12 },
-    { label: "T", date: 13 },
-    { label: "W", date: 14 },
-    { label: "T", date: 15 },
-    { label: "F", date: 16 },
-    { label: "S", date: 17 },
-    { label: "S", date: 18 },
-  ];
+  // Dynamic weekly dates starting from Monday
+  const today = dayjs();
+  const startOfWeek = today.startOf('week').add(1, 'day'); // Monday
+  const days = Array.from({ length: 7 }).map((_, i) => {
+    const d = startOfWeek.add(i, 'day');
+    return { label: d.format('dd').charAt(0), date: d.date(), fullDate: d.format('YYYY-MM-DD') };
+  });
+  
+  const [activeDayIdx, setActiveDayIdx] = useState(today.day() === 0 ? 6 : today.day() - 1);
+  const activeDateStr = days[activeDayIdx].fullDate;
 
-  const { data: exercises, isLoading } = useQuery({
+  // Exercise Library
+  const { data: exercises, isLoading: isLoadingExercises } = useQuery({
     queryKey: ['exercises'],
     queryFn: async () => {
       const snap = await getDocs(collection(db, 'exercises'));
       return snap.docs.map(doc => doc.data() as Exercise);
     }
   });
+
+  // Dynamic Workouts
+  const { workouts, isLoading: isLoadingWorkouts } = useWorkouts();
+  
+  // Filter workout for selected day
+  const todayWorkout = useMemo(() => {
+    return workouts.find(w => w.date.startsWith(activeDateStr));
+  }, [workouts, activeDateStr]);
 
   return (
     <View style={styles.container}>
@@ -53,7 +64,7 @@ export default function WorkoutScreen() {
 
       {activeTab === 'library' ? (
         // --- EXERCISE LIBRARY VIEW ---
-        isLoading ? (
+        isLoadingExercises ? (
           <ActivityIndicator size="large" color="#D2FF00" style={{ marginTop: 40 }} />
         ) : (
           <FlatList
@@ -61,10 +72,10 @@ export default function WorkoutScreen() {
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.list}
             renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>{item.name}</Text>
-                <Text style={styles.cardSub}>{item.muscleGroups.join(', ')} • {item.equipment}</Text>
-              </View>
+               <View style={styles.card}>
+                 <Text style={styles.cardTitle}>{item.name}</Text>
+                 <Text style={styles.cardSub}>{item.muscleGroups.join(', ')} • {item.equipment}</Text>
+               </View>
             )}
             ListEmptyComponent={
               <Text style={styles.emptyText}>No exercises found. Go to Settings and click Seed!</Text>
@@ -76,11 +87,11 @@ export default function WorkoutScreen() {
         <ScrollView contentContainerStyle={styles.plannerContainer}>
           <View style={styles.weekRow}>
             {days.map((day, idx) => {
-              const isActive = idx === activeDay;
+              const isActive = idx === activeDayIdx;
               return (
                 <TouchableOpacity 
                   key={idx} 
-                  onPress={() => setActiveDay(idx)}
+                  onPress={() => setActiveDayIdx(idx)}
                   style={[styles.dayCircle, isActive && styles.activeDayCircle]}
                 >
                   <Text style={[styles.dayText, isActive && styles.activeDayText]}>{day.label}</Text>
@@ -90,20 +101,34 @@ export default function WorkoutScreen() {
             })}
           </View>
 
-          <View style={styles.todayCard}>
-            <Text style={styles.todayTitle}>TODAY'S ROUTINE</Text>
-            <Text style={styles.todaySub}>UPPER BODY POWER</Text>
-            
-            <TouchableOpacity style={styles.startButton} onPress={() => router.push('/activeWorkout')}>
-              <Text style={styles.startText}>▶ START WORKOUT</Text>
-            </TouchableOpacity>
-          </View>
+          {isLoadingWorkouts ? (
+            <ActivityIndicator size="large" color="#D2FF00" />
+          ) : todayWorkout ? (
+            <View style={styles.todayCard}>
+              <Text style={styles.todayTitle}>SCHEDULED ROUTINE</Text>
+              <Text style={styles.todaySub}>{todayWorkout.notes || 'Custom Workout'}</Text>
+              <Text style={{ color: '#8A8A93', marginBottom: 24 }}>{todayWorkout.exercises.length} Exercises Planned</Text>
+              
+              <TouchableOpacity style={styles.startButton} onPress={() => router.push({ pathname: '/activeWorkout', params: { id: todayWorkout.id } })}>
+                <Text style={styles.startText}>▶ START WORKOUT</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={[styles.todayCard, { alignItems: 'center', paddingVertical: 40 }]}>
+              <Text style={styles.todaySub}>Rest Day</Text>
+              <Text style={{ color: '#8A8A93', textAlign: 'center', marginBottom: 24 }}>No workout scheduled for this day.</Text>
+              
+              {/* If no workout, start a blank one */}
+              <TouchableOpacity style={styles.startButton} onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr } })}>
+                <Text style={styles.startText}>+ NEW WORKOUT</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </ScrollView>
       )}
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0C0C0E' },
   header: { padding: 24, paddingTop: 48, backgroundColor: '#0C0C0E' },

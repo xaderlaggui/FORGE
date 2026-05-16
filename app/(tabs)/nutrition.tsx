@@ -1,25 +1,51 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Search, ScanLine, Plus } from 'lucide-react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { useNutrition } from '../../hooks/useNutrition';
 
 export default function NutritionScreen() {
-  const meals = [
-    { name: "Breakfast", calories: 450, macros: "30P / 40C / 15F", logged: true },
-    { name: "Lunch", calories: 650, macros: "50P / 60C / 20F", logged: true },
-    { name: "Dinner", calories: 0, macros: "--", logged: false },
-  ];
+  const { data: nutrition, isLoading } = useNutrition();
+
+  if (isLoading || !nutrition) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#D2FF00" />
+      </View>
+    );
+  }
+
+  // Calculate totals
+  const totalProtein = nutrition.meals.reduce((sum, m) => sum + m.protein, 0);
+  const totalCarbs = nutrition.meals.reduce((sum, m) => sum + m.carbs, 0);
+  const totalFat = nutrition.meals.reduce((sum, m) => sum + m.fat, 0);
+  const totalCal = nutrition.meals.reduce((sum, m) => sum + m.calories, 0);
+  
+  // Goal constants (In a real app, these come from UserProfile goals)
+  const goalPro = 150;
+  const goalCarbs = 200;
+  const goalFat = 70;
+  const goalCal = 2400;
+
+  // SVG Calculations (Circumference = 2 * PI * r)
+  const calcOffset = (val: number, goal: number, r: number) => {
+    const c = 2 * Math.PI * r;
+    const percent = Math.min(val / goal, 1);
+    return c - (percent * c);
+  };
+
+  const proOffset = calcOffset(totalProtein, goalPro, 28);
+  const carbOffset = calcOffset(totalCarbs, goalCarbs, 38);
+  const fatOffset = calcOffset(totalFat, goalFat, 48);
+  const calPercent = Math.min((totalCal / goalCal) * 100, 100);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      {/* Header & Search */}
       <View style={styles.header}>
         <Text style={styles.title}>NUTRITION <Text style={{ color: '#D2FF00' }}>TRACKER</Text></Text>
         
         <View style={styles.searchContainer}>
-          <View style={styles.searchIcon}>
-            <Search size={20} color="#8A8A93" />
-          </View>
+          <View style={styles.searchIcon}><Search size={20} color="#8A8A93" /></View>
           <TextInput 
             style={styles.searchInput}
             placeholder="Search food or scan barcode..."
@@ -31,59 +57,56 @@ export default function NutritionScreen() {
         </View>
       </View>
 
-      {/* Macro Ring Centerpiece */}
       <View style={styles.macroSection}>
         <View style={styles.ringContainer}>
           <Svg height="192" width="192" viewBox="0 0 100 100" style={{ transform: [{ rotate: '-90deg' }] }}>
             {/* Protein (Inner) */}
             <Circle cx="50" cy="50" r="28" fill="transparent" stroke="#16161A" strokeWidth="6" />
-            <Circle cx="50" cy="50" r="28" fill="transparent" stroke="#D2FF00" strokeWidth="6" strokeDasharray="175.9" strokeDashoffset="40" strokeLinecap="round" />
+            <Circle cx="50" cy="50" r="28" fill="transparent" stroke="#D2FF00" strokeWidth="6" strokeDasharray={2 * Math.PI * 28} strokeDashoffset={proOffset} strokeLinecap="round" />
             
             {/* Carbs (Middle) */}
             <Circle cx="50" cy="50" r="38" fill="transparent" stroke="#16161A" strokeWidth="6" />
-            <Circle cx="50" cy="50" r="38" fill="transparent" stroke="#3b82f6" strokeWidth="6" strokeDasharray="238.7" strokeDashoffset="100" strokeLinecap="round" />
+            <Circle cx="50" cy="50" r="38" fill="transparent" stroke="#3b82f6" strokeWidth="6" strokeDasharray={2 * Math.PI * 38} strokeDashoffset={carbOffset} strokeLinecap="round" />
             
             {/* Fat (Outer) */}
             <Circle cx="50" cy="50" r="48" fill="transparent" stroke="#16161A" strokeWidth="6" />
-            <Circle cx="50" cy="50" r="48" fill="transparent" stroke="#ef4444" strokeWidth="6" strokeDasharray="301.5" strokeDashoffset="200" strokeLinecap="round" />
+            <Circle cx="50" cy="50" r="48" fill="transparent" stroke="#ef4444" strokeWidth="6" strokeDasharray={2 * Math.PI * 48} strokeDashoffset={fatOffset} strokeLinecap="round" />
           </Svg>
           
           <View style={styles.ringCenterText}>
-            <Text style={styles.ringValue}>1,100</Text>
+            <Text style={styles.ringValue}>{totalCal}</Text>
             <Text style={styles.ringLabel}>EATEN</Text>
           </View>
         </View>
 
-        {/* Calorie Progress Bar */}
         <View style={styles.progressContainer}>
           <View style={styles.progressHeader}>
             <Text style={styles.progressTitle}>CALORIES</Text>
-            <Text style={styles.progressStats}>1,100 / <Text style={{ color: '#D2FF00' }}>2,400</Text></Text>
+            <Text style={styles.progressStats}>{totalCal} / <Text style={{ color: '#D2FF00' }}>{goalCal}</Text></Text>
           </View>
           <View style={styles.progressBarBg}>
-            <View style={styles.progressBarFill} />
+            <View style={[styles.progressBarFill, { width: `${calPercent}%` }]} />
           </View>
         </View>
       </View>
 
-      {/* Meal Logs */}
       <View style={styles.mealsSection}>
         <Text style={styles.sectionTitle}>MEAL LOG</Text>
         
         <View style={styles.mealsList}>
-          {meals.map((meal, idx) => (
+          {nutrition.meals.map((meal, idx) => (
             <View key={idx} style={styles.mealCard}>
               <View>
                 <Text style={styles.mealName}>{meal.name}</Text>
-                {meal.logged ? (
-                  <Text style={styles.mealMacros}>{meal.macros}</Text>
+                {meal.calories > 0 ? (
+                  <Text style={styles.mealMacros}>{meal.protein}P / {meal.carbs}C / {meal.fat}F</Text>
                 ) : (
                   <Text style={styles.mealNotLogged}>Not logged yet</Text>
                 )}
               </View>
               
               <View style={styles.mealAction}>
-                {meal.logged ? (
+                {meal.calories > 0 ? (
                   <Text style={styles.mealCals}>{meal.calories} <Text style={styles.mealCalsLabel}>kcal</Text></Text>
                 ) : (
                   <TouchableOpacity style={styles.addBtn}>

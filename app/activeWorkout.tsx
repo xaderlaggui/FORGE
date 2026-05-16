@@ -1,19 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Check, Clock } from 'lucide-react-native';
+import { useWorkouts } from '../hooks/useWorkouts';
+import dayjs from 'dayjs';
 
 export default function ActiveWorkoutScreen() {
   const router = useRouter();
+  const { id, date } = useLocalSearchParams();
+  const { workouts, saveWorkout } = useWorkouts();
+  
   const [timer, setTimer] = useState(0);
   const [isResting, setIsResting] = useState(false);
-  const [restTime, setRestTime] = useState(60); // 60s rest
+  const [restTime, setRestTime] = useState(60);
+  const [workoutTitle, setWorkoutTitle] = useState('CUSTOM WORKOUT');
   
-  // Basic mock exercises for the active logger
-  const [exercises, setExercises] = useState([
-    { name: 'Barbell Bench Press', sets: [{ id: 1, weight: '135', reps: '10', done: true }, { id: 2, weight: '185', reps: '8', done: false }] },
-    { name: 'Push-up', sets: [{ id: 1, weight: '0', reps: '15', done: false }] }
-  ]);
+  // Track exercises state
+  const [exercises, setExercises] = useState<any[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isLoaded) {
+      if (id) {
+        const existing = workouts.find(w => w.id === id);
+        if (existing) {
+          setWorkoutTitle(existing.notes || 'SCHEDULED ROUTINE');
+          // Map to local UI state
+          setExercises(existing.exercises.map(ex => ({
+            name: ex.name,
+            sets: ex.sets.map((s, idx) => ({ id: idx, weight: s.weight.toString(), reps: s.reps.toString(), done: false }))
+          })));
+        }
+      } else {
+        // Blank Template
+        setExercises([
+          { name: 'Add Exercise...', sets: [{ id: 1, weight: '0', reps: '0', done: false }] }
+        ]);
+      }
+      setIsLoaded(true);
+    }
+  }, [id, workouts, isLoaded]);
 
   useEffect(() => {
     let interval: any;
@@ -39,9 +65,25 @@ export default function ActiveWorkoutScreen() {
     }
   };
 
-  const finishWorkout = () => {
-    Alert.alert("Great Job!", "Workout saved to Firestore.");
-    router.back();
+  const finishWorkout = async () => {
+    try {
+      await saveWorkout({
+        id: id ? (id as string) : `workout_${Date.now()}`,
+        date: date ? (date as string) : dayjs().format('YYYY-MM-DD'),
+        exercises: exercises.map(ex => ({
+          exerciseId: 'custom',
+          name: ex.name,
+          sets: ex.sets.filter((s: any) => s.done).map((s: any) => ({ weight: Number(s.weight), reps: Number(s.reps) }))
+        })),
+        durationMin: Math.floor(timer / 60),
+        calories: 300, // mock calculation
+        notes: workoutTitle
+      });
+      Alert.alert("Great Job!", "Workout saved to your history.");
+      router.back();
+    } catch (e) {
+      Alert.alert("Error", "Failed to save workout");
+    }
   };
 
   return (
@@ -49,7 +91,7 @@ export default function ActiveWorkoutScreen() {
       <View style={styles.header}>
         <View>
           <Text style={styles.subtitle}>CURRENT WORKOUT</Text>
-          <Text style={styles.title}>UPPER BODY POWER</Text>
+          <Text style={styles.title}>{workoutTitle}</Text>
         </View>
         <Text style={styles.timer}>{Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}</Text>
       </View>
