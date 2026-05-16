@@ -9,7 +9,17 @@ import type { Exercise } from '../../types';
 export default function WorkoutScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'planner' | 'library'>('planner');
-  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const [activeDay, setActiveDay] = useState(3);
+  
+  const days = [
+    { label: "M", date: 12 },
+    { label: "T", date: 13 },
+    { label: "W", date: 14 },
+    { label: "T", date: 15 },
+    { label: "F", date: 16 },
+    { label: "S", date: 17 },
+    { label: "S", date: 18 },
+  ];
 
   const { data: exercises, isLoading } = useQuery({
     queryKey: ['exercises'],
@@ -22,7 +32,7 @@ export default function WorkoutScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Workout</Text>
+        <Text style={styles.title}>WORKOUT <Text style={{ color: '#D2FF00' }}>PLAN</Text></Text>
         
         {/* Custom Segmented Control */}
         <View style={styles.tabContainer}>
@@ -30,13 +40,13 @@ export default function WorkoutScreen() {
             style={[styles.tab, activeTab === 'planner' && styles.activeTab]}
             onPress={() => setActiveTab('planner')}
           >
-            <Text style={[styles.tabText, activeTab === 'planner' && styles.activeTabText]}>Planner</Text>
+            <Text style={[styles.tabText, activeTab === 'planner' && styles.activeTabText]}>PLANNER</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.tab, activeTab === 'library' && styles.activeTab]}
             onPress={() => setActiveTab('library')}
           >
-            <Text style={[styles.tabText, activeTab === 'library' && styles.activeTabText]}>Library</Text>
+            <Text style={[styles.tabText, activeTab === 'library' && styles.activeTabText]}>LIBRARY</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -44,7 +54,7 @@ export default function WorkoutScreen() {
       {activeTab === 'library' ? (
         // --- EXERCISE LIBRARY VIEW ---
         isLoading ? (
-          <ActivityIndicator size="large" color="#C15A28" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#D2FF00" style={{ marginTop: 40 }} />
         ) : (
           <FlatList
             data={exercises}
@@ -64,21 +74,28 @@ export default function WorkoutScreen() {
       ) : (
         // --- WORKOUT PLANNER VIEW ---
         <ScrollView contentContainerStyle={styles.plannerContainer}>
-          <Text style={styles.sectionTitle}>This Week</Text>
           <View style={styles.weekRow}>
-            {weekDays.map((day, idx) => (
-              <View key={idx} style={[styles.dayCircle, idx === 1 && styles.activeDayCircle]}>
-                <Text style={[styles.dayText, idx === 1 && styles.activeDayText]}>{day}</Text>
-              </View>
-            ))}
+            {days.map((day, idx) => {
+              const isActive = idx === activeDay;
+              return (
+                <TouchableOpacity 
+                  key={idx} 
+                  onPress={() => setActiveDay(idx)}
+                  style={[styles.dayCircle, isActive && styles.activeDayCircle]}
+                >
+                  <Text style={[styles.dayText, isActive && styles.activeDayText]}>{day.label}</Text>
+                  <Text style={[styles.dateText, isActive && styles.activeDateText]}>{day.date}</Text>
+                </TouchableOpacity>
+              )
+            })}
           </View>
 
           <View style={styles.todayCard}>
-            <Text style={styles.todayTitle}>Today's Routine</Text>
-            <Text style={styles.todaySub}>Upper Body Power</Text>
+            <Text style={styles.todayTitle}>TODAY'S ROUTINE</Text>
+            <Text style={styles.todaySub}>UPPER BODY POWER</Text>
             
             <TouchableOpacity style={styles.startButton} onPress={() => router.push('/activeWorkout')}>
-              <Text style={styles.startText}>▶ Start Workout</Text>
+              <Text style={styles.startText}>▶ START WORKOUT</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -88,33 +105,34 @@ export default function WorkoutScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
-  header: { padding: 20, paddingTop: 40, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#eee' },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 16 },
+  container: { flex: 1, backgroundColor: '#0C0C0E' },
+  header: { padding: 24, paddingTop: 48, backgroundColor: '#0C0C0E' },
+  title: { fontSize: 24, fontWeight: '900', color: '#FFF', marginBottom: 24, letterSpacing: 1 },
   
-  tabContainer: { flexDirection: 'row', backgroundColor: '#F0F0F0', borderRadius: 8, padding: 4 },
-  tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 6 },
-  activeTab: { backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 2 },
-  tabText: { fontWeight: '600', color: '#666' },
-  activeTabText: { color: '#1A1A1A' },
+  tabContainer: { flexDirection: 'row', backgroundColor: '#16161A', borderRadius: 12, padding: 4, borderWidth: 1, borderColor: '#242429' },
+  tab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8 },
+  activeTab: { backgroundColor: '#D2FF00', shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 10, elevation: 5 },
+  tabText: { fontWeight: '800', color: '#8A8A93', fontSize: 12, letterSpacing: 1 },
+  activeTabText: { color: '#000' },
 
-  list: { padding: 16 },
-  card: { backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 12, borderWidth: 1, borderColor: '#eee' },
-  cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#1A1A1A' },
-  cardSub: { fontSize: 13, color: '#666', marginTop: 4, textTransform: 'capitalize' },
-  emptyText: { textAlign: 'center', marginTop: 40, color: '#999' },
+  list: { padding: 24 },
+  card: { backgroundColor: '#16161A', padding: 20, borderRadius: 16, marginBottom: 12, borderWidth: 1, borderColor: '#242429' },
+  cardTitle: { fontSize: 16, fontWeight: '800', color: '#FFF', letterSpacing: 0.5 },
+  cardSub: { fontSize: 12, color: '#8A8A93', marginTop: 6, textTransform: 'uppercase', fontWeight: '700', letterSpacing: 1 },
+  emptyText: { textAlign: 'center', marginTop: 40, color: '#8A8A93', fontWeight: '600' },
 
-  plannerContainer: { padding: 20 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 16 },
-  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32 },
-  dayCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#eee' },
-  activeDayCircle: { backgroundColor: '#C15A28', borderColor: '#C15A28' },
-  dayText: { fontSize: 12, fontWeight: '600', color: '#666' },
-  activeDayText: { color: '#fff' },
+  plannerContainer: { padding: 24 },
+  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 40 },
+  dayCircle: { width: 44, height: 56, borderRadius: 22, backgroundColor: '#16161A', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#242429' },
+  activeDayCircle: { backgroundColor: '#D2FF00', borderColor: '#D2FF00', shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 6 },
+  dayText: { fontSize: 10, fontWeight: '800', color: '#8A8A93', marginBottom: 4 },
+  activeDayText: { color: '#000' },
+  dateText: { fontSize: 16, fontWeight: '900', color: '#FFF' },
+  activeDateText: { color: '#000' },
 
-  todayCard: { backgroundColor: '#fff', padding: 20, borderRadius: 16, borderWidth: 1, borderColor: '#eee' },
-  todayTitle: { fontSize: 14, color: '#666', marginBottom: 4 },
-  todaySub: { fontSize: 20, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 24 },
-  startButton: { backgroundColor: '#C15A28', padding: 16, borderRadius: 12, alignItems: 'center' },
-  startText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  todayCard: { backgroundColor: '#16161A', padding: 24, borderRadius: 20, borderWidth: 1, borderColor: '#242429' },
+  todayTitle: { fontSize: 12, color: '#8A8A93', marginBottom: 6, fontWeight: '800', letterSpacing: 1 },
+  todaySub: { fontSize: 22, fontWeight: '900', color: '#FFF', marginBottom: 32, letterSpacing: -0.5 },
+  startButton: { backgroundColor: '#D2FF00', padding: 16, borderRadius: 12, alignItems: 'center', shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 6 },
+  startText: { color: '#000', fontWeight: '900', fontSize: 14, letterSpacing: 1 },
 });

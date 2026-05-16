@@ -1,7 +1,8 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 🔧 Replace these values with your Firebase project config
 // Firebase Console → Project Settings → Your apps → SDK setup
@@ -18,7 +19,11 @@ const firebaseConfig = {
 // Prevent re-initialization during hot reload
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-export const auth = getAuth(app);
+// Handle auth with persistent storage (Initialize only if app was just created)
+export const auth = getApps().length === 0 ? initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage)
+}) : getAuth(app);
+
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 

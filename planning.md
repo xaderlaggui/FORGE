@@ -12,7 +12,7 @@
 | **Navigation** | Expo Router v3 | File-based routing, tab + stack layout, deep links |
 | **State Management** | Zustand + React Query | Zustand for global UI state, React Query for server cache |
 | **Styling** | NativeWind + Gluestack | Tailwind utility classes + accessible component library |
-| **AI Coach** | Anthropic API | Via Firebase Cloud Functions — Claude Sonnet for plan suggestions |
+| **AI Coach** | Google Gemini API | Free Tier Gemini API via `@google/generative-ai` for plan suggestions |
 
 ---
 
@@ -173,32 +173,52 @@ fitapp/
 ## Build Phases
 
 ### Phase 1 — Foundation *(weeks 1–2)*
-Expo project init, Firebase setup, Expo Router tabs, Auth screens (email + Google), onboarding flow, Firestore schema, user profile. CI with EAS Build.
+- [x] Expo project init, Firebase setup
+- [x] Expo Router tabs
+- [x] Auth screens (email)
+- [x] Onboarding flow (BMI, stats)
+- [x] Firestore schema, user profile
+- [ ] CI with EAS Build
 
 **Tags:** `Auth` · `Onboarding` · `Firebase`
 
 ---
 
 ### Phase 2 — Core Fitness *(weeks 3–5)*
-BMI calculator + history, exercise library (seed 100+ exercises), workout planner, active workout logger with rest timer, streak logic + notifications.
+- [x] BMI calculator + history
+- [x] Exercise library (seed 100+ exercises)
+- [x] Workout planner UI
+- [x] Active workout logger with rest timer
+- [x] Streak logic + notifications
+- [x] Figma High-Fidelity UI Integration (Dark Neon Theme)
 
 **Tags:** `BMI` · `Exercises` · `Planner` · `Streak`
 
 ---
 
 ### Phase 3 — Health Tracking *(weeks 6–8)*
-Nutrition log + macro charts, water intake tracker, progress photos (camera + Firebase Storage), body measurements log, BMI trend charts.
+- [ ] Nutrition log + macro charts
+- [ ] Water intake tracker
+- [ ] Progress photos (camera + Firebase Storage)
+- [ ] Body measurements log
+- [ ] BMI trend charts
 
 **Tags:** `Nutrition` · `Photos` · `Measurements`
 
 ---
 
 ### Phase 4 — Advanced *(weeks 9–11)*
-AI coach via Cloud Functions + Claude API, leaderboard with friend system, wearable sync (HealthKit & Health Connect), barcode scanning for food.
+- [ ] AI coach via Google Gemini API (Free Tier)
+- [ ] Leaderboard with friend system
+- [ ] Wearable sync (HealthKit & Health Connect)
+- [ ] Barcode scanning for food
 
 **Tags:** `AI coach` · `Leaderboard` · `Wearables`
 
 ---
 
 ### Phase 5 — Polish & Launch *(weeks 12–13)*
-Animations, haptic feedback, offline support, App Store + Play Store submission via EAS Submit, Crashlytics, performance profiling.
+- [ ] Animations, haptic feedback
+- [ ] Offline support
+- [ ] App Store + Play Store submission via EAS Submit
+- [ ] Crashlytics, performance profiling

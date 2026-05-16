@@ -7,6 +7,7 @@ export interface UserProfile {
   photoURL?: string;
   height: number;       // cm
   weight: number;       // kg
+  weightHistory: { value: number; date: string }[];
   age: number;
   bmi: number;
   bmiHistory: { value: number; date: string }[];
