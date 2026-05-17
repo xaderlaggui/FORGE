@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
@@ -10,14 +10,16 @@ import { WorkoutSetsTable } from '../features/workout/components/WorkoutSetsTabl
 // Shared Components
 import { RestTimerWidget, NumpadBottomSheet } from '../components/forge/WorkoutWidgets';
 import { ForgeButton } from '../components/forge/ForgeButton';
+import { ExercisePickerModal } from '../components/forge/ExercisePickerModal';
 import { ForgeTheme as T } from '../constants/ForgeTheme';
 
 export default function ActiveWorkoutScreen() {
   const router = useRouter();
-  const { id, date } = useLocalSearchParams();
+  const { id, date, routineId } = useLocalSearchParams();
+  const [pickerVisible, setPickerVisible] = useState(false);
   
   // Clean Architecture: All business logic is encapsulated in this hook
-  const session = useActiveSession(id, date);
+  const session = useActiveSession(id, date, routineId);
 
   return (
     <View style={styles.container}>
@@ -41,6 +43,14 @@ export default function ActiveWorkoutScreen() {
           onAddSet={session.addSet}
           onOpenNumpad={session.openNumpad}
         />
+
+        <View style={styles.addExerciseWrap}>
+          <ForgeButton 
+            label="+ Add Exercise" 
+            variant="secondary"
+            onPress={() => setPickerVisible(true)} 
+          />
+        </View>
 
         <View style={{ height: 200 }} />
       </ScrollView>
@@ -78,6 +88,12 @@ export default function ActiveWorkoutScreen() {
         onDone={session.commitNumpad}
         onClose={() => session.setNumpadVisible(false)}
       />
+
+      <ExercisePickerModal 
+        visible={pickerVisible}
+        onClose={() => setPickerVisible(false)}
+        onSelect={(ex, preset) => session.addExercise(ex.name, preset)}
+      />
     </View>
   );
 }
@@ -98,6 +114,8 @@ const styles = StyleSheet.create({
     bottom: 100, left: T.spacing.px4, right: T.spacing.px4,
     zIndex: 20,
   },
+  
+  addExerciseWrap: { marginTop: T.spacing.px5, marginBottom: T.spacing.px5 },
   
   footer: {
     position: 'absolute', bottom: 0, left: 0, right: 0,

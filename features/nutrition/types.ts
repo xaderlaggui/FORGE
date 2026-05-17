@@ -25,4 +25,6 @@ export interface DailyAggregates {
   goalCarbs: number;
   goalFat: number;
   goalWater: number;
+  totalFiber: number;
+  totalSugar: number;
 }

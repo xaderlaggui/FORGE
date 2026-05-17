@@ -1,19 +1,99 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useNutrition } from '../hooks/useNutrition';
 import type { Meal } from '../types';
+import { Sparkles, Save, X } from 'lucide-react-native';
+import { ForgeTheme as T } from '../constants/ForgeTheme';
 
 export default function AddMealScreen() {
   const router = useRouter();
   const { mealName } = useLocalSearchParams();
   const { data: nutrition, updateNutrition } = useNutrition();
 
+  const [description, setDescription] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzed, setAnalyzed] = useState(false);
+
+  // Form State
   const [foodName, setFoodName] = useState('');
+  const [portion, setPortion] = useState('');
   const [cals, setCals] = useState('');
   const [pro, setPro] = useState('');
   const [carbs, setCarbs] = useState('');
   const [fat, setFat] = useState('');
+  const [fiber, setFiber] = useState('');
+  const [sugar, setSugar] = useState('');
+
+  const analyzeMeal = async () => {
+    if (!description.trim()) {
+      Alert.alert('Empty', 'Please describe what you ate first.');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const apiKey = process.env.EXPO_PUBLIC_GROQ_API_KEY;
+      if (!apiKey) throw new Error('API key missing');
+
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama3-8b-8192',
+          messages: [
+            {
+              role: 'system',
+              content: `You are a world-class sports nutritionist. The user will describe a meal. 
+Estimate the nutritional content. If no portion is provided, estimate based on a standard serving and specify it.
+Respond ONLY with a valid, parsable JSON object containing exactly these keys: 
+"foodName" (string, short summary of meal),
+"portion" (string, estimated or provided amount),
+"calories" (number),
+"protein" (number, in grams),
+"carbs" (number, in grams),
+"fat" (number, in grams),
+"fiber" (number, in grams),
+"sugar" (number, in grams).
+No markdown formatting, no backticks, just raw JSON.`
+            },
+            {
+              role: 'user',
+              content: description
+            }
+          ],
+          temperature: 0.2,
+          response_format: { type: "json_object" }
+        })
+      });
+
+      if (!response.ok) throw new Error('Network error');
+      
+      const data = await response.json();
+      const content = data.choices[0].message.content;
+      const parsed = JSON.parse(content);
+
+      setFoodName(parsed.foodName || description);
+      setPortion(parsed.portion || '1 serving');
+      setCals(String(parsed.calories || 0));
+      setPro(String(parsed.protein || 0));
+      setCarbs(String(parsed.carbs || 0));
+      setFat(String(parsed.fat || 0));
+      setFiber(String(parsed.fiber || 0));
+      setSugar(String(parsed.sugar || 0));
+      
+      setAnalyzed(true);
+    } catch (e) {
+      console.error(e);
+      Alert.alert('Analysis Failed', 'Could not estimate nutrition. You can still enter it manually.');
+      setAnalyzed(true); // Let them type manually
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!foodName || !cals) {
@@ -25,27 +105,31 @@ export default function AddMealScreen() {
       const targetMealName = (mealName as string) || 'Snack';
       const existingMeals = nutrition?.meals || [];
       
-      // We will replace the dummy empty meal with this actual meal data,
-      // or if it's already filled, we'll append to it (for simplicity, we'll just overwrite/add)
       const mealIdx = existingMeals.findIndex(m => m.name === targetMealName);
-      
       let updatedMeals = [...existingMeals];
+      
+      const finalName = portion ? `${foodName} (${portion})` : foodName;
+      
       const newMealData: Meal = {
         name: targetMealName,
         calories: Number(cals),
         protein: Number(pro) || 0,
         carbs: Number(carbs) || 0,
         fat: Number(fat) || 0,
+        fiber: Number(fiber) || 0,
+        sugar: Number(sugar) || 0,
       };
 
       if (mealIdx >= 0) {
-        // Add to existing meal category
+        // Append macros to the existing meal category (e.g. "Breakfast")
         updatedMeals[mealIdx] = {
           name: targetMealName,
           calories: updatedMeals[mealIdx].calories + newMealData.calories,
           protein: updatedMeals[mealIdx].protein + newMealData.protein,
           carbs: updatedMeals[mealIdx].carbs + newMealData.carbs,
           fat: updatedMeals[mealIdx].fat + newMealData.fat,
+          fiber: (updatedMeals[mealIdx].fiber || 0) + (newMealData.fiber || 0),
+          sugar: (updatedMeals[mealIdx].sugar || 0) + (newMealData.sugar || 0),
         };
       } else {
         updatedMeals.push(newMealData);
@@ -63,70 +147,144 @@ export default function AddMealScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>LOG <Text style={{ color: '#D2FF00' }}>{((mealName as string) || 'MEAL').toUpperCase()}</Text></Text>
-
-      <View style={styles.form}>
-        <Text style={styles.label}>FOOD ITEM</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="e.g. Chicken Breast & Rice" 
-          placeholderTextColor="#8A8A93"
-          value={foodName}
-          onChangeText={setFoodName}
-        />
-
-        <Text style={styles.label}>CALORIES</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="0" 
-          placeholderTextColor="#8A8A93"
-          keyboardType="numeric"
-          value={cals}
-          onChangeText={setCals}
-        />
-
-        <View style={styles.macroRow}>
-          <View style={styles.macroCol}>
-            <Text style={styles.label}>PROTEIN (g)</Text>
-            <TextInput style={styles.input} placeholder="0" placeholderTextColor="#8A8A93" keyboardType="numeric" value={pro} onChangeText={setPro} />
-          </View>
-          <View style={styles.macroCol}>
-            <Text style={styles.label}>CARBS (g)</Text>
-            <TextInput style={styles.input} placeholder="0" placeholderTextColor="#8A8A93" keyboardType="numeric" value={carbs} onChangeText={setCarbs} />
-          </View>
-          <View style={styles.macroCol}>
-            <Text style={styles.label}>FAT (g)</Text>
-            <TextInput style={styles.input} placeholder="0" placeholderTextColor="#8A8A93" keyboardType="numeric" value={fat} onChangeText={setFat} />
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-          <Text style={styles.saveBtnText}>SAVE MEAL</Text>
+    <View style={s.container}>
+      <View style={s.header}>
+        <TouchableOpacity onPress={() => router.back()} style={s.iconBtn}>
+          <X size={24} color={T.colors.t1} />
         </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
-          <Text style={styles.cancelBtnText}>CANCEL</Text>
-        </TouchableOpacity>
+        <Text style={s.title}>LOG <Text style={{ color: T.colors.forge }}>{((mealName as string) || 'MEAL').toUpperCase()}</Text></Text>
+        <View style={{ width: 40 }} />
       </View>
+
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
+        {!analyzed ? (
+          <View style={s.analyzeWrap}>
+            <Text style={s.aiPrompt}>What did you eat?</Text>
+            <TextInput
+              style={s.aiInput}
+              placeholder="e.g. 'I had a bowl of sinigang with 1 cup of white rice' or '2 eggs'"
+              placeholderTextColor={T.colors.t3}
+              multiline
+              textAlignVertical="top"
+              value={description}
+              onChangeText={setDescription}
+            />
+            <TouchableOpacity 
+              style={[s.aiBtn, isAnalyzing && { opacity: 0.7 }]} 
+              onPress={analyzeMeal}
+              disabled={isAnalyzing}
+            >
+              {isAnalyzing ? (
+                <ActivityIndicator color="#000" />
+              ) : (
+                <>
+                  <Sparkles size={18} color="#000" strokeWidth={3} />
+                  <Text style={s.aiBtnText}>Analyze Meal</Text>
+                </>
+              )}
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={() => setAnalyzed(true)} style={{ marginTop: 24, padding: 12 }}>
+              <Text style={{ color: T.colors.t3, textAlign: 'center', fontSize: 14, fontWeight: '600' }}>Or enter manually</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={s.formWrap}>
+            <View style={s.infoBanner}>
+              <Sparkles size={16} color={T.colors.forge} />
+              <Text style={s.infoText}>You can edit these AI estimates if needed.</Text>
+            </View>
+
+            <Text style={s.label}>FOOD SUMMARY</Text>
+            <TextInput style={s.input} value={foodName} onChangeText={setFoodName} placeholder="Food name" placeholderTextColor={T.colors.t3} />
+
+            <Text style={s.label}>PORTION / AMOUNT</Text>
+            <TextInput style={s.input} value={portion} onChangeText={setPortion} placeholder="e.g. 1 cup, 200g" placeholderTextColor={T.colors.t3} />
+
+            <Text style={s.label}>CALORIES</Text>
+            <TextInput style={s.input} value={cals} onChangeText={setCals} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+
+            <View style={s.macroRow}>
+              <View style={s.macroCol}>
+                <Text style={s.label}>PROTEIN (g)</Text>
+                <TextInput style={s.input} value={pro} onChangeText={setPro} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+              </View>
+              <View style={s.macroCol}>
+                <Text style={s.label}>CARBS (g)</Text>
+                <TextInput style={s.input} value={carbs} onChangeText={setCarbs} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+              </View>
+              <View style={s.macroCol}>
+                <Text style={s.label}>FAT (g)</Text>
+                <TextInput style={s.input} value={fat} onChangeText={setFat} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+              </View>
+            </View>
+
+            <View style={s.macroRow}>
+              <View style={s.macroCol}>
+                <Text style={s.label}>FIBER (g)</Text>
+                <TextInput style={s.input} value={fiber} onChangeText={setFiber} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+              </View>
+              <View style={s.macroCol}>
+                <Text style={s.label}>SUGAR (g)</Text>
+                <TextInput style={s.input} value={sugar} onChangeText={setSugar} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+              </View>
+            </View>
+
+            <TouchableOpacity style={s.saveBtn} onPress={handleSave}>
+              <Save size={18} color="#000" strokeWidth={2.5} />
+              <Text style={s.saveBtnText}>SAVE MEAL</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0C0C0E', padding: 24, paddingTop: 40 },
-  title: { fontSize: 24, fontWeight: '900', color: '#FFF', letterSpacing: 1, marginBottom: 32 },
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: T.colors.bg0 },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: T.spacing.page, paddingTop: 60, paddingBottom: 16,
+    borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
+  },
+  iconBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 20, fontWeight: '900', color: T.colors.t1, letterSpacing: 1 },
+  scroll: { padding: T.spacing.page, paddingBottom: 60 },
   
-  form: { flex: 1 },
-  label: { fontSize: 10, fontWeight: '800', color: '#8A8A93', letterSpacing: 1, marginBottom: 8 },
-  input: { backgroundColor: '#16161A', borderWidth: 1, borderColor: '#242429', borderRadius: 12, padding: 16, color: '#FFF', fontSize: 16, fontWeight: '700', marginBottom: 24 },
-  
+  analyzeWrap: { marginTop: 40 },
+  aiPrompt: { fontSize: 28, fontWeight: '700', color: T.colors.t1, marginBottom: 20 },
+  aiInput: {
+    backgroundColor: T.colors.bg1, borderWidth: 1, borderColor: T.colors.b1,
+    borderRadius: T.radii.lg, padding: 20, color: T.colors.t1,
+    fontSize: 18, minHeight: 150, marginBottom: 24, lineHeight: 26,
+  },
+  aiBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
+    backgroundColor: T.colors.forge, padding: 20, borderRadius: T.radii.lg,
+    shadowColor: T.colors.forge, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 15, elevation: 8,
+  },
+  aiBtnText: { color: '#000', fontSize: 18, fontWeight: '800', letterSpacing: 1 },
+
+  formWrap: { flex: 1 },
+  infoBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: 'rgba(178, 255, 36, 0.1)', padding: 12, borderRadius: T.radii.md,
+    borderWidth: 1, borderColor: 'rgba(178, 255, 36, 0.2)', marginBottom: 24,
+  },
+  infoText: { color: T.colors.forge, fontSize: 13, fontWeight: '600' },
+  label: { fontSize: 11, fontWeight: '800', color: T.colors.t3, letterSpacing: 1, marginBottom: 8 },
+  input: {
+    backgroundColor: T.colors.bg2, borderWidth: 1, borderColor: T.colors.b1,
+    borderRadius: T.radii.md, padding: 16, color: T.colors.t1,
+    fontSize: 16, fontWeight: '600', marginBottom: 20,
+  },
   macroRow: { flexDirection: 'row', gap: 12 },
   macroCol: { flex: 1 },
-  
-  saveBtn: { backgroundColor: '#D2FF00', padding: 18, borderRadius: 12, alignItems: 'center', marginTop: 20, shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 10, elevation: 5 },
-  saveBtnText: { color: '#000', fontSize: 14, fontWeight: '900', letterSpacing: 1 },
-  
-  cancelBtn: { padding: 18, alignItems: 'center', marginTop: 8 },
-  cancelBtnText: { color: '#8A8A93', fontSize: 12, fontWeight: '800', letterSpacing: 1 }
+  saveBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
+    backgroundColor: T.colors.forge, padding: 20, borderRadius: T.radii.lg, marginTop: 24,
+    shadowColor: T.colors.forge, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 15, elevation: 8,
+  },
+  saveBtnText: { color: '#000', fontSize: 16, fontWeight: '900', letterSpacing: 1 },
 });

@@ -15,6 +15,8 @@ export function useDailyNutrition() {
   const totalProtein = nutrition.meals.reduce((sum, m) => sum + (m.protein ?? 0), 0);
   const totalCarbs   = nutrition.meals.reduce((sum, m) => sum + (m.carbs   ?? 0), 0);
   const totalFat     = nutrition.meals.reduce((sum, m) => sum + (m.fat     ?? 0), 0);
+  const totalFiber   = nutrition.meals.reduce((sum, m) => sum + (m.fiber   ?? 0), 0);
+  const totalSugar   = nutrition.meals.reduce((sum, m) => sum + (m.sugar   ?? 0), 0);
   const totalCal     = nutrition.meals.reduce((sum, m) => sum + (m.calories ?? 0), 0);
   const waterMl      = nutrition.waterMl ?? 0;
   const waterLiters  = waterMl / 1000;
@@ -31,7 +33,7 @@ export function useDailyNutrition() {
   const remaining = Math.max(goalCal - totalCal, 0);
 
   const aggregates: DailyAggregates = {
-    totalProtein, totalCarbs, totalFat, totalCal, waterMl, waterLiters,
+    totalProtein, totalCarbs, totalFat, totalCal, waterMl, waterLiters, totalFiber, totalSugar,
     calPct, remaining, goalCal, goalProtein, goalCarbs, goalFat, goalWater
   };
 

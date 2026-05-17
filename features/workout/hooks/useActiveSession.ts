@@ -3,11 +3,13 @@ import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import dayjs from 'dayjs';
 import { useWorkouts } from '../../../hooks/useWorkouts';
+import { useRoutines } from '../../../hooks/useRoutines';
 import { ExerciseState, NumpadTarget } from '../types';
 
-export function useActiveSession(id?: string | string[], date?: string | string[]) {
+export function useActiveSession(id?: string | string[], date?: string | string[], routineId?: string | string[]) {
   const router = useRouter();
   const { workouts, saveWorkout } = useWorkouts();
+  const { routines } = useRoutines();
 
   const [timer, setTimer] = useState(0);
   const [isResting, setIsResting] = useState(false);
@@ -42,6 +44,21 @@ export function useActiveSession(id?: string | string[], date?: string | string[
           })),
         })));
       }
+    } else if (routineId && typeof routineId === 'string') {
+      const routine = routines.find(r => r.id === routineId);
+      if (routine) {
+        setWorkoutTitle(routine.name);
+        setExercises(routine.exercises.map((ex) => ({
+          name: ex.name,
+          sets: Array.from({ length: ex.sets }).map((_, idx) => ({
+            id: idx + 1,
+            prev: '—',
+            weight: '',
+            reps: ex.reps.toString(),
+            done: false,
+          })),
+        })));
+      }
     } else {
       setExercises([{ 
         name: 'Bench Press (Barbell)', 
@@ -52,7 +69,7 @@ export function useActiveSession(id?: string | string[], date?: string | string[
       }]);
     }
     setIsLoaded(true);
-  }, [id, workouts, isLoaded]);
+  }, [id, routineId, workouts, routines, isLoaded]);
 
   // General Timer
   useEffect(() => {
@@ -85,9 +102,9 @@ export function useActiveSession(id?: string | string[], date?: string | string[
     setExercises(copy);
     if (!copy[exIdx].sets[setIdx].done) return;
     
-    // Trigger rest timer
+    // Trigger rest timer manually
     setIsResting(true);
-    setIsPaused(false);
+    setIsPaused(true); // Start paused as requested
     setRestTime(60);
   };
 
@@ -102,6 +119,26 @@ export function useActiveSession(id?: string | string[], date?: string | string[
       done: false,
     });
     setExercises(copy);
+  };
+
+  const addExercise = (exerciseName: string, preset?: { sets: number; reps: number }) => {
+    setExercises(prev => [
+      ...prev,
+      {
+        name: exerciseName,
+        sets: preset 
+          ? Array.from({ length: preset.sets }).map((_, i) => ({
+              id: i + 1,
+              prev: '—',
+              weight: '',
+              reps: preset.reps.toString(),
+              done: false
+            }))
+          : [
+              { id: 1, prev: '—', weight: '', reps: '', done: false },
+            ]
+      }
+    ]);
   };
 
   const openNumpad = (exIdx: number, setIdx: number, field: 'weight' | 'reps') => {
@@ -160,6 +197,6 @@ export function useActiveSession(id?: string | string[], date?: string | string[
     workoutTitle, exercises, numpadVisible, numpadValue, numpadLabel,
     doneExercises, totalExercises,
     setNumpadValue, setNumpadVisible, setIsResting, setRestTime, setIsPaused,
-    toggleSet, addSet, openNumpad, commitNumpad, finishWorkout
+    toggleSet, addSet, addExercise, openNumpad, commitNumpad, finishWorkout
   };
 }

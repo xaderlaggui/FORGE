@@ -8,6 +8,7 @@ import { usePlannerData } from '../../features/planner/hooks/usePlannerData';
 import { ExerciseLibrary } from '../../features/planner/components/ExerciseLibrary';
 import { WeeklyCalendar } from '../../features/planner/components/WeeklyCalendar';
 import { DailyPlanCard } from '../../features/planner/components/DailyPlanCard';
+import { RoutineList } from '../../features/planner/components/RoutineList';
 
 export default function WorkoutScreen() {
   // Clean Architecture: Hook handles all state, formatting, and fetching
@@ -24,7 +25,7 @@ export default function WorkoutScreen() {
       <View style={s.header}>
         <Text style={s.title} maxFontSizeMultiplier={1.2}>Workout Planner</Text>
         <ForgeSegment
-          options={['Planner', 'Library']}
+          options={['Planner', 'Routines', 'Library']}
           value={activeTab}
           onChange={setActiveTab}
         />
@@ -36,6 +37,8 @@ export default function WorkoutScreen() {
           exercises={exercises} 
           isLoading={isLoadingExercises} 
         />
+      ) : activeTab === 'Routines' ? (
+        <RoutineList />
       ) : (
         <ScrollView contentContainerStyle={s.plannerContainer} showsVerticalScrollIndicator={false}>
           <WeeklyCalendar 
