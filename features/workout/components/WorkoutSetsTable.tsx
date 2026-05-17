@@ -20,7 +20,7 @@ export function WorkoutSetsTable({ exercises, personalRecords, onToggleSet, onAd
   const renderRightActions = (exIdx: number, setIdx: number) => {
     return (
       <TouchableOpacity
-        style={useStyles.deleteAction}
+        style={styles.deleteAction}
         onPress={() => onRemoveSet?.(exIdx, setIdx)}
       >
         <Trash2 size={20} color="#fff" />
@@ -31,16 +31,16 @@ export function WorkoutSetsTable({ exercises, personalRecords, onToggleSet, onAd
   return (
     <View>
       {exercises.map((ex, exIdx) => (
-        <View key={exIdx} style={useStyles.exerciseBlock}>
-          <Text style={useStyles.exName} maxFontSizeMultiplier={1.2}>{ex.name}</Text>
+        <View key={exIdx} style={styles.exerciseBlock}>
+          <Text style={styles.exName} maxFontSizeMultiplier={1.2}>{ex.name}</Text>
 
           {/* Table header */}
-          <View style={useStyles.tableHeader}>
-            <Text style={[useStyles.colHead, { flex: 0.6 }]} maxFontSizeMultiplier={1.2}>SET</Text>
-            <Text style={[useStyles.colHead, { flex: 1.4 }]} maxFontSizeMultiplier={1.2}>PREVIOUS</Text>
-            <Text style={[useStyles.colHead, { flex: 1 }]} maxFontSizeMultiplier={1.2}>LBS</Text>
-            <Text style={[useStyles.colHead, { flex: 1 }]} maxFontSizeMultiplier={1.2}>REPS</Text>
-            <Text style={[useStyles.colHead, { flex: 0.6, textAlign: 'center' }]} maxFontSizeMultiplier={1.2}>✓</Text>
+          <View style={styles.tableHeader}>
+            <Text style={[styles.colHead, { flex: 0.6 }]} maxFontSizeMultiplier={1.2}>SET</Text>
+            <Text style={[styles.colHead, { flex: 1.4 }]} maxFontSizeMultiplier={1.2}>PREVIOUS</Text>
+            <Text style={[styles.colHead, { flex: 1 }]} maxFontSizeMultiplier={1.2}>LBS</Text>
+            <Text style={[styles.colHead, { flex: 1 }]} maxFontSizeMultiplier={1.2}>REPS</Text>
+            <Text style={[styles.colHead, { flex: 0.6, textAlign: 'center' }]} maxFontSizeMultiplier={1.2}>✓</Text>
           </View>
 
           {/* Set rows */}
@@ -57,35 +57,35 @@ export function WorkoutSetsTable({ exercises, personalRecords, onToggleSet, onAd
               overshootRight={false}
             >
               <View
-                style={[useStyles.row, set.done && useStyles.rowDone, setIdx < ex.sets.length - 1 && useStyles.rowBorder]}
+                style={[styles.row, set.done && styles.rowDone, setIdx < ex.sets.length - 1 && styles.rowBorder]}
               >
               <View style={{ flex: 0.6 }}>
-                <Text style={[useStyles.cell, { color: T.colors.t2 }]} maxFontSizeMultiplier={1.2}>{setIdx + 1}</Text>
+                <Text style={[styles.cell, { color: T.colors.t2 }]} maxFontSizeMultiplier={1.2}>{setIdx + 1}</Text>
               </View>
               <View style={{ flex: 1.4 }}>
-                {isPR && <Text style={useStyles.prBadge} maxFontSizeMultiplier={1.2}>NEW PR 🏆</Text>}
-                <Text style={[useStyles.cell, { color: T.colors.t3, fontSize: T.typography.sizes.bodyS }]} numberOfLines={1} maxFontSizeMultiplier={1.2}>
+                {isPR && <Text style={styles.prBadge} maxFontSizeMultiplier={1.2}>NEW PR 🏆</Text>}
+                <Text style={[styles.cell, { color: T.colors.t3, fontSize: T.typography.sizes.bodyS }]} numberOfLines={1} maxFontSizeMultiplier={1.2}>
                   {set.prev}
                 </Text>
               </View>
 
               <TouchableOpacity
-                style={[useStyles.inputCell, { flex: 1 }, set.done && useStyles.inputCellDone]}
+                style={[styles.inputCell, { flex: 1 }, set.done && styles.inputCellDone]}
                 onPress={() => onOpenNumpad(exIdx, setIdx, 'weight')}
               >
-                <Text style={useStyles.inputCellText} maxFontSizeMultiplier={1.2}>{set.weight || '—'}</Text>
+                <Text style={styles.inputCellText} maxFontSizeMultiplier={1.2}>{set.weight || '—'}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[useStyles.inputCell, { flex: 1 }, set.done && useStyles.inputCellDone]}
+                style={[styles.inputCell, { flex: 1 }, set.done && styles.inputCellDone]}
                 onPress={() => onOpenNumpad(exIdx, setIdx, 'reps')}
               >
-                <Text style={useStyles.inputCellText} maxFontSizeMultiplier={1.2}>{set.reps || '—'}</Text>
+                <Text style={styles.inputCellText} maxFontSizeMultiplier={1.2}>{set.reps || '—'}</Text>
               </TouchableOpacity>
 
               <View style={[{ flex: 0.6, alignItems: 'center' }]}>
                 <TouchableOpacity
-                  style={[useStyles.checkBtn, set.done && useStyles.checkBtnDone]}
+                  style={[styles.checkBtn, set.done && styles.checkBtnDone]}
                   onPress={() => onToggleSet(exIdx, setIdx)}
                 >
                   <Check size={14} strokeWidth={3} color={set.done ? '#fff' : 'transparent'} />
@@ -97,8 +97,8 @@ export function WorkoutSetsTable({ exercises, personalRecords, onToggleSet, onAd
           })}
 
           {/* Add set */}
-          <TouchableOpacity style={useStyles.addSetBtn} onPress={() => onAddSet(exIdx)}>
-            <Text style={useStyles.addSetText} maxFontSizeMultiplier={1.2}>+ Add Set</Text>
+          <TouchableOpacity style={styles.addSetBtn} onPress={() => onAddSet(exIdx)}>
+            <Text style={styles.addSetText} maxFontSizeMultiplier={1.2}>+ Add Set</Text>
           </TouchableOpacity>
         </View>
       ))}

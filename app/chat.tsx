@@ -133,20 +133,20 @@ export default function ChatScreen() {
   };
 
   const renderMessage = ({ item }: { item: Message }) => (
-    <View style={[useS.msgRow, item.isAi ? useS.msgRowAi : useS.msgRowUser]}>
+    <View style={[s.msgRow, item.isAi ? s.msgRowAi : s.msgRowUser]}>
       {item.isAi && (
-        <View style={useS.avatarWrap}>
+        <View style={s.avatarWrap}>
           <Image source={MascotImages.coach} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
         </View>
       )}
-      <View style={[useS.bubble, item.isAi ? useS.bubbleAi : useS.bubbleUser]}>
-        {item.logged && <Text style={useS.loggedBadge} maxFontSizeMultiplier={1.2}>WORKOUT LOGGED</Text>}
-        <Text style={[useS.bubbleText, item.isAi ? useS.bubbleTextAi : useS.bubbleTextUser]} maxFontSizeMultiplier={1.2}>
+      <View style={[s.bubble, item.isAi ? s.bubbleAi : s.bubbleUser]}>
+        {item.logged && <Text style={s.loggedBadge} maxFontSizeMultiplier={1.2}>WORKOUT LOGGED</Text>}
+        <Text style={[s.bubbleText, item.isAi ? s.bubbleTextAi : s.bubbleTextUser]} maxFontSizeMultiplier={1.2}>
           {item.text}
         </Text>
       </View>
       {!item.isAi && (
-        <View style={[useS.avatarWrap, { backgroundColor: T.colors.bg3 }]}>
+        <View style={[s.avatarWrap, { backgroundColor: T.colors.bg3 }]}>
           <UserIcon size={15} color={T.colors.t1} />
         </View>
       )}
@@ -155,24 +155,24 @@ export default function ChatScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={useS.container}
+      style={s.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {/* ── Header ── */}
-      <View style={useS.header}>
-        <View style={useS.headerLeft}>
-          <View style={useS.headerAvatar}>
+      <View style={s.header}>
+        <View style={s.headerLeft}>
+          <View style={s.headerAvatar}>
             <Image source={MascotImages.coach} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
           </View>
           <View>
-            <Text style={useS.headerTitle} maxFontSizeMultiplier={1.2}>FORGE Coach</Text>
-            <View style={useS.onlineDot}>
-              <View style={useS.onlineDotCircle} />
-              <Text style={useS.onlineText} maxFontSizeMultiplier={1.2}>Online · Groq AI (Llama 3.3)</Text>
+            <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>FORGE Coach</Text>
+            <View style={s.onlineDot}>
+              <View style={s.onlineDotCircle} />
+              <Text style={s.onlineText} maxFontSizeMultiplier={1.2}>Online · Groq AI (Llama 3.3)</Text>
             </View>
           </View>
         </View>
-        <TouchableOpacity onPress={() => router.back()} style={useS.closeBtn}>
+        <TouchableOpacity onPress={() => router.back()} style={s.closeBtn}>
           <X size={18} color={T.colors.t2} />
         </TouchableOpacity>
       </View>
@@ -183,7 +183,7 @@ export default function ChatScreen() {
         data={messages}
         keyExtractor={m => m.id}
         renderItem={renderMessage}
-        contentContainerStyle={useS.list}
+        contentContainerStyle={s.list}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         showsVerticalScrollIndicator={false}
       />
@@ -204,24 +204,24 @@ export default function ChatScreen() {
 
       {/* ── Typing indicator ── */}
       {isTyping && (
-        <View style={useS.typingWrap}>
-          <View style={useS.avatarWrap}>
+        <View style={s.typingWrap}>
+          <View style={s.avatarWrap}>
             <Image source={MascotImages.coach} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
           </View>
-          <View style={useS.bubbleAi}>
+          <View style={s.bubbleAi}>
             <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
-              <Animated.View style={[useS.typingDot, dot1Style]} />
-              <Animated.View style={[useS.typingDot, dot2Style]} />
-              <Animated.View style={[useS.typingDot, dot3Style]} />
+              <Animated.View style={[s.typingDot, dot1Style]} />
+              <Animated.View style={[s.typingDot, dot2Style]} />
+              <Animated.View style={[s.typingDot, dot3Style]} />
             </View>
           </View>
         </View>
       )}
 
       {/* ── Input ── */}
-      <View style={useS.inputBar}>
+      <View style={s.inputBar}>
         <TextInput
-          style={useS.input}
+          style={s.input}
           placeholder="Tell me what you did today..."
           placeholderTextColor={T.colors.t3}
           value={inputText}
@@ -232,7 +232,7 @@ export default function ChatScreen() {
           maxFontSizeMultiplier={1.2}
         />
         <TouchableOpacity
-          style={[useS.sendBtn, !inputText.trim() && { opacity: 0.4 }]}
+          style={[s.sendBtn, !inputText.trim() && { opacity: 0.4 }]}
           onPress={handleSend}
           disabled={!inputText.trim() || isTyping}
         >

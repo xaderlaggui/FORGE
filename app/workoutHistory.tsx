@@ -22,16 +22,16 @@ export default function WorkoutHistoryScreen() {
   }, [workouts]);
 
   return (
-    <View style={useS.container}>
-      <View style={useS.header}>
-        <TouchableOpacity style={useS.backBtn} onPress={() => router.back()}>
+    <View style={s.container}>
+      <View style={s.header}>
+        <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
           <ChevronLeft size={24} color={T.colors.t1} />
         </TouchableOpacity>
-        <Text style={useS.title}>Workout History</Text>
+        <Text style={s.title}>Workout History</Text>
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView contentContainerStyle={useS.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
         {sortedWorkouts.length === 0 ? (
           <View style={{ alignItems: 'center', marginTop: 40 }}>
             <MascotImage
@@ -42,7 +42,7 @@ export default function WorkoutHistoryScreen() {
               accessibilityLabel="Forge the bear celebrating progress gains"
               style={{ alignSelf: 'center', marginBottom: 16 }}
             />
-            <Text style={[useS.empty, { marginTop: 0 }]}>No workouts logged yet.</Text>
+            <Text style={[s.empty, { marginTop: 0 }]}>No workouts logged yet.</Text>
           </View>
         ) : (
           sortedWorkouts.map((session, idx) => {
@@ -64,32 +64,32 @@ export default function WorkoutHistoryScreen() {
             const data = mapMusclesToSlugs(Array.from(allMuscles)).map((slug: any) => ({ slug, intensity: 2 }));
 
             return (
-              <View key={session.id || idx} style={useS.card}>
-                <View style={useS.cardHeader}>
+              <View key={session.id || idx} style={s.card}>
+                <View style={s.cardHeader}>
                   <View>
-                    <Text style={useS.cardDate}>{dayjs(session.date).format('MMM D, YYYY')}</Text>
-                    <Text style={useS.cardTitle}>{session.notes || 'Workout'}</Text>
+                    <Text style={s.cardDate}>{dayjs(session.date).format('MMM D, YYYY')}</Text>
+                    <Text style={s.cardTitle}>{session.notes || 'Workout'}</Text>
                   </View>
-                  <View style={useS.durationBadge}>
-                    <Text style={useS.durationText}>{session.durationMin} MIN</Text>
+                  <View style={s.durationBadge}>
+                    <Text style={s.durationText}>{session.durationMin} MIN</Text>
                   </View>
                 </View>
 
-                <View style={useS.statsRow}>
-                  <View style={useS.stat}>
-                    <Text style={useS.statValue}>{totalVolume.toLocaleString()}</Text>
-                    <Text style={useS.statLabel}>LBS VOL</Text>
+                <View style={s.statsRow}>
+                  <View style={s.stat}>
+                    <Text style={s.statValue}>{totalVolume.toLocaleString()}</Text>
+                    <Text style={s.statLabel}>LBS VOL</Text>
                   </View>
-                  <View style={useS.stat}>
-                    <Text style={useS.statValue}>{session.exercises.length}</Text>
-                    <Text style={useS.statLabel}>EXERCISES</Text>
+                  <View style={s.stat}>
+                    <Text style={s.statValue}>{session.exercises.length}</Text>
+                    <Text style={s.statLabel}>EXERCISES</Text>
                   </View>
                 </View>
 
                 {data.length > 0 && (
-                  <View style={useS.heatmapWrap}>
-                    <Text style={useS.heatmapLabel}>Targeted Muscles</Text>
-                    <View style={useS.heatmapFigures}>
+                  <View style={s.heatmapWrap}>
+                    <Text style={s.heatmapLabel}>Targeted Muscles</Text>
+                    <View style={s.heatmapFigures}>
                       <Body data={data} gender="male" side="front" scale={0.45} colors={['#333', T.colors.forge]} />
                       <Body data={data} gender="male" side="back" scale={0.45} colors={['#333', T.colors.forge]} />
                     </View>

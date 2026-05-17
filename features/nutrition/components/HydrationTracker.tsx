@@ -27,34 +27,34 @@ export function HydrationTracker({ aggregates, waterMl, updateNutrition }: Hydra
   };
   
   return (
-    <View style={[useS.section, { marginBottom: 0 }]}>
-      <Text style={useS.sectionLabel} maxFontSizeMultiplier={1.2}>Hydration</Text>
-      <View style={useS.waterCard}>
-        <View style={useS.waterLeft}>
-          <View style={useS.waterIcon}>
+    <View style={[s.section, { marginBottom: 0 }]}>
+      <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Hydration</Text>
+      <View style={s.waterCard}>
+        <View style={s.waterLeft}>
+          <View style={s.waterIcon}>
             <Droplets size={20} color={T.colors.blue} />
           </View>
           <View>
-            <Text style={useS.waterVal} maxFontSizeMultiplier={1.2}>{waterLiters.toFixed(1)} L</Text>
-            <Text style={useS.waterGoal} maxFontSizeMultiplier={1.2}>Goal: {goalWater} L</Text>
+            <Text style={s.waterVal} maxFontSizeMultiplier={1.2}>{waterLiters.toFixed(1)} L</Text>
+            <Text style={s.waterGoal} maxFontSizeMultiplier={1.2}>Goal: {goalWater} L</Text>
           </View>
         </View>
-        <View style={useS.waterBarWrap}>
-          <View style={useS.waterBarTrack}>
+        <View style={s.waterBarWrap}>
+          <View style={s.waterBarTrack}>
             <View
               style={[
-                useS.waterBarFill,
+                s.waterBarFill,
                 { width: `${Math.min((waterLiters / goalWater) * 100, 100)}%` },
               ]}
             />
           </View>
-          <View style={useS.waterDots}>
+          <View style={s.waterDots}>
             {Array.from({ length: 8 }).map((_, i) => (
               <View
                 key={i}
                 style={[
-                  useS.waterDot,
-                  i < Math.round((waterLiters / goalWater) * 8) && useS.waterDotFilled,
+                  s.waterDot,
+                  i < Math.round((waterLiters / goalWater) * 8) && s.waterDotFilled,
                 ]}
               />
             ))}
@@ -62,14 +62,14 @@ export function HydrationTracker({ aggregates, waterMl, updateNutrition }: Hydra
         </View>
         
         {updateNutrition && (
-          <View style={useS.waterActions}>
-            <TouchableOpacity style={useS.waterBtn} onPress={() => addWater(250)} disabled={isUpdating}>
+          <View style={s.waterActions}>
+            <TouchableOpacity style={s.waterBtn} onPress={() => addWater(250)} disabled={isUpdating}>
               <Plus size={14} color={T.colors.blue} />
-              <Text style={useS.waterBtnText}>Glass (250ml)</Text>
+              <Text style={s.waterBtnText}>Glass (250ml)</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={useS.waterBtn} onPress={() => addWater(500)} disabled={isUpdating}>
+            <TouchableOpacity style={s.waterBtn} onPress={() => addWater(500)} disabled={isUpdating}>
               <Plus size={14} color={T.colors.blue} />
-              <Text style={useS.waterBtnText}>Bottle (500ml)</Text>
+              <Text style={s.waterBtnText}>Bottle (500ml)</Text>
             </TouchableOpacity>
           </View>
         )}

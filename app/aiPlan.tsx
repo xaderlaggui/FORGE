@@ -21,20 +21,20 @@ function WorkoutDayCard({ day }: { day: GeneratedWorkoutDay }) {
   const hasExercises = day.exercises.length > 0;
 
   return (
-    <View style={useS.card}>
+    <View style={s.card}>
       <TouchableOpacity
-        style={useS.cardHeader}
+        style={s.cardHeader}
         onPress={() => hasExercises && setExpanded(e => !e)}
         activeOpacity={hasExercises ? 0.7 : 1}
       >
-        <View style={useS.dayBadge}>
-          <Text style={useS.dayText}>{day.day.slice(0, 3).toUpperCase()}</Text>
+        <View style={s.dayBadge}>
+          <Text style={s.dayText}>{day.day.slice(0, 3).toUpperCase()}</Text>
         </View>
-        <View style={useS.cardHeaderText}>
-          <Text style={useS.cardTitle}>{day.focus}</Text>
+        <View style={s.cardHeaderText}>
+          <Text style={s.cardTitle}>{day.focus}</Text>
           {hasExercises
-            ? <Text style={useS.cardSub}>{day.exercises.length} exercises</Text>
-            : <Text style={[useS.cardSub, { color: T.colors.t3 }]}>Rest Day</Text>
+            ? <Text style={s.cardSub}>{day.exercises.length} exercises</Text>
+            : <Text style={[s.cardSub, { color: T.colors.t3 }]}>Rest Day</Text>
           }
         </View>
         {hasExercises && (
@@ -45,13 +45,13 @@ function WorkoutDayCard({ day }: { day: GeneratedWorkoutDay }) {
       </TouchableOpacity>
 
       {expanded && hasExercises && (
-        <View style={useS.exerciseList}>
+        <View style={s.exerciseList}>
           {day.exercises.map((ex: GeneratedWorkoutDay['exercises'][0], i: number) => (
-            <View key={i} style={useS.exerciseRow}>
-              <View style={useS.exDot} />
+            <View key={i} style={s.exerciseRow}>
+              <View style={s.exDot} />
               <View style={{ flex: 1 }}>
-                <Text style={useS.exName}>{ex.name}</Text>
-                <Text style={useS.exDetail}>{ex.sets} sets × {ex.reps} reps • {ex.restSec}s rest</Text>
+                <Text style={s.exName}>{ex.name}</Text>
+                <Text style={s.exDetail}>{ex.sets} sets × {ex.reps} reps • {ex.restSec}s rest</Text>
               </View>
             </View>
           ))}
@@ -67,10 +67,10 @@ function MacroRow({ label, value, unit, color }: { label: string; value: number;
     const { T } = useForgeTheme();
     const s = useS(T);
   return (
-    <View style={useS.macroRow}>
-      <View style={[useS.macroDot, { backgroundColor: color }]} />
-      <Text style={useS.macroLabel}>{label}</Text>
-      <Text style={[useS.macroValue, { color }]}>{value}{unit}</Text>
+    <View style={s.macroRow}>
+      <View style={[s.macroDot, { backgroundColor: color }]} />
+      <Text style={s.macroLabel}>{label}</Text>
+      <Text style={[s.macroValue, { color }]}>{value}{unit}</Text>
     </View>
   );
 }
@@ -127,44 +127,44 @@ export default function AIPlanScreen() {
   };
 
   return (
-    <View style={useS.container}>
+    <View style={s.container}>
       {/* Header */}
-      <View style={useS.header}>
-        <TouchableOpacity onPress={() => router.back()} style={useS.backBtn}>
-          <Text style={useS.backText}>← Back</Text>
+      <View style={s.header}>
+        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
+          <Text style={s.backText}>← Back</Text>
         </TouchableOpacity>
-        <View style={useS.headerTitle}>
+        <View style={s.headerTitle}>
           <Sparkles size={18} color={T.colors.forge} />
-          <Text style={useS.headerTitleText}>AI Plan Generator</Text>
+          <Text style={s.headerTitleText}>AI Plan Generator</Text>
         </View>
         <View style={{ width: 60 }} />
       </View>
 
-      <ScrollView style={useS.scroll} contentContainerStyle={useS.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={s.scroll} contentContainerStyle={s.scrollContent} showsVerticalScrollIndicator={false}>
 
         {/* Hero Card */}
-        <View style={useS.heroCard}>
+        <View style={s.heroCard}>
           <Sparkles size={32} color={T.colors.forge} />
-          <Text style={useS.heroTitle}>Your Personalized Plan</Text>
-          <Text style={useS.heroSub}>
+          <Text style={s.heroTitle}>Your Personalized Plan</Text>
+          <Text style={s.heroSub}>
             Powered by the Hybrid Forge Engine — mathematically calibrated macros,
             AI-selected exercises tailored to your goal and equipment.
           </Text>
           {!plan && (
             <TouchableOpacity
-              style={[useS.generateBtn, generating && { opacity: 0.6 }]}
+              style={[s.generateBtn, generating && { opacity: 0.6 }]}
               onPress={handleGenerate}
               disabled={generating}
               activeOpacity={0.8}
             >
               {generating
                 ? <ActivityIndicator color={T.colors.bg0} />
-                : <Text style={useS.generateBtnText}>✦ Generate My Plan</Text>
+                : <Text style={s.generateBtnText}>✦ Generate My Plan</Text>
               }
             </TouchableOpacity>
           )}
           {generating && (
-            <Text style={useS.generatingHint}>
+            <Text style={s.generatingHint}>
               Crunching your macros and curating exercises… ~15s
             </Text>
           )}
@@ -173,43 +173,43 @@ export default function AIPlanScreen() {
         {plan && (
           <>
             {/* Meal Plan Summary */}
-            <View style={useS.section}>
-              <View style={useS.sectionRow}>
+            <View style={s.section}>
+              <View style={s.sectionRow}>
                 <Flame size={18} color={T.colors.gold} />
-                <Text style={useS.sectionTitle}>Daily Nutrition Target</Text>
+                <Text style={s.sectionTitle}>Daily Nutrition Target</Text>
               </View>
-              <View style={useS.macroCard}>
-                <View style={useS.calRow}>
-                  <Text style={useS.calValue}>{plan.mealPlan.targetCalories}</Text>
-                  <Text style={useS.calUnit}>kcal / day</Text>
+              <View style={s.macroCard}>
+                <View style={s.calRow}>
+                  <Text style={s.calValue}>{plan.mealPlan.targetCalories}</Text>
+                  <Text style={s.calUnit}>kcal / day</Text>
                 </View>
                 <MacroRow label="Protein" value={plan.mealPlan.targetProtein} unit="g" color={T.colors.blue} />
                 <MacroRow label="Carbs"   value={plan.mealPlan.targetCarbs}   unit="g" color={T.colors.forge} />
                 <MacroRow label="Fat"     value={plan.mealPlan.targetFat}     unit="g" color={T.colors.gold} />
               </View>
 
-              <Text style={useS.subsectionTitle}>Sample Day Menu</Text>
+              <Text style={s.subsectionTitle}>Sample Day Menu</Text>
               {plan.mealPlan.meals.map((meal: GeneratedPlan['mealPlan']['meals'][0], i: number) => (
-                <View key={i} style={useS.mealCard}>
-                  <View style={useS.mealHeader}>
-                    <Text style={useS.mealName}>{meal.name}</Text>
-                    <Text style={useS.mealCal}>{meal.calories} kcal</Text>
+                <View key={i} style={s.mealCard}>
+                  <View style={s.mealHeader}>
+                    <Text style={s.mealName}>{meal.name}</Text>
+                    <Text style={s.mealCal}>{meal.calories} kcal</Text>
                   </View>
-                  <Text style={useS.mealDesc}>{meal.description}</Text>
-                  <View style={useS.mealMacros}>
-                    <Text style={useS.mealMacro}>P {meal.protein}g</Text>
-                    <Text style={useS.mealMacro}>C {meal.carbs}g</Text>
-                    <Text style={useS.mealMacro}>F {meal.fat}g</Text>
+                  <Text style={s.mealDesc}>{meal.description}</Text>
+                  <View style={s.mealMacros}>
+                    <Text style={s.mealMacro}>P {meal.protein}g</Text>
+                    <Text style={s.mealMacro}>C {meal.carbs}g</Text>
+                    <Text style={s.mealMacro}>F {meal.fat}g</Text>
                   </View>
                 </View>
               ))}
             </View>
 
             {/* Workout Week */}
-            <View style={useS.section}>
-              <View style={useS.sectionRow}>
+            <View style={s.section}>
+              <View style={s.sectionRow}>
                 <Dumbbell size={18} color={T.colors.forge} />
-                <Text style={useS.sectionTitle}>7-Day Workout Split</Text>
+                <Text style={s.sectionTitle}>7-Day Workout Split</Text>
               </View>
               {plan.workoutWeek.map((day: GeneratedWorkoutDay, i: number) => (
                 <WorkoutDayCard key={i} day={day} />
@@ -218,7 +218,7 @@ export default function AIPlanScreen() {
 
             {/* Accept Button */}
             <TouchableOpacity
-              style={[useS.acceptBtn, accepting && { opacity: 0.6 }]}
+              style={[s.acceptBtn, accepting && { opacity: 0.6 }]}
               onPress={handleAccept}
               disabled={accepting}
               activeOpacity={0.8}
@@ -227,13 +227,13 @@ export default function AIPlanScreen() {
                 ? <ActivityIndicator color={T.colors.bg0} />
                 : <>
                     <Check size={18} color={T.colors.bg0} />
-                    <Text style={useS.acceptBtnText}>Activate This Plan</Text>
+                    <Text style={s.acceptBtnText}>Activate This Plan</Text>
                   </>
               }
             </TouchableOpacity>
 
-            <TouchableOpacity style={useS.regenBtn} onPress={handleGenerate} disabled={generating}>
-              <Text style={useS.regenText}>↺ Regenerate</Text>
+            <TouchableOpacity style={s.regenBtn} onPress={handleGenerate} disabled={generating}>
+              <Text style={s.regenText}>↺ Regenerate</Text>
             </TouchableOpacity>
 
             <View style={{ height: 48 }} />

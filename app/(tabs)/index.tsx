@@ -21,8 +21,8 @@ export default function HomeScreen() {
 
   return (
     <ScrollView
-      style={useStyles.container}
-      contentContainerStyle={useStyles.scrollContent}
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
       {/* ── Composition: Header & Greeting ── */}
@@ -48,7 +48,7 @@ export default function HomeScreen() {
       />
 
       {/* ── Composition: AI Coach (Shared Component) ── */}
-      <View style={useStyles.section}>
+      <View style={styles.section}>
         <AiCoachCard
           tip={data.aiTip}
           isLoading={data.isAiLoading}

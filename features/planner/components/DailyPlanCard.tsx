@@ -9,7 +9,7 @@ function SkeletonPlanner() {
     const { T } = useForgeTheme();
     const s = useS(T);
   return (
-    <View style={useS.todayCard}>
+    <View style={s.todayCard}>
       <ForgeSkeleton width="40%" height={12} radius={4} style={{ marginBottom: 10 }} />
       <ForgeSkeleton width="70%" height={24} radius={6} style={{ marginBottom: 8 }} />
       <ForgeSkeleton width="55%" height={14} radius={4} style={{ marginBottom: 32 }} />
@@ -59,14 +59,14 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
   if (isCompleted) {
     const data = getHeatmapData(loggedWorkout.exercises);
     return (
-      <View style={useS.todayCard}>
-        <Text style={useS.todayTitle} maxFontSizeMultiplier={1.2}>✅ Completed</Text>
-        <Text style={useS.todaySub} maxFontSizeMultiplier={1.2}>{loggedWorkout.notes || 'Workout Logged'}</Text>
-        <Text style={useS.todayMeta} maxFontSizeMultiplier={1.2}>
+      <View style={s.todayCard}>
+        <Text style={s.todayTitle} maxFontSizeMultiplier={1.2}>✅ Completed</Text>
+        <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{loggedWorkout.notes || 'Workout Logged'}</Text>
+        <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
           {loggedWorkout.exercises?.length ?? 0} Exercises Completed
         </Text>
         {data.length > 0 && (
-          <View style={useS.heatmapFigures}>
+          <View style={s.heatmapFigures}>
             <Body data={data} gender="male" side="front" scale={0.4} colors={['#333', T.colors.forge]} />
             <Body data={data} gender="male" side="back" scale={0.4} colors={['#333', T.colors.forge]} />
           </View>
@@ -83,14 +83,14 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
   if (!isRestDay) {
     const data = getHeatmapData(plannedWorkout.exercises);
     return (
-      <View style={useS.todayCard}>
-        <Text style={useS.todayTitle} maxFontSizeMultiplier={1.2}>Scheduled Routine</Text>
-        <Text style={useS.todaySub} maxFontSizeMultiplier={1.2}>{plannedWorkout.title}</Text>
-        <Text style={useS.todayMeta} maxFontSizeMultiplier={1.2}>
+      <View style={s.todayCard}>
+        <Text style={s.todayTitle} maxFontSizeMultiplier={1.2}>Scheduled Routine</Text>
+        <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{plannedWorkout.title}</Text>
+        <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
           {plannedWorkout.exercises?.length ?? 0} Exercises Prescribed
         </Text>
         {data.length > 0 && (
-          <View style={useS.heatmapFigures}>
+          <View style={s.heatmapFigures}>
             <Body data={data} gender="male" side="front" scale={0.4} colors={['#333', T.colors.forge]} />
             <Body data={data} gender="male" side="back" scale={0.4} colors={['#333', T.colors.forge]} />
           </View>
@@ -105,7 +105,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
   }
 
   return (
-    <View style={[useS.todayCard, useS.todayCardEmpty]}>
+    <View style={[s.todayCard, s.todayCardEmpty]}>
       <MascotImage
         mascot="workout"
         width={160}
@@ -114,8 +114,8 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
         accessibilityLabel="Forge the bear lifting weights — no workout planned yet"
         style={{ alignSelf: 'center', marginBottom: 16 }}
       />
-      <Text style={useS.todaySub} maxFontSizeMultiplier={1.2}>Active Recovery</Text>
-      <Text style={useS.todayMetaCenter} maxFontSizeMultiplier={1.2}>
+      <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>Active Recovery</Text>
+      <Text style={s.todayMetaCenter} maxFontSizeMultiplier={1.2}>
         No formal training scheduled. Rest up or do light cardio.
       </Text>
       <ForgeButton

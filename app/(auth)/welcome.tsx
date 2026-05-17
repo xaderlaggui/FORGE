@@ -50,7 +50,7 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <View style={useS.container}>
+    <View style={s.container}>
       <FlatList
         ref={flatListRef}
         data={SLIDES}
@@ -62,20 +62,20 @@ export default function WelcomeScreen() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         renderItem={({ item }) => (
-          <View style={useS.slide}>
-            <View style={useS.iconWrap}>
+          <View style={s.slide}>
+            <View style={s.iconWrap}>
               {item.icon}
             </View>
-            <Text style={useS.title}>{item.title}</Text>
-            <Text style={useS.description}>{item.description}</Text>
+            <Text style={s.title}>{item.title}</Text>
+            <Text style={s.description}>{item.description}</Text>
           </View>
         )}
       />
 
-      <View style={useS.footer}>
-        <View style={useS.pagination}>
+      <View style={s.footer}>
+        <View style={s.pagination}>
           {SLIDES.map((_, i) => (
-            <View key={i} style={[useS.dot, currentIndex === i && useS.dotActive]} />
+            <View key={i} style={[s.dot, currentIndex === i && s.dotActive]} />
           ))}
         </View>
 
@@ -86,8 +86,8 @@ export default function WelcomeScreen() {
         />
         
         {currentIndex < SLIDES.length - 1 && (
-          <TouchableOpacity style={useS.skipBtn} onPress={() => router.replace('/(auth)/login')}>
-            <Text style={useS.skipText}>Skip</Text>
+          <TouchableOpacity style={s.skipBtn} onPress={() => router.replace('/(auth)/login')}>
+            <Text style={s.skipText}>Skip</Text>
           </TouchableOpacity>
         )}
       </View>

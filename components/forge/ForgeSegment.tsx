@@ -32,11 +32,11 @@ export function ForgeSegment({ options, value, onChange }: ForgeSegmentProps) {
   };
 
   return (
-    <View style={useStyles.container} onLayout={handleLayout}>
+    <View style={styles.container} onLayout={handleLayout}>
       {tabWidth > 0 && (
         <Animated.View
           style={[
-            useStyles.activeBg,
+            styles.activeBg,
             animStyle,
             { width: tabWidth - 8 }, // subtract 4px padding on each side
           ]}
@@ -47,14 +47,14 @@ export function ForgeSegment({ options, value, onChange }: ForgeSegmentProps) {
         return (
           <TouchableOpacity
             key={opt}
-            style={useStyles.tab}
+            style={styles.tab}
             onPress={() => onChange(opt)}
             activeOpacity={0.7}
             accessibilityRole="tab"
             accessibilityState={{ selected: isActive }}
           >
             <Text
-              style={[useStyles.text, isActive && useStyles.textActive]}
+              style={[styles.text, isActive && styles.textActive]}
               maxFontSizeMultiplier={1.2}
             >
               {opt.toUpperCase()}

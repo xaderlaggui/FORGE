@@ -32,7 +32,7 @@ export function MacroDonutRing({ calories, calorieGoal, waterLiters, waterGoal }
   const calOffset = innerCircumference - calPercent * innerCircumference;
 
   return (
-    <View style={useStyles.wrapper}>
+    <View style={styles.wrapper}>
       <View style={{ width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center' }}>
         <Svg width={SIZE} height={SIZE} viewBox="0 0 100 100" style={{ transform: [{ rotate: '-90deg' }] }}>
           {/* Track rings */}
@@ -61,21 +61,21 @@ export function MacroDonutRing({ calories, calorieGoal, waterLiters, waterGoal }
         </Svg>
         {/* Center label */}
         <View style={StyleSheet.absoluteFillObject as any} pointerEvents="none">
-          <View style={useStyles.center}>
-            <Text style={useStyles.centerText}>{Math.round(calPercent * 100)}%</Text>
+          <View style={styles.center}>
+            <Text style={styles.centerText}>{Math.round(calPercent * 100)}%</Text>
           </View>
         </View>
       </View>
 
       {/* Legend */}
-      <View style={useStyles.legend}>
-        <View style={useStyles.legendItem}>
-          <View style={[useStyles.dot, { backgroundColor: ForgeTheme.colors.forge }]} />
-          <Text style={useStyles.legendLabel}>{calories} cal</Text>
+      <View style={styles.legend}>
+        <View style={styles.legendItem}>
+          <View style={[styles.dot, { backgroundColor: ForgeTheme.colors.forge }]} />
+          <Text style={styles.legendLabel}>{calories} cal</Text>
         </View>
-        <View style={useStyles.legendItem}>
-          <View style={[useStyles.dot, { backgroundColor: ForgeTheme.colors.blue }]} />
-          <Text style={useStyles.legendLabel}>{waterLiters.toFixed(1)} L</Text>
+        <View style={styles.legendItem}>
+          <View style={[styles.dot, { backgroundColor: ForgeTheme.colors.blue }]} />
+          <Text style={styles.legendLabel}>{waterLiters.toFixed(1)} L</Text>
         </View>
       </View>
     </View>

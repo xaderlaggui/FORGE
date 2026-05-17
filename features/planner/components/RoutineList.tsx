@@ -19,8 +19,8 @@ function Badge({ split }: { split?: string }) {
   const c = colors[split] || { bg: T.colors.bg2, text: T.colors.t2 };
   
   return (
-    <View style={[useS.badge, { backgroundColor: c.bg }]}>
-      <Text style={[useS.badgeText, { color: c.text }]}>{split.toUpperCase()}</Text>
+    <View style={[s.badge, { backgroundColor: c.bg }]}>
+      <Text style={[s.badgeText, { color: c.text }]}>{split.toUpperCase()}</Text>
     </View>
   );
 }
@@ -33,7 +33,7 @@ export function RoutineList() {
 
   if (isLoading) {
     return (
-      <View style={useS.list}>
+      <View style={s.list}>
         <ForgeSkeleton width="100%" height={150} radius={T.radii.lg} style={{ marginBottom: 12 }} />
         <ForgeSkeleton width="100%" height={150} radius={T.radii.lg} />
       </View>
@@ -41,7 +41,7 @@ export function RoutineList() {
   }
 
   return (
-    <ScrollView contentContainerStyle={useS.list} showsVerticalScrollIndicator={false}>
+    <ScrollView contentContainerStyle={s.list} showsVerticalScrollIndicator={false}>
       <ForgeButton 
         label="+ Create Custom Routine" 
         onPress={() => router.push('/buildRoutine')} 
@@ -49,38 +49,38 @@ export function RoutineList() {
       />
 
       {routines.length === 0 ? (
-        <View style={useS.emptyState}>
-          <Text style={useS.emptyText} maxFontSizeMultiplier={1.2}>
+        <View style={s.emptyState}>
+          <Text style={s.emptyText} maxFontSizeMultiplier={1.2}>
             You haven't built any custom routines yet.
           </Text>
         </View>
       ) : (
         routines.map(routine => (
-          <View key={routine.id} style={useS.card}>
-            <View style={useS.cardTop}>
-              <Text style={useS.cardTitle}>{routine.name}</Text>
+          <View key={routine.id} style={s.card}>
+            <View style={s.cardTop}>
+              <Text style={s.cardTitle}>{routine.name}</Text>
               <Badge split={routine.split} />
             </View>
-            <Text style={useS.cardMeta}>
+            <Text style={s.cardMeta}>
               {routine.exercises.length} exercises • ~{routine.exercises.length * 10} min
             </Text>
             
-            <View style={useS.exList}>
+            <View style={s.exList}>
               {routine.exercises.map((ex, idx) => (
-                <View key={idx} style={useS.exRow}>
-                  <View style={useS.exDot} />
-                  <Text style={useS.exName} numberOfLines={1}>{ex.name}</Text>
-                  <Text style={useS.exPreset}>{ex.preset || `${ex.sets}×${ex.reps}`}</Text>
+                <View key={idx} style={s.exRow}>
+                  <View style={s.exDot} />
+                  <Text style={s.exName} numberOfLines={1}>{ex.name}</Text>
+                  <Text style={s.exPreset}>{ex.preset || `${ex.sets}×${ex.reps}`}</Text>
                 </View>
               ))}
             </View>
 
             <TouchableOpacity 
-              style={useS.startBtn}
+              style={s.startBtn}
               onPress={() => router.push({ pathname: '/activeWorkout', params: { routineId: routine.id } })}
               activeOpacity={0.8}
             >
-              <Text style={useS.startBtnText}>Start Workout</Text>
+              <Text style={s.startBtnText}>Start Workout</Text>
             </TouchableOpacity>
           </View>
         ))

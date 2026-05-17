@@ -27,15 +27,15 @@ export default function ProgressScreen() {
   } = useProgressData();
 
   return (
-    <ScrollView style={useS.container} contentContainerStyle={useS.content} showsVerticalScrollIndicator={false}>
+    <ScrollView style={s.container} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
 
       {/* ── Composition: Header ── */}
-      <View style={useS.header}>
+      <View style={s.header}>
         <View>
-          <Text style={useS.headerSub} maxFontSizeMultiplier={1.2}>Your Journey</Text>
-          <Text style={useS.headerTitle} maxFontSizeMultiplier={1.2}>Progress</Text>
+          <Text style={s.headerSub} maxFontSizeMultiplier={1.2}>Your Journey</Text>
+          <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>Progress</Text>
         </View>
-        <TouchableOpacity style={useS.cameraBtn} onPress={takePhoto} disabled={isUploading}>
+        <TouchableOpacity style={s.cameraBtn} onPress={takePhoto} disabled={isUploading}>
           {isUploading
             ? <ActivityIndicator size="small" color={T.colors.forge} />
             : <Camera size={18} color={T.colors.forge} />}
@@ -43,7 +43,7 @@ export default function ProgressScreen() {
       </View>
 
       {/* ── Composition: Key Stats ── */}
-      <View style={useS.statsRow}>
+      <View style={s.statsRow}>
         <StatCard label="Current" value={currentWeight} unit="lbs" delta={weightDiff} />
         <StatCard label="Started" value={startWeight} unit="lbs" />
         <StatCard label="BMI" value={user?.bmi?.toFixed(1) ?? '—'} />
@@ -60,9 +60,9 @@ export default function ProgressScreen() {
       />
 
       {/* ── Composition: Body Measurements ── */}
-      <View style={useS.section}>
-        <Text style={useS.sectionLabel} maxFontSizeMultiplier={1.2}>Body Measurements</Text>
-        <View style={useS.measGrid}>
+      <View style={s.section}>
+        <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Body Measurements</Text>
+        <View style={s.measGrid}>
           <MeasurementCard label="Chest" value={latest?.chest} prevValue={prev?.chest} onPress={() => router.push('/measurements')} />
           <MeasurementCard label="Waist" value={latest?.waist} prevValue={prev?.waist} onPress={() => router.push('/measurements')} />
           <MeasurementCard label="Arms"  value={latest?.arms}  prevValue={prev?.arms}  onPress={() => router.push('/measurements')} />
@@ -88,10 +88,10 @@ export default function ProgressScreen() {
       />
 
       {/* ── Composition: Links ── */}
-      <View style={useS.section}>
-        <TouchableOpacity style={useS.linkCard} onPress={() => router.push('/workoutHistory')}>
-          <Text style={useS.linkTitle} maxFontSizeMultiplier={1.2}>Workout History</Text>
-          <Text style={useS.linkSub} maxFontSizeMultiplier={1.2}>View your past sessions and volume</Text>
+      <View style={s.section}>
+        <TouchableOpacity style={s.linkCard} onPress={() => router.push('/workoutHistory')}>
+          <Text style={s.linkTitle} maxFontSizeMultiplier={1.2}>Workout History</Text>
+          <Text style={s.linkSub} maxFontSizeMultiplier={1.2}>View your past sessions and volume</Text>
         </TouchableOpacity>
       </View>
 

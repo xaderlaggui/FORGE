@@ -7,8 +7,8 @@ export function NutritionSkeleton() {
     const { T } = useForgeTheme();
     const s = useS(T);
   return (
-    <View style={useS.content}>
-      <View style={[useS.header, { paddingBottom: T.spacing.px6 }]}>
+    <View style={s.content}>
+      <View style={[s.header, { paddingBottom: T.spacing.px6 }]}>
         <View>
           <ForgeSkeleton width={120} height={14} radius={4} style={{ marginBottom: 6 }} />
           <ForgeSkeleton width={180} height={32} radius={8} />
@@ -16,9 +16,9 @@ export function NutritionSkeleton() {
         <ForgeSkeleton circle size={40} />
       </View>
       <SkeletonHeroCard />
-      <View style={useS.section}>
+      <View style={s.section}>
         <ForgeSkeleton width={140} height={14} radius={4} style={{ marginBottom: 10 }} />
-        <View style={useS.card}>
+        <View style={s.card}>
            <ForgeSkeleton width="100%" height={24} radius={4} style={{ marginBottom: 12 }} />
            <ForgeSkeleton width="100%" height={24} radius={4} style={{ marginBottom: 12 }} />
            <ForgeSkeleton width="100%" height={24} radius={4} />

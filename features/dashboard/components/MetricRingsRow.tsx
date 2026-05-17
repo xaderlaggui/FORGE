@@ -31,8 +31,8 @@ export function MetricRingsRow({
   }
 
   return (
-    <View style={useS.metricsRow}>
-      <View style={useS.metricCard}>
+    <View style={s.metricsRow}>
+      <View style={s.metricCard}>
         <MacroDonutRing
           calories={activeCals}
           calorieGoal={calGoal}
@@ -40,7 +40,7 @@ export function MetricRingsRow({
           waterGoal={waterGoal}
         />
       </View>
-      <View style={useS.metricCard}>
+      <View style={s.metricCard}>
         <StreakWidget streak={streak} weekActivity={weekActivity} />
       </View>
     </View>

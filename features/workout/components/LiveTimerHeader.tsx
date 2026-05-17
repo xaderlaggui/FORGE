@@ -17,28 +17,28 @@ export function LiveTimerHeader({ timerLabel, totalExercises, doneExercises, onB
   const pips = Array.from({ length: totalExercises });
 
   return (
-    <View style={useStyles.header}>
-      <TouchableOpacity style={useStyles.backBtn} onPress={onBack}>
+    <View style={styles.header}>
+      <TouchableOpacity style={styles.backBtn} onPress={onBack}>
         <ChevronLeft size={20} color={T.colors.t2} />
       </TouchableOpacity>
 
       {/* Exercise progress pips */}
-      <View style={useStyles.pips}>
+      <View style={styles.pips}>
         {pips.map((_, i) => (
           <View
             key={i}
             style={[
-              useStyles.pip,
-              i === doneExercises ? useStyles.pipActive : i < doneExercises ? useStyles.pipDone : useStyles.pipInactive,
+              styles.pip,
+              i === doneExercises ? styles.pipActive : i < doneExercises ? styles.pipDone : styles.pipInactive,
             ]}
           />
         ))}
       </View>
 
       {/* Live timer */}
-      <View style={useStyles.timerBadge}>
-        <View style={useStyles.timerDot} />
-        <Text style={useStyles.timerText} maxFontSizeMultiplier={1.2}>{timerLabel}</Text>
+      <View style={styles.timerBadge}>
+        <View style={styles.timerDot} />
+        <Text style={styles.timerText} maxFontSizeMultiplier={1.2}>{timerLabel}</Text>
       </View>
     </View>
   );

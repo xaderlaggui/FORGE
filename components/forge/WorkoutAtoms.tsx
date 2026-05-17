@@ -10,8 +10,8 @@ export function MuscleTagChip({ label }: MuscleTagChipProps) {
     const { T: ForgeTheme } = useForgeTheme();
     const styles = useStyles(ForgeTheme);
   return (
-    <View style={useStyles.chip}>
-      <Text style={useStyles.chipText}>{label}</Text>
+    <View style={styles.chip}>
+      <Text style={styles.chipText}>{label}</Text>
     </View>
   );
 }
@@ -30,18 +30,18 @@ export function WorkoutListItem({ title, date, icon = '🔥', stat, isLast, onPr
     const styles = useStyles(ForgeTheme);
   return (
     <TouchableOpacity
-      style={[useStyles.row, !isLast && useStyles.rowBorder]}
+      style={[styles.row, !isLast && styles.rowBorder]}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View style={useStyles.iconWrap}>
-        <Text style={useStyles.iconEmoji}>{icon}</Text>
+      <View style={styles.iconWrap}>
+        <Text style={styles.iconEmoji}>{icon}</Text>
       </View>
-      <View style={useStyles.textWrap}>
-        <Text style={useStyles.title} numberOfLines={1}>{title}</Text>
-        <Text style={useStyles.date}>{date}</Text>
+      <View style={styles.textWrap}>
+        <Text style={styles.title} numberOfLines={1}>{title}</Text>
+        <Text style={styles.date}>{date}</Text>
       </View>
-      {!!stat && <Text style={useStyles.stat}>{stat}</Text>}
+      {!!stat && <Text style={styles.stat}>{stat}</Text>}
     </TouchableOpacity>
   );
 }

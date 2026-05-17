@@ -47,7 +47,7 @@ export default function ActiveWorkoutScreen() {
   const currentExercise = session.exercises[session.currentExerciseIndex];
 
   return (
-    <View style={useStyles.container}>
+    <View style={styles.container}>
       <LiveTimerHeader 
         timerLabel={session.timerLabel}
         totalExercises={session.totalExercises}
@@ -55,50 +55,50 @@ export default function ActiveWorkoutScreen() {
         onBack={handleBack}
       />
 
-      <ScrollView contentContainerStyle={useStyles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {!session.workoutStarted ? (
-          <View style={useStyles.startOverlay}>
-            <Text style={useStyles.exerciseTitle} maxFontSizeMultiplier={1.2}>
+          <View style={styles.startOverlay}>
+            <Text style={styles.exerciseTitle} maxFontSizeMultiplier={1.2}>
               {session.workoutTitle}
             </Text>
-            <Text style={useStyles.startHint}>Tap Start Workout to begin tracking.</Text>
+            <Text style={styles.startHint}>Tap Start Workout to begin tracking.</Text>
           </View>
         ) : (
           <>
             {/* Feature 4: Volume Tracker */}
-            <View style={useStyles.volumeTracker}>
-              <View style={useStyles.volStat}>
-                <Text style={useStyles.volValue}>{session.volumeStats.volume.toLocaleString()}</Text>
-                <Text style={useStyles.volLabel}>LBS VOL</Text>
+            <View style={styles.volumeTracker}>
+              <View style={styles.volStat}>
+                <Text style={styles.volValue}>{session.volumeStats.volume.toLocaleString()}</Text>
+                <Text style={styles.volLabel}>LBS VOL</Text>
               </View>
-              <View style={useStyles.volDivider} />
-              <View style={useStyles.volStat}>
-                <Text style={useStyles.volValue}>{session.volumeStats.completedSets}</Text>
-                <Text style={useStyles.volLabel}>SETS DONE</Text>
+              <View style={styles.volDivider} />
+              <View style={styles.volStat}>
+                <Text style={styles.volValue}>{session.volumeStats.completedSets}</Text>
+                <Text style={styles.volLabel}>SETS DONE</Text>
               </View>
-              <View style={useStyles.volDivider} />
-              <View style={useStyles.volStat}>
-                <Text style={useStyles.volValue}>{session.doneExercises}/{session.totalExercises}</Text>
-                <Text style={useStyles.volLabel}>EXERCISES</Text>
+              <View style={styles.volDivider} />
+              <View style={styles.volStat}>
+                <Text style={styles.volValue}>{session.doneExercises}/{session.totalExercises}</Text>
+                <Text style={styles.volLabel}>EXERCISES</Text>
               </View>
             </View>
 
             {/* Exercise Navigator */}
-            <View style={useStyles.navigator}>
+            <View style={styles.navigator}>
               <TouchableOpacity 
-                style={useStyles.navBtn} 
+                style={styles.navBtn} 
                 disabled={session.currentExerciseIndex === 0}
                 onPress={() => session.setCurrentExerciseIndex(i => i - 1)}
               >
                 <ChevronLeft size={24} color={session.currentExerciseIndex === 0 ? T.colors.t3 : T.colors.forge} />
               </TouchableOpacity>
               
-              <Text style={useStyles.navCount}>
+              <Text style={styles.navCount}>
                 {session.currentExerciseIndex + 1} OF {session.totalExercises}
               </Text>
 
               <TouchableOpacity 
-                style={useStyles.navBtn} 
+                style={styles.navBtn} 
                 disabled={session.currentExerciseIndex === session.totalExercises - 1}
                 onPress={() => session.setCurrentExerciseIndex(i => i + 1)}
               >
@@ -108,23 +108,23 @@ export default function ActiveWorkoutScreen() {
 
             {currentExercise && (
               <>
-                <Text style={useStyles.exerciseName} maxFontSizeMultiplier={1.2}>
+                <Text style={styles.exerciseName} maxFontSizeMultiplier={1.2}>
                   {currentExercise.name}
                 </Text>
 
                 {/* Preset Selector */}
-                <View style={useStyles.presetSection}>
-                  <Text style={useStyles.presetLabel}>QUICK PRESETS</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={useStyles.presetRow}>
+                <View style={styles.presetSection}>
+                  <Text style={styles.presetLabel}>QUICK PRESETS</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.presetRow}>
                     {PRESETS.map(p => {
                       const isActive = currentExercise.sets.length === p.sets && currentExercise.sets[0]?.reps === p.reps.toString();
                       return (
                         <TouchableOpacity 
                           key={p.label} 
-                          style={[useStyles.presetChip, isActive && useStyles.presetChipActive]}
+                          style={[styles.presetChip, isActive && styles.presetChipActive]}
                           onPress={() => session.selectPreset(session.currentExerciseIndex, p.sets, p.reps)}
                         >
-                          <Text style={[useStyles.presetChipText, isActive && useStyles.presetChipTextActive]}>{p.label}</Text>
+                          <Text style={[styles.presetChipText, isActive && styles.presetChipTextActive]}>{p.label}</Text>
                         </TouchableOpacity>
                       );
                     })}
@@ -150,7 +150,7 @@ export default function ActiveWorkoutScreen() {
 
       {/* Rest Timer (Absolute) */}
       {session.isResting && (
-        <View style={useStyles.restTimerFloat}>
+        <View style={styles.restTimerFloat}>
           <RestTimerWidget
             restTime={session.restTime}
             totalTime={session.totalRestTime}
@@ -163,7 +163,7 @@ export default function ActiveWorkoutScreen() {
       )}
 
       {/* Footer CTA */}
-      <View style={useStyles.footer}>
+      <View style={styles.footer}>
         {!session.workoutStarted ? (
           <ForgeButton
             label="START WORKOUT"

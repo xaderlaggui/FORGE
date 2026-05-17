@@ -30,13 +30,13 @@ function InputField({
     const { T } = useForgeTheme();
     const s = useS(T);
   return (
-    <View style={[useS.inputWrap, focusedField === fieldKey && useS.inputWrapFocused]}>
+    <View style={[s.inputWrap, focusedField === fieldKey && s.inputWrapFocused]}>
       {React.cloneElement(icon, {
         color: focusedField === fieldKey ? T.colors.forge : T.colors.t3,
         size: 18,
       })}
       <TextInput
-        style={useS.input}
+        style={s.input}
         placeholder={placeholder}
         placeholderTextColor={T.colors.t3}
         value={value}
@@ -116,14 +116,14 @@ export default function SignupScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={useS.container}
+      style={s.container}
     >
-      <View style={useS.innerWrapper}>
-        <Animated.View style={[useS.inner, animStyle]}>
+      <View style={s.innerWrapper}>
+        <Animated.View style={[s.inner, animStyle]}>
 
           {/* Back to login */}
-          <TouchableOpacity style={useS.backRow} onPress={() => router.back()}>
-            <Text style={useS.backText}>← Back to Login</Text>
+          <TouchableOpacity style={s.backRow} onPress={() => router.back()}>
+            <Text style={s.backText}>← Back to Login</Text>
           </TouchableOpacity>
 
           <MascotImage
@@ -135,9 +135,9 @@ export default function SignupScreen() {
             style={{ alignSelf: 'center', marginBottom: 8 }}
           />
           {/* Brand */}
-          <Text style={useS.wordmark}>FORGE</Text>
-          <Text style={useS.title}>Create your account</Text>
-          <Text style={useS.subtitle}>Start building your best self today.</Text>
+          <Text style={s.wordmark}>FORGE</Text>
+          <Text style={s.title}>Create your account</Text>
+          <Text style={s.subtitle}>Start building your best self today.</Text>
 
           {/* Fields */}
           <InputField
@@ -184,19 +184,19 @@ export default function SignupScreen() {
 
           {/* CTA */}
           <TouchableOpacity
-            style={[useS.btn, loading && { opacity: 0.7 }]}
+            style={[s.btn, loading && { opacity: 0.7 }]}
             onPress={handleSignup}
             disabled={loading}
             activeOpacity={0.85}
           >
             {loading
               ? <ActivityIndicator color="#fff" />
-              : <Text style={useS.btnText}>Create Account</Text>
+              : <Text style={s.btnText}>Create Account</Text>
             }
           </TouchableOpacity>
 
           {/* Terms */}
-          <Text style={useS.terms}>
+          <Text style={s.terms}>
             By signing up, you agree to our{' '}
             <Text style={{ color: T.colors.forge }}>Terms of Service</Text>
             {' '}and{' '}
@@ -204,10 +204,10 @@ export default function SignupScreen() {
           </Text>
 
           {/* Footer */}
-          <View style={useS.footer}>
-            <Text style={useS.footerText}>Already have an account? </Text>
+          <View style={s.footer}>
+            <Text style={s.footerText}>Already have an account? </Text>
             <TouchableOpacity onPress={() => router.back()}>
-              <Text style={useS.footerLink}>Log in</Text>
+              <Text style={s.footerLink}>Log in</Text>
             </TouchableOpacity>
           </View>
 

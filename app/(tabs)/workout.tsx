@@ -23,12 +23,12 @@ export default function WorkoutScreen() {
   } = usePlannerData();
 
   return (
-    <View style={useS.container}>
+    <View style={s.container}>
       {/* ── Composition: Header ── */}
-      <View style={useS.header}>
+      <View style={s.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: T.spacing.px4 }}>
           <Image source={MascotImages.workout} style={{ width: 48, height: 48, resizeMode: 'contain' }} />
-          <Text style={useS.title} maxFontSizeMultiplier={1.2}>Workout Planner</Text>
+          <Text style={s.title} maxFontSizeMultiplier={1.2}>Workout Planner</Text>
         </View>
         <ForgeSegment
           options={['Planner', 'Routines', 'Library']}
@@ -46,7 +46,7 @@ export default function WorkoutScreen() {
       ) : activeTab === 'Routines' ? (
         <RoutineList />
       ) : (
-        <ScrollView contentContainerStyle={useS.plannerContainer} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={s.plannerContainer} showsVerticalScrollIndicator={false}>
           <WeeklyCalendar
             days={days}
             activeDayIdx={activeDayIdx}

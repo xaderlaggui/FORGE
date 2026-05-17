@@ -15,11 +15,11 @@ export function ProgressPhotos({ firstPhoto, lastPhoto, isUploading, onTakePhoto
     const { T } = useForgeTheme();
     const s = useS(T);
   return (
-    <View style={useS.section}>
-      <Text style={useS.sectionLabel} maxFontSizeMultiplier={1.2}>Transformation</Text>
-      <View style={useS.photoGrid}>
+    <View style={s.section}>
+      <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Transformation</Text>
+      <View style={s.photoGrid}>
         {[{ photo: firstPhoto, badge: 'Before' }, { photo: lastPhoto, badge: 'Current' }].map(({ photo, badge }) => (
-          <View key={badge} style={useS.photoCard}>
+          <View key={badge} style={s.photoCard}>
             {photo?.url ? (
               <Image source={{ uri: photo.url }} style={StyleSheet.absoluteFill as any} resizeMode="cover" />
             ) : (
@@ -27,8 +27,8 @@ export function ProgressPhotos({ firstPhoto, lastPhoto, isUploading, onTakePhoto
                 <Camera size={24} color={T.colors.t2} />
               </View>
             )}
-            <View style={useS.photoBadgeWrap}>
-              <Text style={useS.photoBadgeText} maxFontSizeMultiplier={1.2}>{badge}</Text>
+            <View style={s.photoBadgeWrap}>
+              <Text style={s.photoBadgeText} maxFontSizeMultiplier={1.2}>{badge}</Text>
             </View>
           </View>
         ))}

@@ -27,21 +27,21 @@ export function WeeklyCalendar({ days, activeDayIdx, onSelectDay }: WeeklyCalend
   }));
 
   return (
-    <View style={useS.weekRow}>
+    <View style={s.weekRow}>
       {days.map((day, idx) => {
         const isActive = idx === activeDayIdx;
         return (
           <TouchableOpacity
             key={idx}
             onPress={() => onSelectDay(idx)}
-            style={useS.weekDotCol}
+            style={s.weekDotCol}
             activeOpacity={0.7}
           >
-            <Text style={useS.dayLabel} maxFontSizeMultiplier={1.2}>{day.label}</Text>
+            <Text style={s.dayLabel} maxFontSizeMultiplier={1.2}>{day.label}</Text>
             {isActive ? (
-              <Animated.View style={[useS.weekDot, useS.weekDotActive, dotOpacityStyle]} />
+              <Animated.View style={[s.weekDot, s.weekDotActive, dotOpacityStyle]} />
             ) : (
-              <View style={useS.weekDot} />
+              <View style={s.weekDot} />
             )}
           </TouchableOpacity>
         );

@@ -12,7 +12,7 @@ function SkeletonLibrary() {
   return (
     <View style={{ gap: 12 }}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <View key={i} style={useS.card}>
+        <View key={i} style={s.card}>
           <ForgeSkeleton width="50%" height={16} radius={4} style={{ marginBottom: 8 }} />
           <ForgeSkeleton width="30%" height={12} radius={4} />
         </View>
@@ -94,33 +94,33 @@ export function ExercisePreviewModal({
 
   return (
     <Modal visible={!!exercise} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <SafeAreaView style={useS.modalContainer}>
-        <View style={useS.modalHeader}>
-          <Text style={useS.modalTitle}>{exercise.name}</Text>
-          <TouchableOpacity onPress={onClose} style={useS.closeBtn}>
+      <SafeAreaView style={s.modalContainer}>
+        <View style={s.modalHeader}>
+          <Text style={s.modalTitle}>{exercise.name}</Text>
+          <TouchableOpacity onPress={onClose} style={s.closeBtn}>
             <X size={24} color={T.colors.t1} />
           </TouchableOpacity>
         </View>
 
-        <Text style={useS.modalSub}>
+        <Text style={s.modalSub}>
           {exercise.muscleGroups.join(', ')} • {exercise.equipment}
         </Text>
 
-        <View style={useS.bodyRow}>
-          <View style={useS.bodyWrapper}>
+        <View style={s.bodyRow}>
+          <View style={s.bodyWrapper}>
             <Body data={slugs as any} gender="male" side="front" scale={0.9} colors={['#FF5C2E', '#FF5C2E']} border={T.colors.b1} />
-            <Text style={useS.bodyLabel}>FRONT</Text>
+            <Text style={s.bodyLabel}>FRONT</Text>
           </View>
-          <View style={useS.bodyWrapper}>
+          <View style={s.bodyWrapper}>
             <Body data={slugs as any} gender="male" side="back" scale={0.9} colors={['#FF5C2E', '#FF5C2E']} border={T.colors.b1} />
-            <Text style={useS.bodyLabel}>BACK</Text>
+            <Text style={s.bodyLabel}>BACK</Text>
           </View>
         </View>
 
         {onAdd && (
           <View style={{ padding: T.spacing.page, marginTop: 'auto', marginBottom: 20 }}>
-            <TouchableOpacity style={useS.addBtn} onPress={() => { onAdd(exercise); onClose(); }}>
-              <Text style={useS.addBtnText}>Add to Routine</Text>
+            <TouchableOpacity style={s.addBtn} onPress={() => { onAdd(exercise); onClose(); }}>
+              <Text style={s.addBtnText}>Add to Routine</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -174,10 +174,10 @@ export function ExerciseLibrary({ exercises, isLoading, onSelect }: ExerciseLibr
   return (
     <View style={{ flex: 1 }}>
       <View style={{ paddingHorizontal: T.spacing.page, paddingTop: 16, paddingBottom: 8 }}>
-        <View style={useS.searchBar}>
+        <View style={s.searchBar}>
           <Search size={18} color={T.colors.t3} />
           <TextInput
-            style={useS.searchInput}
+            style={s.searchInput}
             placeholder="Search exercises or muscles..."
             placeholderTextColor={T.colors.t3}
             value={searchQuery}
@@ -188,28 +188,28 @@ export function ExerciseLibrary({ exercises, isLoading, onSelect }: ExerciseLibr
           {['All', 'Push', 'Pull', 'Legs', 'Chest', 'Back', 'Arms', 'Core'].map(cat => (
             <TouchableOpacity
               key={cat}
-              style={[useS.filterChip, activeCat === cat && useS.filterChipActive]}
+              style={[s.filterChip, activeCat === cat && s.filterChipActive]}
               onPress={() => setActiveCat(cat)}
             >
-              <Text style={[useS.filterChipText, activeCat === cat && { color: '#000' }]}>{cat}</Text>
+              <Text style={[s.filterChipText, activeCat === cat && { color: '#000' }]}>{cat}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
-      <ScrollView contentContainerStyle={useS.list} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={s.list} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <SkeletonLibrary />
         ) : filteredExercises.length === 0 ? (
-          <View style={useS.emptyState}>
-            <Text style={useS.emptyText} maxFontSizeMultiplier={1.2}>
+          <View style={s.emptyState}>
+            <Text style={s.emptyText} maxFontSizeMultiplier={1.2}>
               No exercises found matching your criteria.
             </Text>
           </View>
         ) : (
           filteredExercises.map((item) => (
-            <TouchableOpacity key={item.id} style={useS.card} onPress={() => setSelectedEx(item)} activeOpacity={0.7}>
-              <Text style={useS.cardTitle} maxFontSizeMultiplier={1.2}>{item.name}</Text>
-              <Text style={useS.cardSub} maxFontSizeMultiplier={1.2}>
+            <TouchableOpacity key={item.id} style={s.card} onPress={() => setSelectedEx(item)} activeOpacity={0.7}>
+              <Text style={s.cardTitle} maxFontSizeMultiplier={1.2}>{item.name}</Text>
+              <Text style={s.cardSub} maxFontSizeMultiplier={1.2}>
                 {item.muscleGroups.join(', ')} • {item.equipment}
               </Text>
             </TouchableOpacity>

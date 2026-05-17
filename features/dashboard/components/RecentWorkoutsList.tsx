@@ -16,14 +16,14 @@ export function RecentWorkoutsList({ recentWorkouts }: RecentWorkoutsListProps) 
   const router = useRouter();
 
   return (
-    <View style={useS.section}>
-      <Text style={useS.sectionLabel} maxFontSizeMultiplier={1.2}>Recent Workouts</Text>
-      <View style={useS.card}>
+    <View style={s.section}>
+      <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Recent Workouts</Text>
+      <View style={s.card}>
         {recentWorkouts.length === 0 ? (
-          <View style={useS.emptyState}>
-            <Text style={useS.emptyIcon} maxFontSizeMultiplier={1.2}>🏋️</Text>
-            <Text style={useS.emptyTitle} maxFontSizeMultiplier={1.2}>No workouts yet</Text>
-            <Text style={useS.emptyBody} maxFontSizeMultiplier={1.2}>
+          <View style={s.emptyState}>
+            <Text style={s.emptyIcon} maxFontSizeMultiplier={1.2}>🏋️</Text>
+            <Text style={s.emptyTitle} maxFontSizeMultiplier={1.2}>No workouts yet</Text>
+            <Text style={s.emptyBody} maxFontSizeMultiplier={1.2}>
               Log your first session to start tracking progress.
             </Text>
             <ForgeButton

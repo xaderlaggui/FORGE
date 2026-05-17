@@ -59,9 +59,9 @@ export function StreakWidget({ streak, weekActivity }: StreakWidgetProps) {
   const hasStreak = streak > 0;
 
   return (
-    <View style={useStyles.wrapper}>
+    <View style={styles.wrapper}>
       {/* Flame icon with glow ring */}
-      <View style={useStyles.flameRing}>
+      <View style={styles.flameRing}>
         <Animated.View style={flameStyle}>
           <Flame
             size={26}
@@ -74,26 +74,26 @@ export function StreakWidget({ streak, weekActivity }: StreakWidgetProps) {
 
       {/* Streak number */}
       <Text
-        style={[useStyles.streakNum, hasStreak && useStyles.streakNumActive]}
+        style={[styles.streakNum, hasStreak && styles.streakNumActive]}
         maxFontSizeMultiplier={1.2}
       >
         {streak}
       </Text>
-      <Text style={useStyles.streakLabel} maxFontSizeMultiplier={1.2}>
+      <Text style={styles.streakLabel} maxFontSizeMultiplier={1.2}>
         Day Streak
       </Text>
 
       {/* 7-day activity dots */}
-      <View style={useStyles.weekRow}>
+      <View style={styles.weekRow}>
         {DAY_LABELS.map((label, i) => {
           const active = weekActivity[i] ?? false;
           return (
-            <View key={i} style={useStyles.dayCol}>
-              <Text style={useStyles.dayLabel}>{label}</Text>
+            <View key={i} style={styles.dayCol}>
+              <Text style={styles.dayLabel}>{label}</Text>
               <View
                 style={[
-                  useStyles.dayDot,
-                  active ? useStyles.dayDotActive : useStyles.dayDotEmpty,
+                  styles.dayDot,
+                  active ? styles.dayDotActive : styles.dayDotEmpty,
                 ]}
               />
             </View>

@@ -8,13 +8,13 @@ export default function NotFoundScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Not Found', headerShown: false }} />
-      <View style={useS.container}>
-        <Text style={useS.code}>404</Text>
-        <Text style={useS.title}>Screen not found.</Text>
-        <Text style={useS.sub}>The page you're looking for doesn't exist.</Text>
+      <View style={s.container}>
+        <Text style={s.code}>404</Text>
+        <Text style={s.title}>Screen not found.</Text>
+        <Text style={s.sub}>The page you're looking for doesn't exist.</Text>
         <Link href="/" asChild>
-          <TouchableOpacity style={useS.btn}>
-            <Text style={useS.btnText}>Go to Home</Text>
+          <TouchableOpacity style={s.btn}>
+            <Text style={s.btnText}>Go to Home</Text>
           </TouchableOpacity>
         </Link>
       </View>

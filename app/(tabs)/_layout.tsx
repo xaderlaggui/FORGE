@@ -15,7 +15,7 @@ function ForgeFAB() {
 
   return (
     <TouchableOpacity
-      style={[useStyles.fab, { bottom: 85 + insets.bottom, backgroundColor: aiColor, shadowColor: aiColor }]}
+      style={[styles.fab, { bottom: 85 + insets.bottom, backgroundColor: aiColor, shadowColor: aiColor }]}
       onPress={() => router.push('/chat')}
       activeOpacity={0.85}
       accessibilityLabel="AI Coach"

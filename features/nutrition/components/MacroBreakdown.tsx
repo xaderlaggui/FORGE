@@ -36,16 +36,16 @@ export function MacroBreakdown({ aggregates }: { aggregates: DailyAggregates }) 
   const { totalProtein, totalCarbs, totalFat, goalProtein, goalCarbs, goalFat, totalFiber, totalSugar } = aggregates;
 
   return (
-    <View style={useS.section}>
-      <Text style={useS.sectionLabel} maxFontSizeMultiplier={1.2}>Macro Breakdown</Text>
-      <View style={useS.card}>
+    <View style={s.section}>
+      <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Macro Breakdown</Text>
+      <View style={s.card}>
         <MacroBar label="Protein" value={totalProtein} goal={goalProtein} color={T.colors.green} />
         <MacroBar label="Carbs"   value={totalCarbs}   goal={goalCarbs}   color={T.colors.blue} />
         <MacroBar label="Fat"     value={totalFat}     goal={goalFat}     color={T.colors.gold} />
         
-        <View style={useS.microRow}>
-          <Text style={useS.microText}>Fiber: {totalFiber}g</Text>
-          <Text style={useS.microText}>Sugar: {totalSugar}g</Text>
+        <View style={s.microRow}>
+          <Text style={s.microText}>Fiber: {totalFiber}g</Text>
+          <Text style={s.microText}>Sugar: {totalSugar}g</Text>
         </View>
       </View>
     </View>

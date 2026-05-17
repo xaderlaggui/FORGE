@@ -23,7 +23,7 @@ export default function NutritionScreen() {
 
   if (isLoading || !nutrition || !aggregates) {
     return (
-      <View style={useS.container}>
+      <View style={s.container}>
         <NutritionSkeleton />
       </View>
     );
@@ -31,23 +31,23 @@ export default function NutritionScreen() {
 
   return (
     <ScrollView
-      style={useS.container}
-      contentContainerStyle={useS.content}
+      style={s.container}
+      contentContainerStyle={s.content}
       showsVerticalScrollIndicator={false}
     >
       {/* ── Composition: Header ── */}
-      <View style={useS.header}>
+      <View style={s.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Image source={MascotImages.nutrition} style={{ width: 48, height: 48, resizeMode: 'contain' }} />
           <View>
-            <Text style={useS.headerSub} maxFontSizeMultiplier={1.2}>
+            <Text style={s.headerSub} maxFontSizeMultiplier={1.2}>
               Today · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
             </Text>
-            <Text style={useS.headerTitle} maxFontSizeMultiplier={1.2}>Nutrition</Text>
+            <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>Nutrition</Text>
           </View>
         </View>
         <TouchableOpacity
-          style={useS.addBtn}
+          style={s.addBtn}
           onPress={() => router.push('/addMeal')}
           activeOpacity={0.8}
         >

@@ -22,26 +22,26 @@ export function WeightChart({
     const { T } = useForgeTheme();
     const s = useS(T);
   return (
-    <View style={useS.section}>
+    <View style={s.section}>
       {/* Timeframe pills */}
-      <View style={useS.tfRow}>
+      <View style={s.tfRow}>
         {TIMEFRAMES.map(tf => (
           <TouchableOpacity
             key={tf}
-            style={[useS.tfPill, timeframe === tf && useS.tfPillActive]}
+            style={[s.tfPill, timeframe === tf && s.tfPillActive]}
             onPress={() => setTimeframe(tf)}
           >
-            <Text style={[useS.tfText, timeframe === tf && useS.tfTextActive]} maxFontSizeMultiplier={1.2}>{tf}</Text>
+            <Text style={[s.tfText, timeframe === tf && s.tfTextActive]} maxFontSizeMultiplier={1.2}>{tf}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <View style={useS.chartCard}>
-        <View style={useS.chartHeader}>
-          <Text style={useS.chartTitle} maxFontSizeMultiplier={1.2}>Weight Trend</Text>
-          <View style={[useS.deltaBadge, weightDiff <= 0 ? useS.deltaBadgeDown : useS.deltaBadgeUp]}>
+      <View style={s.chartCard}>
+        <View style={s.chartHeader}>
+          <Text style={s.chartTitle} maxFontSizeMultiplier={1.2}>Weight Trend</Text>
+          <View style={[s.deltaBadge, weightDiff <= 0 ? s.deltaBadgeDown : s.deltaBadgeUp]}>
             {weightDiff <= 0 ? <TrendingDown size={12} color={T.colors.green} /> : <TrendingUp size={12} color={T.colors.red} />}
-            <Text style={[useS.deltaBadgeText, weightDiff <= 0 ? { color: T.colors.green } : { color: T.colors.red }]} maxFontSizeMultiplier={1.2}>
+            <Text style={[s.deltaBadgeText, weightDiff <= 0 ? { color: T.colors.green } : { color: T.colors.red }]} maxFontSizeMultiplier={1.2}>
               {weightDiff > 0 ? '+' : ''}{weightDiff} lbs
             </Text>
           </View>

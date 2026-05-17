@@ -60,14 +60,14 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={useS.container}
+      style={s.container}
     >
       <ScrollView
-        contentContainerStyle={useS.scroll}
+        contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Animated.View style={[useS.inner, animStyle]}>
+        <Animated.View style={[s.inner, animStyle]}>
 
           <MascotImage
             mascot="welcome"
@@ -78,16 +78,16 @@ export default function LoginScreen() {
             style={{ alignSelf: 'center', marginBottom: 8 }}
           />
           {/* Brand */}
-          <View style={useS.brandRow}>
-            <Text style={useS.wordmark}>FORGE</Text>
+          <View style={s.brandRow}>
+            <Text style={s.wordmark}>FORGE</Text>
           </View>
-          <Text style={useS.subtitle}>Sign in to track your progress.</Text>
+          <Text style={s.subtitle}>Sign in to track your progress.</Text>
 
           {/* Email */}
-          <View style={[useS.inputWrap, focusedField === 'email' && useS.inputWrapFocused]}>
+          <View style={[s.inputWrap, focusedField === 'email' && s.inputWrapFocused]}>
             <Mail size={18} color={focusedField === 'email' ? T.colors.forge : T.colors.t3} />
             <TextInput
-              style={useS.input}
+              style={s.input}
               placeholder="Email address"
               placeholderTextColor={T.colors.t3}
               autoCapitalize="none"
@@ -101,10 +101,10 @@ export default function LoginScreen() {
           </View>
 
           {/* Password */}
-          <View style={[useS.inputWrap, focusedField === 'password' && useS.inputWrapFocused]}>
+          <View style={[s.inputWrap, focusedField === 'password' && s.inputWrapFocused]}>
             <Lock size={18} color={focusedField === 'password' ? T.colors.forge : T.colors.t3} />
             <TextInput
-              style={useS.input}
+              style={s.input}
               placeholder="Password"
               placeholderTextColor={T.colors.t3}
               secureTextEntry
@@ -119,39 +119,39 @@ export default function LoginScreen() {
 
           {/* CTA */}
           <TouchableOpacity
-            style={[useS.btn, loading && { opacity: 0.7 }]}
+            style={[s.btn, loading && { opacity: 0.7 }]}
             onPress={handleLogin}
             disabled={loading}
             activeOpacity={0.85}
           >
             {loading
               ? <ActivityIndicator color="#000" />
-              : <Text style={useS.btnText}>Log In</Text>
+              : <Text style={s.btnText}>Log In</Text>
             }
           </TouchableOpacity>
 
           {/* Divider */}
-          <View style={useS.divider}>
-            <View style={useS.dividerLine} />
-            <Text style={useS.dividerText}>or continue with</Text>
-            <View style={useS.dividerLine} />
+          <View style={s.divider}>
+            <View style={s.dividerLine} />
+            <Text style={s.dividerText}>or continue with</Text>
+            <View style={s.dividerLine} />
           </View>
 
           {/* Google/Apple SSO placeholders */}
-          <View style={useS.ssoRow}>
-            <TouchableOpacity style={useS.ssoBtn} activeOpacity={0.75}>
-              <Text style={useS.ssoIcon}>G</Text>
+          <View style={s.ssoRow}>
+            <TouchableOpacity style={s.ssoBtn} activeOpacity={0.75}>
+              <Text style={s.ssoIcon}>G</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={useS.ssoBtn} activeOpacity={0.75}>
-              <Text style={useS.ssoIcon}>🍎</Text>
+            <TouchableOpacity style={s.ssoBtn} activeOpacity={0.75}>
+              <Text style={s.ssoIcon}>🍎</Text>
             </TouchableOpacity>
           </View>
 
           {/* Footer */}
-          <View style={useS.footer}>
-            <Text style={useS.footerText}>Don't have an account? </Text>
+          <View style={s.footer}>
+            <Text style={s.footerText}>Don't have an account? </Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
-              <Text style={useS.footerLink}>Sign up</Text>
+              <Text style={s.footerLink}>Sign up</Text>
             </TouchableOpacity>
           </View>
 

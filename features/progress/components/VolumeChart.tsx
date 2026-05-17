@@ -28,18 +28,18 @@ export function VolumeChart({
   const isUp = volumeDiff >= 0;
 
   return (
-    <View style={useS.section}>
-      <Text style={useS.sectionLabel} maxFontSizeMultiplier={1.2}>Progressive Overload</Text>
+    <View style={s.section}>
+      <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Progressive Overload</Text>
       
-      <View style={useS.chartCard}>
-        <View style={useS.chartHeader}>
+      <View style={s.chartCard}>
+        <View style={s.chartHeader}>
           <View>
-            <Text style={useS.chartTitle} maxFontSizeMultiplier={1.2}>Total Volume</Text>
-            <Text style={useS.chartSub} maxFontSizeMultiplier={1.2}>{currentVolume.toLocaleString()} lbs in latest session</Text>
+            <Text style={s.chartTitle} maxFontSizeMultiplier={1.2}>Total Volume</Text>
+            <Text style={s.chartSub} maxFontSizeMultiplier={1.2}>{currentVolume.toLocaleString()} lbs in latest session</Text>
           </View>
-          <View style={[useS.deltaBadge, isUp ? useS.deltaBadgeUp : useS.deltaBadgeDown]}>
+          <View style={[s.deltaBadge, isUp ? s.deltaBadgeUp : s.deltaBadgeDown]}>
             {isUp ? <TrendingUp size={12} color={T.colors.forge} /> : <TrendingDown size={12} color={T.colors.t3} />}
-            <Text style={[useS.deltaBadgeText, isUp ? { color: T.colors.forge } : { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>
+            <Text style={[s.deltaBadgeText, isUp ? { color: T.colors.forge } : { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>
               {isUp ? '+' : ''}{volumeDiff.toLocaleString()}
             </Text>
           </View>

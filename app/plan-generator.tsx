@@ -55,40 +55,40 @@ export default function PlanGeneratorScreen() {
 
   const renderOption = (label: string, isSelected: boolean, onPress: () => void) => (
     <TouchableOpacity 
-      style={[useS.optionCard, isSelected && useS.optionCardActive]} 
+      style={[s.optionCard, isSelected && s.optionCardActive]} 
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <Text style={[useS.optionText, isSelected && useS.optionTextActive]}>{label}</Text>
+      <Text style={[s.optionText, isSelected && s.optionTextActive]}>{label}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <View style={useS.container}>
+    <View style={s.container}>
       {/* Header */}
-      <View style={useS.header}>
-        <TouchableOpacity onPress={() => router.back()} style={useS.backBtn}>
+      <View style={s.header}>
+        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
           <ChevronLeft color={T.colors.t1} size={24} />
         </TouchableOpacity>
-        <Text style={useS.headerTitle}>AI Plan Generator</Text>
+        <Text style={s.headerTitle}>AI Plan Generator</Text>
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView style={useS.scroll} contentContainerStyle={useS.content}>
+      <ScrollView style={s.scroll} contentContainerStyle={s.content}>
         
-        <View style={useS.hero}>
+        <View style={s.hero}>
           <Zap size={48} color={T.colors.forge} />
-          <Text style={useS.heroTitle}>Build Your Routine</Text>
-          <Text style={useS.heroSubtitle}>Let the algorithm construct your optimal PPL split and calculate your exact macros.</Text>
+          <Text style={s.heroTitle}>Build Your Routine</Text>
+          <Text style={s.heroSubtitle}>Let the algorithm construct your optimal PPL split and calculate your exact macros.</Text>
         </View>
 
         {/* GOAL */}
-        <View style={useS.section}>
-          <View style={useS.sectionHeader}>
+        <View style={s.section}>
+          <View style={s.sectionHeader}>
             <Target size={18} color={T.colors.t2} />
-            <Text style={useS.sectionTitle}>Primary Goal</Text>
+            <Text style={s.sectionTitle}>Primary Goal</Text>
           </View>
-          <View style={useS.row}>
+          <View style={s.row}>
             {renderOption('Shred Fat (Cut)', goal === 'cut', () => setGoal('cut'))}
             {renderOption('Recomp (Maintain)', goal === 'maintain', () => setGoal('maintain'))}
             {renderOption('Build Muscle (Bulk)', goal === 'bulk', () => setGoal('bulk'))}
@@ -96,36 +96,36 @@ export default function PlanGeneratorScreen() {
         </View>
 
         {/* ACTIVITY */}
-        <View style={useS.section}>
-          <View style={useS.sectionHeader}>
+        <View style={s.section}>
+          <View style={s.sectionHeader}>
             <Activity size={18} color={T.colors.t2} />
-            <Text style={useS.sectionTitle}>Daily Activity Level</Text>
+            <Text style={s.sectionTitle}>Daily Activity Level</Text>
           </View>
-          <View style={useS.row}>
+          <View style={s.row}>
             {renderOption('Desk Job (Sedentary)', activity === 'sedentary', () => setActivity('sedentary'))}
             {renderOption('Light Activity', activity === 'light', () => setActivity('light'))}
           </View>
-          <View style={useS.row}>
+          <View style={s.row}>
             {renderOption('Active (10k Steps)', activity === 'active', () => setActivity('active'))}
             {renderOption('Very Active (Manual Labor)', activity === 'very_active', () => setActivity('very_active'))}
           </View>
         </View>
 
         {/* FREQUENCY */}
-        <View style={useS.section}>
-          <View style={useS.sectionHeader}>
+        <View style={s.section}>
+          <View style={s.sectionHeader}>
             <CalendarDays size={18} color={T.colors.t2} />
-            <Text style={useS.sectionTitle}>Training Frequency</Text>
+            <Text style={s.sectionTitle}>Training Frequency</Text>
           </View>
-          <Text style={useS.hintText}>How many days per week can you realistically hit the gym?</Text>
-          <View style={useS.freqRow}>
+          <Text style={s.hintText}>How many days per week can you realistically hit the gym?</Text>
+          <View style={s.freqRow}>
             {[3, 4, 5, 6].map(num => (
               <TouchableOpacity 
                 key={num}
-                style={[useS.freqCircle, days === num && useS.freqCircleActive]}
+                style={[s.freqCircle, days === num && s.freqCircleActive]}
                 onPress={() => setDays(num as any)}
               >
-                <Text style={[useS.freqText, days === num && useS.freqTextActive]}>{num}</Text>
+                <Text style={[s.freqText, days === num && s.freqTextActive]}>{num}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -134,7 +134,7 @@ export default function PlanGeneratorScreen() {
       </ScrollView>
 
       {/* Sticky Footer CTA */}
-      <View style={useS.footer}>
+      <View style={s.footer}>
         <ForgeButton 
           label="Generate My Plan"
           onPress={handleGenerate}

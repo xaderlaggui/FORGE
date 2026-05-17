@@ -68,29 +68,29 @@ export function ExercisePickerModal({ visible, onClose, onSelect }: ExercisePick
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <View style={useS.container}>
-        <View style={useS.header}>
+      <View style={s.container}>
+        <View style={s.header}>
           {step === 'pick_preset' ? (
-            <TouchableOpacity onPress={() => setStep('pick_exercise')} style={useS.closeBtn}>
+            <TouchableOpacity onPress={() => setStep('pick_exercise')} style={s.closeBtn}>
               <ChevronLeft size={20} color={T.colors.t1} />
             </TouchableOpacity>
           ) : (
             <View style={{ width: 32 }} /> // Spacer
           )}
           
-          <Text style={useS.title}>{step === 'pick_exercise' ? 'Select Exercise' : 'Select Preset'}</Text>
+          <Text style={s.title}>{step === 'pick_exercise' ? 'Select Exercise' : 'Select Preset'}</Text>
           
-          <TouchableOpacity onPress={closeModal} style={useS.closeBtn}>
+          <TouchableOpacity onPress={closeModal} style={s.closeBtn}>
             <X size={20} color={T.colors.t1} />
           </TouchableOpacity>
         </View>
 
         {step === 'pick_exercise' ? (
           <>
-            <View style={useS.searchWrap}>
-              <Search size={18} color={T.colors.t3} style={useS.searchIcon} />
+            <View style={s.searchWrap}>
+              <Search size={18} color={T.colors.t3} style={s.searchIcon} />
               <TextInput
-                style={useS.searchInput}
+                style={s.searchInput}
                 placeholder="Search exercises..."
                 placeholderTextColor={T.colors.t3}
                 value={search}
@@ -103,13 +103,13 @@ export function ExercisePickerModal({ visible, onClose, onSelect }: ExercisePick
                 data={muscles}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={useS.filterScroll}
+                contentContainerStyle={s.filterScroll}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    style={[useS.filterChip, selectedMuscle === item && useS.filterChipActive]}
+                    style={[s.filterChip, selectedMuscle === item && s.filterChipActive]}
                     onPress={() => setSelectedMuscle(prev => prev === item ? null : item)}
                   >
-                    <Text style={[useS.filterText, selectedMuscle === item && useS.filterTextActive]}>
+                    <Text style={[s.filterText, selectedMuscle === item && s.filterTextActive]}>
                       {item}
                     </Text>
                   </TouchableOpacity>
@@ -118,41 +118,41 @@ export function ExercisePickerModal({ visible, onClose, onSelect }: ExercisePick
             </View>
 
             {isLoading ? (
-              <View style={useS.loadingWrap}>
+              <View style={s.loadingWrap}>
                 <ActivityIndicator size="large" color={T.colors.forge} />
               </View>
             ) : (
               <FlatList
                 data={filtered}
                 keyExtractor={item => item.id}
-                contentContainerStyle={useS.list}
+                contentContainerStyle={s.list}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={useS.card} onPress={() => handleSelectExercise(item)}>
-                    <Text style={useS.cardTitle}>{item.name}</Text>
-                    <Text style={useS.cardSub}>
+                  <TouchableOpacity style={s.card} onPress={() => handleSelectExercise(item)}>
+                    <Text style={s.cardTitle}>{item.name}</Text>
+                    <Text style={s.cardSub}>
                       {item.muscleGroups.join(', ')} • {item.equipment}
                     </Text>
                   </TouchableOpacity>
                 )}
                 ListEmptyComponent={() => (
-                  <Text style={useS.empty}>No exercises found.</Text>
+                  <Text style={s.empty}>No exercises found.</Text>
                 )}
               />
             )}
           </>
         ) : (
-          <View style={useS.presetWrap}>
-            <Text style={useS.presetTarget}>{selectedExercise?.name}</Text>
-            <Text style={useS.presetSub}>Choose a sets and reps scheme</Text>
+          <View style={s.presetWrap}>
+            <Text style={s.presetTarget}>{selectedExercise?.name}</Text>
+            <Text style={s.presetSub}>Choose a sets and reps scheme</Text>
             
-            <View style={useS.presetGrid}>
+            <View style={s.presetGrid}>
               {PRESETS.map((p, i) => (
-                <TouchableOpacity key={i} style={useS.presetBtn} onPress={() => handleSelectPreset({ sets: p.sets, reps: p.reps })}>
-                  <Text style={useS.presetBtnText}>{p.label}</Text>
+                <TouchableOpacity key={i} style={s.presetBtn} onPress={() => handleSelectPreset({ sets: p.sets, reps: p.reps })}>
+                  <Text style={s.presetBtnText}>{p.label}</Text>
                 </TouchableOpacity>
               ))}
-              <TouchableOpacity style={[useS.presetBtn, useS.presetBtnCustom]} onPress={() => handleSelectPreset()}>
-                <Text style={useS.presetBtnText}>Custom / Blank</Text>
+              <TouchableOpacity style={[s.presetBtn, s.presetBtnCustom]} onPress={() => handleSelectPreset()}>
+                <Text style={s.presetBtnText}>Custom / Blank</Text>
               </TouchableOpacity>
             </View>
           </View>

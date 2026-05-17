@@ -29,23 +29,23 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
 
   return (
     <View style={{ position: 'relative', overflow: 'visible', marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5 }}>
-      <View style={[useS.todayCard, { marginHorizontal: 0, marginBottom: 0 }]}>
+      <View style={[s.todayCard, { marginHorizontal: 0, marginBottom: 0 }]}>
         <LinearGradient
           colors={['#1C1C22', '#0E0E11']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFillObject}
         />
-        <View style={useS.blobDecor} />
+        <View style={s.blobDecor} />
 
-        <View style={useS.todayCardContent}>
-          <Text style={useS.todayTag} maxFontSizeMultiplier={1.2}>
+        <View style={s.todayCardContent}>
+          <Text style={s.todayTag} maxFontSizeMultiplier={1.2}>
             {isCompleted ? '✅ COMPLETED TODAY' : '📅 Today\'s Plan'}
           </Text>
-          <Text style={useS.todayWorkoutName} maxFontSizeMultiplier={1.2}>
+          <Text style={s.todayWorkoutName} maxFontSizeMultiplier={1.2}>
             {isRestDay ? 'Active Recovery' : plannedWorkout.title}
           </Text>
-          <Text style={useS.todayMeta} maxFontSizeMultiplier={1.2}>
+          <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
             {isRestDay
               ? 'Time to recover and hydrate.'
               : isCompleted
@@ -55,7 +55,7 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
 
           {/* Muscle chips */}
           {muscleTags.length > 0 && !isRestDay && (
-            <View style={useS.chipRow}>
+            <View style={s.chipRow}>
               {muscleTags.slice(0, 4).map(tag => (
                 <MuscleTagChip key={tag} label={tag} />
               ))}

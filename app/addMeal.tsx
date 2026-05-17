@@ -180,21 +180,21 @@ No markdown formatting, no backticks, just raw JSON.`
   };
 
   return (
-    <View style={useS.container}>
-      <View style={useS.header}>
-        <TouchableOpacity onPress={() => router.back()} style={useS.iconBtn}>
+    <View style={s.container}>
+      <View style={s.header}>
+        <TouchableOpacity onPress={() => router.back()} style={s.iconBtn}>
           <X size={24} color={T.colors.t1} />
         </TouchableOpacity>
-        <Text style={useS.title}>LOG <Text style={{ color: T.colors.forge }}>{resolvedMealName.toUpperCase()}</Text></Text>
+        <Text style={s.title}>LOG <Text style={{ color: T.colors.forge }}>{resolvedMealName.toUpperCase()}</Text></Text>
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={useS.scroll}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
         {!analyzed ? (
-          <View style={useS.analyzeWrap}>
-            <Text style={useS.aiPrompt}>What did you eat?</Text>
+          <View style={s.analyzeWrap}>
+            <Text style={s.aiPrompt}>What did you eat?</Text>
             <TextInput
-              style={useS.aiInput}
+              style={s.aiInput}
               placeholder="e.g. 'I had a bowl of sinigang with 1 cup of white rice' or '2 eggs'"
               placeholderTextColor={T.colors.t3}
               multiline
@@ -203,7 +203,7 @@ No markdown formatting, no backticks, just raw JSON.`
               onChangeText={setDescription}
             />
             <TouchableOpacity
-              style={[useS.aiBtn, isAnalyzing && { opacity: 0.7 }]}
+              style={[s.aiBtn, isAnalyzing && { opacity: 0.7 }]}
               onPress={analyzeMeal}
               disabled={isAnalyzing}
             >
@@ -212,7 +212,7 @@ No markdown formatting, no backticks, just raw JSON.`
               ) : (
                 <>
                   <Sparkles size={18} color="#000" strokeWidth={3} />
-                  <Text style={useS.aiBtnText}>Analyze Meal</Text>
+                  <Text style={s.aiBtnText}>Analyze Meal</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -222,58 +222,58 @@ No markdown formatting, no backticks, just raw JSON.`
             </TouchableOpacity>
           </View>
         ) : (
-          <View style={useS.formWrap}>
-            <View style={useS.infoBanner}>
+          <View style={s.formWrap}>
+            <View style={s.infoBanner}>
               <Sparkles size={16} color={T.colors.forge} />
-              <Text style={useS.infoText}>You can edit these AI estimates if needed.</Text>
+              <Text style={s.infoText}>You can edit these AI estimates if needed.</Text>
             </View>
 
-            <Text style={useS.label}>FOOD SUMMARY</Text>
-            <TextInput style={useS.input} value={foodName} onChangeText={setFoodName} placeholder="Food name" placeholderTextColor={T.colors.t3} />
+            <Text style={s.label}>FOOD SUMMARY</Text>
+            <TextInput style={s.input} value={foodName} onChangeText={setFoodName} placeholder="Food name" placeholderTextColor={T.colors.t3} />
 
-            <Text style={useS.label}>PORTION / AMOUNT</Text>
-            <TextInput style={useS.input} value={portion} onChangeText={setPortion} placeholder="e.g. 1 cup, 200g" placeholderTextColor={T.colors.t3} />
+            <Text style={s.label}>PORTION / AMOUNT</Text>
+            <TextInput style={s.input} value={portion} onChangeText={setPortion} placeholder="e.g. 1 cup, 200g" placeholderTextColor={T.colors.t3} />
 
-            <Text style={useS.label}>CALORIES</Text>
-            <TextInput style={useS.input} value={cals} onChangeText={setCals} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+            <Text style={s.label}>CALORIES</Text>
+            <TextInput style={s.input} value={cals} onChangeText={setCals} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
 
-            <View style={useS.macroRow}>
-              <View style={useS.macroCol}>
-                <Text style={useS.label}>PROTEIN (g)</Text>
-                <TextInput style={useS.input} value={pro} onChangeText={setPro} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+            <View style={s.macroRow}>
+              <View style={s.macroCol}>
+                <Text style={s.label}>PROTEIN (g)</Text>
+                <TextInput style={s.input} value={pro} onChangeText={setPro} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
               </View>
-              <View style={useS.macroCol}>
-                <Text style={useS.label}>CARBS (g)</Text>
-                <TextInput style={useS.input} value={carbs} onChangeText={setCarbs} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+              <View style={s.macroCol}>
+                <Text style={s.label}>CARBS (g)</Text>
+                <TextInput style={s.input} value={carbs} onChangeText={setCarbs} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
               </View>
-              <View style={useS.macroCol}>
-                <Text style={useS.label}>FAT (g)</Text>
-                <TextInput style={useS.input} value={fat} onChangeText={setFat} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
-              </View>
-            </View>
-
-            <View style={useS.macroRow}>
-              <View style={useS.macroCol}>
-                <Text style={useS.label}>FIBER (g)</Text>
-                <TextInput style={useS.input} value={fiber} onChangeText={setFiber} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
-              </View>
-              <View style={useS.macroCol}>
-                <Text style={useS.label}>SUGAR (g)</Text>
-                <TextInput style={useS.input} value={sugar} onChangeText={setSugar} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+              <View style={s.macroCol}>
+                <Text style={s.label}>FAT (g)</Text>
+                <TextInput style={s.input} value={fat} onChangeText={setFat} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
               </View>
             </View>
 
-            <View style={useS.macroRow}>
-              <View style={useS.macroCol}>
-                <Text style={useS.label}>WATER (ml)</Text>
-                <TextInput style={useS.input} value={waterMl} onChangeText={setWaterMl} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+            <View style={s.macroRow}>
+              <View style={s.macroCol}>
+                <Text style={s.label}>FIBER (g)</Text>
+                <TextInput style={s.input} value={fiber} onChangeText={setFiber} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
               </View>
-              <View style={useS.macroCol} />
+              <View style={s.macroCol}>
+                <Text style={s.label}>SUGAR (g)</Text>
+                <TextInput style={s.input} value={sugar} onChangeText={setSugar} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+              </View>
             </View>
 
-            <TouchableOpacity style={useS.saveBtn} onPress={handleSave}>
+            <View style={s.macroRow}>
+              <View style={s.macroCol}>
+                <Text style={s.label}>WATER (ml)</Text>
+                <TextInput style={s.input} value={waterMl} onChangeText={setWaterMl} keyboardType="numeric" placeholder="0" placeholderTextColor={T.colors.t3} />
+              </View>
+              <View style={s.macroCol} />
+            </View>
+
+            <TouchableOpacity style={s.saveBtn} onPress={handleSave}>
               <Save size={18} color="#000" strokeWidth={2.5} />
-              <Text style={useS.saveBtnText}>SAVE MEAL</Text>
+              <Text style={s.saveBtnText}>SAVE MEAL</Text>
             </TouchableOpacity>
           </View>
         )}

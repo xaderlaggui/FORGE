@@ -14,23 +14,23 @@ export function DashboardHeader({ displayName }: DashboardHeaderProps) {
   return (
     <View>
       {/* ── Top Bar ── */}
-      <View style={useS.topBar}>
-        <Text style={useS.wordmark}>FORGE</Text>
+      <View style={s.topBar}>
+        <Text style={s.wordmark}>FORGE</Text>
         <View
-          style={useS.avatar}
+          style={s.avatar}
           accessibilityLabel={`Profile: ${displayName ?? 'Athlete'}`}
           accessibilityRole="button"
         >
-          <Text style={useS.avatarText}>{getInitial(displayName)}</Text>
+          <Text style={s.avatarText}>{getInitial(displayName)}</Text>
         </View>
       </View>
 
       {/* ── Greeting ── */}
-      <View style={useS.greetingWrap}>
-        <Text style={useS.greetingSub} maxFontSizeMultiplier={1.3}>
+      <View style={s.greetingWrap}>
+        <Text style={s.greetingSub} maxFontSizeMultiplier={1.3}>
           {getGreeting()} · {dayjs().format('dddd')}
         </Text>
-        <Text style={useS.greetingName} maxFontSizeMultiplier={1.3}>
+        <Text style={s.greetingName} maxFontSizeMultiplier={1.3}>
           {displayName ?? 'Athlete'}
         </Text>
       </View>

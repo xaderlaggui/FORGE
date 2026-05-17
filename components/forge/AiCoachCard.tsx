@@ -13,28 +13,28 @@ export function AiCoachCard({ tip, isLoading, onChatPress }: AiCoachCardProps) {
     const { T: ForgeTheme } = useForgeTheme();
     const styles = useStyles(ForgeTheme);
   return (
-    <View style={useStyles.card}>
+    <View style={styles.card}>
       {/* Left forge accent bar */}
-      <View style={useStyles.accentBar} />
+      <View style={styles.accentBar} />
 
-      <View style={useStyles.row}>
-        <View style={useStyles.iconWrap}>
+      <View style={styles.row}>
+        <View style={styles.iconWrap}>
           <MessageSquare size={18} color={ForgeTheme.colors.forge} />
         </View>
 
-        <View style={useStyles.content}>
-          <Text style={useStyles.label}>Personalized</Text>
+        <View style={styles.content}>
+          <Text style={styles.label}>Personalized</Text>
 
           {isLoading ? (
             <ActivityIndicator size="small" color={ForgeTheme.colors.forge} style={{ alignSelf: 'flex-start', marginVertical: 4 }} />
           ) : (
-            <Text style={useStyles.tipText} numberOfLines={3}>
+            <Text style={styles.tipText} numberOfLines={3}>
               {tip || "You're doing great! Keep pushing your limits today."}
             </Text>
           )}
 
-          <TouchableOpacity style={useStyles.chatBtn} onPress={onChatPress} activeOpacity={0.7}>
-            <Text style={useStyles.chatBtnText}>Chat with Coach</Text>
+          <TouchableOpacity style={styles.chatBtn} onPress={onChatPress} activeOpacity={0.7}>
+            <Text style={styles.chatBtnText}>Chat with Coach</Text>
             <ChevronRight size={14} color={ForgeTheme.colors.forge} />
           </TouchableOpacity>
         </View>

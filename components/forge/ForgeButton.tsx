@@ -92,10 +92,10 @@ export function ForgeButton({
     <Animated.View style={[pulseStyle, style]}>
       <TouchableOpacity
         style={[
-          useStyles.base,
+          styles.base,
           useStyles[`size_${size}`],
           useStyles[`variant_${variant}`],
-          isDisabled && useStyles.disabled,
+          isDisabled && styles.disabled,
         ]}
         onPress={onPress}
         disabled={isDisabled}
@@ -111,20 +111,20 @@ export function ForgeButton({
             color={variant === 'primary' ? '#000' : variant === 'danger' ? '#fff' : ForgeTheme.colors.forge}
           />
         ) : (
-          <View style={useStyles.inner}>
-            {leftIcon && <View style={useStyles.iconLeft}>{leftIcon}</View>}
+          <View style={styles.inner}>
+            {leftIcon && <View style={styles.iconLeft}>{leftIcon}</View>}
             <Text
               style={[
-                useStyles.label,
+                styles.label,
                 useStyles[`label_${size}`],
                 useStyles[`labelColor_${variant}`],
-                isDisabled && useStyles.labelDisabled,
+                isDisabled && styles.labelDisabled,
               ]}
               maxFontSizeMultiplier={1.2}
             >
               {label}
             </Text>
-            {rightIcon && <View style={useStyles.iconRight}>{rightIcon}</View>}
+            {rightIcon && <View style={styles.iconRight}>{rightIcon}</View>}
           </View>
         )}
       </TouchableOpacity>
