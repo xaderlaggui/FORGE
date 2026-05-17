@@ -20,19 +20,51 @@ function SkeletonLibrary() {
 }
 
 export const mapMusclesToSlugs = (groups: string[]): { slug: string; intensity: number }[] => {
+  // Maps every muscle group name used in seedData to react-native-body-highlighter slugs
   const map: Record<string, string[]> = {
-    chest: ['chest'],
-    shoulders: ['deltoids'],
-    triceps: ['triceps'],
-    back: ['upper-back', 'lower-back', 'trapezius'],
-    biceps: ['biceps'],
-    legs: ['quadriceps', 'hamstring', 'calves', 'gluteal'],
-    core: ['abs', 'obliques'],
-    abs: ['abs'],
-    calves: ['calves'],
-    glutes: ['gluteal'],
-    hamstrings: ['hamstring'],
-    quads: ['quadriceps']
+    // Chest
+    chest:          ['chest'],
+    'lower chest':  ['chest'],
+    'upper chest':  ['chest'],
+
+    // Shoulders / Delts
+    shoulders:      ['deltoids'],
+    deltoids:       ['deltoids'],
+    'front delts':  ['deltoids'],
+    'side delts':   ['deltoids'],
+    'rear delts':   ['deltoids'],
+
+    // Arms
+    triceps:        ['triceps'],
+    biceps:         ['biceps'],
+    forearms:       ['biceps'],          // no forearm slug; closest is biceps
+
+    // Back
+    back:           ['upper-back', 'trapezius'],
+    lats:           ['upper-back'],
+    'upper back':   ['upper-back'],
+    'upper-back':   ['upper-back'],
+    'lower back':   ['lower-back'],
+    'lower-back':   ['lower-back'],
+    trapezius:      ['trapezius'],
+    traps:          ['trapezius'],
+    rhomboids:      ['upper-back'],
+
+    // Core
+    core:           ['abs', 'obliques'],
+    abs:            ['abs'],
+    obliques:       ['obliques'],
+
+    // Legs
+    legs:           ['quadriceps', 'hamstring', 'calves', 'gluteal'],
+    quads:          ['quadriceps'],
+    quadriceps:     ['quadriceps'],
+    hamstrings:     ['hamstring'],
+    hamstring:      ['hamstring'],
+    glutes:         ['gluteal'],
+    gluteal:        ['gluteal'],
+    calves:         ['calves'],
+    adductors:      ['adductors'],
   };
 
   const slugs = new Set<string>();
