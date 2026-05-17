@@ -29,7 +29,7 @@ const mb = StyleSheet.create({
 });
 
 export function MacroBreakdown({ aggregates }: { aggregates: DailyAggregates }) {
-  const { totalProtein, totalCarbs, totalFat, goalProtein, goalCarbs, goalFat } = aggregates;
+  const { totalProtein, totalCarbs, totalFat, goalProtein, goalCarbs, goalFat, totalFiber, totalSugar } = aggregates;
 
   return (
     <View style={s.section}>
@@ -38,6 +38,11 @@ export function MacroBreakdown({ aggregates }: { aggregates: DailyAggregates }) 
         <MacroBar label="Protein" value={totalProtein} goal={goalProtein} color={T.colors.green} />
         <MacroBar label="Carbs"   value={totalCarbs}   goal={goalCarbs}   color={T.colors.blue} />
         <MacroBar label="Fat"     value={totalFat}     goal={goalFat}     color={T.colors.gold} />
+        
+        <View style={s.microRow}>
+          <Text style={s.microText}>Fiber: {totalFiber}g</Text>
+          <Text style={s.microText}>Sugar: {totalSugar}g</Text>
+        </View>
       </View>
     </View>
   );
@@ -53,4 +58,10 @@ const s = StyleSheet.create({
     backgroundColor: T.colors.bg1, borderRadius: T.radii.lg,
     borderWidth: 0.5, borderColor: T.colors.b1, padding: T.spacing.px4,
   },
+  microRow: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    marginTop: T.spacing.px2, paddingTop: T.spacing.px3,
+    borderTopWidth: 0.5, borderTopColor: T.colors.b1,
+  },
+  microText: { fontSize: T.typography.sizes.bodyS, color: T.colors.t3, fontWeight: '500' },
 });
