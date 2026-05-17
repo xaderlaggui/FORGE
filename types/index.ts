@@ -70,6 +70,7 @@ export interface Meal {
   fat: number;
   fiber?: number;
   sugar?: number;
+  isAiParsed?: boolean;
   items?: FoodItem[];
 }
 

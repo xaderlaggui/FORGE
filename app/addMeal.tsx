@@ -15,6 +15,7 @@ export default function AddMealScreen() {
   const [description, setDescription] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
+  const [wasAiAnalyzed, setWasAiAnalyzed] = useState(false);
 
   // Form State
   const [foodName, setFoodName] = useState('');
@@ -73,6 +74,7 @@ No markdown formatting, no backticks, just raw JSON.`
       setSugar(String(parsed.sugar || 0));
 
       setAnalyzed(true);
+      setWasAiAnalyzed(true);
     } catch (e) {
       console.error(e);
       Alert.alert('Analysis Failed', 'Could not estimate nutrition. You can still enter it manually.');
@@ -126,10 +128,12 @@ No markdown formatting, no backticks, just raw JSON.`
           fat: updatedMeals[mealIdx].fat + newMealData.fat,
           fiber: (updatedMeals[mealIdx].fiber || 0) + (newMealData.fiber || 0),
           sugar: (updatedMeals[mealIdx].sugar || 0) + (newMealData.sugar || 0),
+          // Keep isAiParsed true if either the existing or new entry was AI-analyzed
+          isAiParsed: (updatedMeals[mealIdx] as any).isAiParsed || wasAiAnalyzed,
           items: [...(updatedMeals[mealIdx].items || []), newItem]
         };
       } else {
-        updatedMeals.push({ ...newMealData, items: [newItem] });
+        updatedMeals.push({ ...newMealData, isAiParsed: wasAiAnalyzed, items: [newItem] });
       }
 
       await updateNutrition({

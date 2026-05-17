@@ -1,14 +1,15 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Text, Image } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ForgeSegment } from '../../components/forge/ForgeSegment';
 import { ForgeTheme as T } from '../../constants/ForgeTheme';
+import { MascotImages } from '../../constants/mascotImages';
 
 // Feature Modules
-import { usePlannerData } from '../../features/planner/hooks/usePlannerData';
-import { ExerciseLibrary } from '../../features/planner/components/ExerciseLibrary';
-import { WeeklyCalendar } from '../../features/planner/components/WeeklyCalendar';
 import { DailyPlanCard } from '../../features/planner/components/DailyPlanCard';
+import { ExerciseLibrary } from '../../features/planner/components/ExerciseLibrary';
 import { RoutineList } from '../../features/planner/components/RoutineList';
+import { WeeklyCalendar } from '../../features/planner/components/WeeklyCalendar';
+import { usePlannerData } from '../../features/planner/hooks/usePlannerData';
 
 export default function WorkoutScreen() {
   // Clean Architecture: Hook handles all state, formatting, and fetching
@@ -24,7 +25,7 @@ export default function WorkoutScreen() {
       {/* ── Composition: Header ── */}
       <View style={s.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: T.spacing.px4 }}>
-          <Image source={require('../../assets/images/mascot_workout.png')} style={{ width: 48, height: 48, resizeMode: 'contain' }} />
+          <Image source={MascotImages.workout} style={{ width: 48, height: 48, resizeMode: 'contain' }} />
           <Text style={s.title} maxFontSizeMultiplier={1.2}>Workout Planner</Text>
         </View>
         <ForgeSegment
@@ -36,21 +37,21 @@ export default function WorkoutScreen() {
 
       {/* ── Composition: Content ── */}
       {activeTab === 'Library' ? (
-        <ExerciseLibrary 
-          exercises={exercises} 
-          isLoading={isLoadingExercises} 
+        <ExerciseLibrary
+          exercises={exercises}
+          isLoading={isLoadingExercises}
         />
       ) : activeTab === 'Routines' ? (
         <RoutineList />
       ) : (
         <ScrollView contentContainerStyle={s.plannerContainer} showsVerticalScrollIndicator={false}>
-          <WeeklyCalendar 
-            days={days} 
-            activeDayIdx={activeDayIdx} 
-            onSelectDay={setActiveDayIdx} 
+          <WeeklyCalendar
+            days={days}
+            activeDayIdx={activeDayIdx}
+            onSelectDay={setActiveDayIdx}
           />
-          
-          <DailyPlanCard 
+
+          <DailyPlanCard
             isLoading={isLoadingWorkouts}
             loggedWorkout={loggedWorkout}
             plannedWorkout={plannedWorkout}

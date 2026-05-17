@@ -1,23 +1,29 @@
+import { MascotImages } from '@/constants/mascotImages';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import { addDoc, collection } from 'firebase/firestore';
-import { Bot, Send, User as UserIcon, X } from 'lucide-react-native';
+import { Send, User as UserIcon, X } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  FlatList, KeyboardAvoidingView, Platform,
-  StyleSheet, Text, TextInput, TouchableOpacity, View, Image,
+  FlatList,
+  Image,
+  KeyboardAvoidingView, Platform,
+  StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import Animated, {
-  useSharedValue, useAnimatedStyle,
-  withRepeat, withTiming, withSequence,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
+import { MascotImage } from '../components/common/MascotImage';
 import { ForgeTheme as T } from '../constants/ForgeTheme';
-import { groqComplete, GroqMessage } from '../services/groq';
-import { db } from '../services/firebase';
-import { useAuthStore } from '../stores/authStore';
 import { useNutrition } from '../hooks/useNutrition';
 import { useWorkouts } from '../hooks/useWorkouts';
-import { MascotImage } from '../components/common/MascotImage';
+import { db } from '../services/firebase';
+import { groqComplete, GroqMessage } from '../services/groq';
+import { useAuthStore } from '../stores/authStore';
 
 const BASE_SYSTEM_PROMPT = `You are FORGE Coach — an energetic, supportive AI fitness coach inside a workout tracking app.
 
@@ -37,7 +43,7 @@ export default function ChatScreen() {
   const { workouts } = useWorkouts();
 
   const [inputText, setInputText] = useState('');
-  const [messages, setMessages]   = useState<Message[]>([
+  const [messages, setMessages] = useState<Message[]>([
     { id: '1', text: "Hey! I'm your FORGE Coach. Tell me what you did today — like 'I ran 5km' — and I'll log it for you!", isAi: true },
   ]);
   const [isTyping, setIsTyping] = useState(false);
@@ -128,7 +134,7 @@ export default function ChatScreen() {
     <View style={[s.msgRow, item.isAi ? s.msgRowAi : s.msgRowUser]}>
       {item.isAi && (
         <View style={s.avatarWrap}>
-          <Image source={require('../assets/images/mascot_ai.png')} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+          <Image source={MascotImages.coach} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
         </View>
       )}
       <View style={[s.bubble, item.isAi ? s.bubbleAi : s.bubbleUser]}>
@@ -154,7 +160,7 @@ export default function ChatScreen() {
       <View style={s.header}>
         <View style={s.headerLeft}>
           <View style={s.headerAvatar}>
-            <Image source={require('../assets/images/mascot_ai.png')} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+            <Image source={MascotImages.coach} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
           </View>
           <View>
             <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>FORGE Coach</Text>
@@ -198,7 +204,7 @@ export default function ChatScreen() {
       {isTyping && (
         <View style={s.typingWrap}>
           <View style={s.avatarWrap}>
-            <Image source={require('../assets/images/mascot_ai.png')} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+            <Image source={MascotImages.coach} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
           </View>
           <View style={s.bubbleAi}>
             <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
@@ -267,7 +273,7 @@ const s = StyleSheet.create({
 
   // Bubbles
   msgRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
-  msgRowAi:   { justifyContent: 'flex-start' },
+  msgRowAi: { justifyContent: 'flex-start' },
   msgRowUser: { justifyContent: 'flex-end' },
   avatarWrap: {
     width: 28, height: 28, borderRadius: 14,
@@ -278,10 +284,10 @@ const s = StyleSheet.create({
   bubble: {
     maxWidth: '78%', paddingHorizontal: 14, paddingVertical: 10, borderRadius: T.radii.lg,
   },
-  bubbleAi:   { backgroundColor: T.colors.bg1, borderBottomLeftRadius: 4, borderWidth: 0.5, borderColor: T.colors.b1 },
+  bubbleAi: { backgroundColor: T.colors.bg1, borderBottomLeftRadius: 4, borderWidth: 0.5, borderColor: T.colors.b1 },
   bubbleUser: { backgroundColor: T.colors.forge, borderBottomRightRadius: 4 },
   bubbleText: { fontSize: T.typography.sizes.bodyS, lineHeight: T.typography.sizes.bodyS * 1.5 },
-  bubbleTextAi:   { color: T.colors.t1 },
+  bubbleTextAi: { color: T.colors.t1 },
   bubbleTextUser: { color: '#fff', fontWeight: '500' },
 
   loggedBadge: {

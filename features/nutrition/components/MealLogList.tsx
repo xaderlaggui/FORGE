@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { ChevronRight, Plus } from 'lucide-react-native';
+import { Sparkles } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { ForgeTheme as T } from '../../../constants/ForgeTheme';
 import { MealDef } from '../types';
@@ -18,84 +18,64 @@ interface MealLogListProps {
   setExpandedMeal: (key: string | null) => void;
 }
 
-export function MealLogList({ meals, expandedMeal, setExpandedMeal }: MealLogListProps) {
+export function MealLogList({ meals }: MealLogListProps) {
   const router = useRouter();
 
   return (
-    <View style={[s.section, { marginTop: T.spacing.px5 }]}>
-      <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Meals</Text>
-      {MEAL_DEFS.map(({ key, label, emoji }) => {
+    <View style={s.section}>
+      {MEAL_DEFS.map(({ key, label }, index) => {
         const meal = meals.find(m => m.name === key)
           ?? { name: key, calories: 0, protein: 0, carbs: 0, fat: 0 };
-        const isExpanded = expandedMeal === key;
         const isEmpty = meal.calories === 0;
 
         return (
-          <View key={key} style={[s.mealCard, { marginBottom: T.spacing.px3 }]}>
-            {/* Meal Row */}
-            <TouchableOpacity
-              style={s.mealRow}
-              onPress={() => setExpandedMeal(isExpanded ? null : key)}
-              activeOpacity={0.75}
-            >
-              <View style={s.mealIconWrap}>
-                <Text style={{ fontSize: 18 }}>{emoji}</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={s.mealLabel} maxFontSizeMultiplier={1.2}>{label}</Text>
-                <Text style={s.mealCal} maxFontSizeMultiplier={1.2}>{isEmpty ? 'Not logged yet' : `${meal.calories} kcal`}</Text>
-              </View>
+          <View key={key}>
+            <View style={[s.sectionHeader, { marginTop: index === 0 ? 6 : 14 }]}>
+              <Text style={s.sectionTitle}>{label}</Text>
+              <Text style={[s.sectionCals, isEmpty && { color: T.colors.red }]}>
+                {isEmpty ? 'not logged' : `${meal.calories} kcal`}
+              </Text>
+            </View>
+
+            {isEmpty ? (
               <TouchableOpacity
-                style={s.mealAddBtn}
+                style={[s.mealCard, s.mealCardEmpty]}
+                activeOpacity={0.7}
                 onPress={() => router.push({ pathname: '/addMeal', params: { mealName: key } })}
               >
-                <Plus size={14} color={T.colors.forge} strokeWidth={2.5} />
+                <View style={s.foodRowCenter}>
+                  <Text style={s.emptyTapText}>Tap + to log {label.toLowerCase()}</Text>
+                </View>
               </TouchableOpacity>
-              <ChevronRight
-                size={16}
-                color={T.colors.t3}
-                style={{ transform: [{ rotate: isExpanded ? '90deg' : '0deg' }] }}
-              />
-            </TouchableOpacity>
-
-            {/* Expanded Macro Detail & Food Items */}
-            {isExpanded && !isEmpty && (
-              <View style={s.mealDetail}>
-                {meal.items && meal.items.length > 0 ? (
-                  <View style={s.foodList}>
-                    {meal.items.map((item: any, i: number) => (
-                      <View key={i} style={[s.foodRow, i === meal.items.length - 1 && { borderBottomWidth: 0 }]}>
-                        <View style={{ flex: 1, paddingRight: 8 }}>
-                          <Text style={s.foodName}>{item.name}</Text>
-                          {item.serving && <Text style={s.foodServing}>{item.serving}</Text>}
-                        </View>
-                        <View style={s.foodMacros}>
-                          <Text style={s.foodCal}>{item.calories} kcal</Text>
-                          <Text style={s.foodPfc}>P {item.protein}g · C {item.carbs}g · F {item.fat}g</Text>
-                        </View>
-                      </View>
-                    ))}
-                  </View>
-                ) : (
-                  <View style={[s.foodRow, { borderBottomWidth: 0, justifyContent: 'center' }]}>
-                    <Text style={{ color: T.colors.t3, fontSize: 12 }}>Aggregated macros only</Text>
+            ) : (
+              <View style={s.mealCard}>
+                {/* Assuming isAiParsed or if the backend passes some flag, we check here. We'll show it if it exists */}
+                {meal.isAiParsed && (
+                  <View style={s.parsedBadgeRow}>
+                    <View style={s.parsedBadge}>
+                      <Sparkles size={11} color={T.colors.green} />
+                      <Text style={s.parsedBadgeText}>AI PARSED</Text>
+                    </View>
                   </View>
                 )}
-
-                <View style={s.mealDetailRow}>
-                  {[
-                    { label: 'Protein', value: meal.protein || 0, color: T.colors.green },
-                    { label: 'Carbs',   value: meal.carbs || 0,   color: T.colors.blue },
-                    { label: 'Fat',     value: meal.fat || 0,     color: T.colors.gold },
-                    { label: 'Fiber',   value: meal.fiber || 0,   color: T.colors.purple },
-                    { label: 'Sugar',   value: meal.sugar || 0,   color: T.colors.red },
-                  ].map(m => (
-                    <View key={m.label} style={s.mealDetailStat}>
-                      <Text style={[s.mealDetailVal, { color: m.color }]} maxFontSizeMultiplier={1.2}>{Math.round(m.value)}g</Text>
-                      <Text style={s.mealDetailLbl} maxFontSizeMultiplier={1.2}>{m.label}</Text>
+                {meal.items && meal.items.length > 0 ? (
+                  meal.items.map((item: any, i: number) => (
+                    <View key={i} style={[s.foodRow, i > 0 && s.foodRowBorder]}>
+                      <View style={{ flex: 1, paddingRight: 8 }}>
+                        <Text style={s.foodName}>{item.name}</Text>
+                        {item.serving && <Text style={s.foodServing}>{item.serving}</Text>}
+                      </View>
+                      <View style={s.foodMacros}>
+                        <Text style={s.foodCal}>{item.calories} kcal</Text>
+                        <Text style={s.foodPfc}>P {item.protein}g · C {item.carbs}g · F {item.fat}g</Text>
+                      </View>
                     </View>
-                  ))}
-                </View>
+                  ))
+                ) : (
+                  <View style={s.foodRowCenter}>
+                    <Text style={s.emptyTapText}>Aggregated macros only</Text>
+                  </View>
+                )}
               </View>
             )}
           </View>
@@ -107,39 +87,24 @@ export function MealLogList({ meals, expandedMeal, setExpandedMeal }: MealLogLis
 
 const s = StyleSheet.create({
   section: { marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5 },
-  sectionLabel: {
-    fontSize: T.typography.sizes.label, fontWeight: '600', color: T.colors.t3,
-    textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: T.spacing.px2,
-  },
-  mealCard: { backgroundColor: T.colors.bg1, borderRadius: T.radii.lg, borderWidth: 0.5, borderColor: T.colors.b1, overflow: 'hidden' },
-  mealRow: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 12 },
-  mealIconWrap: {
-    width: 40, height: 40, borderRadius: T.radii.md,
-    backgroundColor: T.colors.bg2,
-    alignItems: 'center', justifyContent: 'center',
-    flexShrink: 0,
-  },
-  mealLabel: { fontSize: T.typography.sizes.body, fontWeight: '600', color: T.colors.t1 },
-  mealCal: { fontSize: T.typography.sizes.bodyS, color: T.colors.t3, marginTop: 1 },
-  mealAddBtn: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: T.colors.forgeDim,
-    alignItems: 'center', justifyContent: 'center',
-    marginRight: 4,
-  },
-  mealDetail: {
-    borderTopWidth: 0.5, borderTopColor: T.colors.b1,
-    paddingHorizontal: T.spacing.px4, paddingVertical: T.spacing.px3,
-    backgroundColor: T.colors.bg0,
-  },
-  mealDetailRow: { flexDirection: 'row', justifyContent: 'space-around' },
-  mealDetailStat: { alignItems: 'center' },
-  mealDetailVal: { fontSize: T.typography.sizes.body, fontWeight: '700' },
-  mealDetailLbl: { fontSize: T.typography.sizes.caption, color: T.colors.t3, marginTop: 2, fontWeight: '500' },
-  foodList: { marginBottom: 16, borderBottomWidth: 0.5, borderBottomColor: T.colors.b1, paddingBottom: 8 },
-  foodRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  sectionTitle: { color: T.colors.t1, fontSize: 15, fontWeight: '700' },
+  sectionCals: { color: T.colors.t3, fontSize: 12 },
+  
+  mealCard: { backgroundColor: T.colors.bg1, borderRadius: 16, overflow: 'hidden', borderWidth: 0.5, borderColor: T.colors.b1, marginBottom: 8 },
+  mealCardEmpty: { borderStyle: 'dashed', opacity: 0.5 },
+  
+  parsedBadgeRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingTop: 8, paddingBottom: 4 },
+  parsedBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: T.colors.greenDim, borderWidth: 0.5, borderColor: T.colors.green, borderRadius: 6, paddingVertical: 3, paddingHorizontal: 8 },
+  parsedBadgeText: { color: T.colors.green, fontSize: 10, fontWeight: '600' },
+  
+  foodRowCenter: { alignItems: 'center', justifyContent: 'center', paddingVertical: 14 },
+  emptyTapText: { color: T.colors.t3, fontSize: 12 },
+  
+  foodRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10, paddingHorizontal: 14 },
+  foodRowBorder: { borderTopWidth: 0.5, borderTopColor: T.colors.b0 },
   foodName: { color: T.colors.t1, fontSize: 13, fontWeight: '500' },
-  foodServing: { color: T.colors.t3, fontSize: 11, marginTop: 2 },
+  foodServing: { color: T.colors.t2, fontSize: 11, marginTop: 2 },
   foodMacros: { alignItems: 'flex-end' },
   foodCal: { color: T.colors.t1, fontSize: 13, fontWeight: '600' },
   foodPfc: { color: T.colors.t3, fontSize: 10, marginTop: 2 },
