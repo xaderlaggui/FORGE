@@ -17,6 +17,9 @@ export interface UserProfile {
   lastActiveDate: string;
   waterGoalMl: number;
   goals: string[];       // e.g. ['weight_loss', 'muscle_gain']
+  fitnessGoal?: 'cut' | 'maintain' | 'bulk';
+  dietPreference?: 'anything' | 'vegan' | 'keto';
+  equipmentAccess?: 'full' | 'dumbbells' | 'bodyweight';
   fitnessLevel: 'beginner' | 'intermediate' | 'advanced';
   createdAt: string;
   isOnboarded?: boolean;

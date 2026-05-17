@@ -12,6 +12,12 @@ export default function OnboardingScreen() {
   const [height, setHeight] = useState(''); // cm
   const [weight, setWeight] = useState(''); // kg
   const [loading, setLoading] = useState(false);
+  
+  // AI Generator Preferences
+  const [fitnessGoal, setFitnessGoal] = useState<'cut'|'maintain'|'bulk'>('maintain');
+  const [dietPreference, setDietPreference] = useState<'anything'|'vegan'|'keto'>('anything');
+  const [equipmentAccess, setEquipmentAccess] = useState<'full'|'dumbbells'|'bodyweight'>('full');
+
   const { user, setUser } = useAuthStore();
 
   const handleCompleteSetup = async () => {
@@ -39,6 +45,9 @@ export default function OnboardingScreen() {
         height: heightNum,
         weight: weightNum,
         bmi: bmi,
+        fitnessGoal,
+        dietPreference,
+        equipmentAccess,
         // Also initialize bmiHistory with the first entry
         bmiHistory: [{ value: bmi, date: new Date().toISOString() }],
         isOnboarded: true // We can use this to track completion
@@ -107,6 +116,65 @@ export default function OnboardingScreen() {
           </View>
         </View>
 
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Your Preferences</Text>
+          <Text style={styles.sectionSubtitle}>Help us tailor your AI-generated workouts and meals.</Text>
+        </View>
+
+        {/* Goal Selection */}
+        <View style={styles.pickerGroup}>
+          <Text style={styles.label}>Primary Goal</Text>
+          <View style={styles.pillRow}>
+            {(['cut', 'maintain', 'bulk'] as const).map(g => (
+              <TouchableOpacity
+                key={g}
+                style={[styles.pill, fitnessGoal === g && styles.pillActive]}
+                onPress={() => setFitnessGoal(g)}
+              >
+                <Text style={[styles.pillText, fitnessGoal === g && styles.pillTextActive]}>
+                  {g.charAt(0).toUpperCase() + g.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Diet Selection */}
+        <View style={styles.pickerGroup}>
+          <Text style={styles.label}>Dietary Preference</Text>
+          <View style={styles.pillRow}>
+            {(['anything', 'vegan', 'keto'] as const).map(d => (
+              <TouchableOpacity
+                key={d}
+                style={[styles.pill, dietPreference === d && styles.pillActive]}
+                onPress={() => setDietPreference(d)}
+              >
+                <Text style={[styles.pillText, dietPreference === d && styles.pillTextActive]}>
+                  {d.charAt(0).toUpperCase() + d.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Equipment Selection */}
+        <View style={styles.pickerGroup}>
+          <Text style={styles.label}>Equipment Access</Text>
+          <View style={styles.pillRow}>
+            {(['full', 'dumbbells', 'bodyweight'] as const).map(e => (
+              <TouchableOpacity
+                key={e}
+                style={[styles.pill, equipmentAccess === e && styles.pillActive]}
+                onPress={() => setEquipmentAccess(e)}
+              >
+                <Text style={[styles.pillText, equipmentAccess === e && styles.pillTextActive]}>
+                  {e === 'full' ? 'Full Gym' : e.charAt(0).toUpperCase() + e.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
         <TouchableOpacity 
           style={styles.button} 
           onPress={handleCompleteSetup}
@@ -139,12 +207,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#1A1A1A',
   },
+  sectionHeader: { marginTop: 8, marginBottom: 20 },
+  sectionTitle: { fontSize: 22, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 4 },
+  sectionSubtitle: { fontSize: 14, color: '#666' },
+  pickerGroup: { marginBottom: 24 },
+  pillRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
+  pill: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  pillActive: {
+    backgroundColor: '#C15A28',
+    borderColor: '#C15A28',
+  },
+  pillText: { fontSize: 14, fontWeight: '600', color: '#666' },
+  pillTextActive: { color: '#fff' },
   button: {
     backgroundColor: '#C15A28', // Our primary color
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 16,
+    marginBottom: 40,
   },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });
