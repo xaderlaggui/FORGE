@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  TouchableOpacity, ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Plus, Droplets, ChevronRight } from 'lucide-react-native';
 import { ForgeTheme as T } from '../../constants/ForgeTheme';
 import { useNutrition } from '../../hooks/useNutrition';
+import { ForgeSkeleton, SkeletonHeroCard, SkeletonListItem } from '../../components/forge/ForgeSkeleton';
 
 // ─── Types ─────────────────────────────────────────────────
 interface MacroBarProps {
@@ -37,25 +38,48 @@ function MacroBar({ label, value, goal, color }: MacroBarProps) {
   return (
     <View style={mb.wrapper}>
       <View style={mb.labelRow}>
-        <Text style={mb.label}>{label}</Text>
-        <Text style={mb.value}>{value}<Text style={mb.goal}>/{goal}g</Text></Text>
+        <Text style={mb.label} maxFontSizeMultiplier={1.2}>{label}</Text>
+        <Text style={mb.value} maxFontSizeMultiplier={1.2}>{value}<Text style={mb.goal}>/{goal}g</Text></Text>
       </View>
       <View style={mb.track}>
-        <View style={[mb.fill, { width: `${pct}%` as any, backgroundColor: color }]} />
+        <View style={[mb.fill, { width: `${pct}%`, backgroundColor: color }]} />
       </View>
     </View>
   );
 }
 
 const mb = StyleSheet.create({
-  wrapper: { marginBottom: 10 },
-  labelRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 },
-  label: { fontSize: 12, fontWeight: '500', color: T.colors.t2 },
-  value: { fontSize: 12, fontWeight: '700', color: T.colors.t1 },
+  wrapper: { marginBottom: T.spacing.px3 },
+  labelRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: T.spacing.px1 },
+  label: { fontSize: T.typography.sizes.bodyS, fontWeight: '500', color: T.colors.t2 },
+  value: { fontSize: T.typography.sizes.bodyS, fontWeight: '700', color: T.colors.t1 },
   goal: { fontWeight: '400', color: T.colors.t3 },
-  track: { height: 5, backgroundColor: T.colors.bg3, borderRadius: 3, overflow: 'hidden' },
-  fill: { height: 5, borderRadius: 3 },
+  track: { height: 6, backgroundColor: T.colors.bg3, borderRadius: T.radii.sm, overflow: 'hidden' },
+  fill: { height: 6, borderRadius: T.radii.sm },
 });
+
+function NutritionSkeleton() {
+  return (
+    <View style={s.content}>
+      <View style={[s.header, { paddingBottom: T.spacing.px6 }]}>
+        <View>
+          <ForgeSkeleton width={120} height={14} radius={4} style={{ marginBottom: 6 }} />
+          <ForgeSkeleton width={180} height={32} radius={8} />
+        </View>
+        <ForgeSkeleton circle size={40} />
+      </View>
+      <SkeletonHeroCard />
+      <View style={s.section}>
+        <ForgeSkeleton width={140} height={14} radius={4} style={{ marginBottom: 10 }} />
+        <View style={s.card}>
+           <ForgeSkeleton width="100%" height={24} radius={4} style={{ marginBottom: 12 }} />
+           <ForgeSkeleton width="100%" height={24} radius={4} style={{ marginBottom: 12 }} />
+           <ForgeSkeleton width="100%" height={24} radius={4} />
+        </View>
+      </View>
+    </View>
+  );
+}
 
 // ─── Main Screen ───────────────────────────────────────────
 
@@ -66,8 +90,8 @@ export default function NutritionScreen() {
 
   if (isLoading || !nutrition) {
     return (
-      <View style={[s.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color={T.colors.forge} />
+      <View style={s.container}>
+        <NutritionSkeleton />
       </View>
     );
   }
@@ -99,8 +123,8 @@ export default function NutritionScreen() {
       {/* ── Header ── */}
       <View style={s.header}>
         <View>
-          <Text style={s.headerSub}>Today · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</Text>
-          <Text style={s.headerTitle}>Nutrition</Text>
+          <Text style={s.headerSub} maxFontSizeMultiplier={1.2}>Today · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</Text>
+          <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>Nutrition</Text>
         </View>
         <TouchableOpacity
           style={s.addBtn}
@@ -114,7 +138,7 @@ export default function NutritionScreen() {
       {/* ── Calorie Summary Card ── */}
       <View style={s.summaryCard}>
         <LinearGradient
-          colors={['#1C1C20', '#141416']}
+          colors={['#1C1C22', '#0E0E11']}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFillObject}
         />
@@ -124,26 +148,26 @@ export default function NutritionScreen() {
         {/* Top row: consumed / remaining */}
         <View style={s.calTopRow}>
           <View style={s.calBlock}>
-            <Text style={s.calNum}>{totalCal}</Text>
-            <Text style={s.calLabel}>Eaten</Text>
+            <Text style={s.calNum} maxFontSizeMultiplier={1.2}>{totalCal}</Text>
+            <Text style={s.calLabel} maxFontSizeMultiplier={1.2}>Eaten</Text>
           </View>
           <View style={s.calRingWrap}>
             {/* Simple circular % indicator */}
-            <Text style={s.calPct}>{Math.round(calPct)}%</Text>
-            <Text style={s.calGoalLabel}>of {goalCal}</Text>
+            <Text style={s.calPct} maxFontSizeMultiplier={1.2}>{Math.round(calPct)}%</Text>
+            <Text style={s.calGoalLabel} maxFontSizeMultiplier={1.2}>of {goalCal}</Text>
           </View>
           <View style={[s.calBlock, { alignItems: 'flex-end' }]}>
-            <Text style={[s.calNum, { color: remaining === 0 ? T.colors.forge : T.colors.t1 }]}>{remaining}</Text>
-            <Text style={s.calLabel}>Remaining</Text>
+            <Text style={[s.calNum, { color: remaining === 0 ? T.colors.forge : T.colors.t1 }]} maxFontSizeMultiplier={1.2}>{remaining}</Text>
+            <Text style={s.calLabel} maxFontSizeMultiplier={1.2}>Remaining</Text>
           </View>
         </View>
 
         {/* Progress bar */}
         <View style={s.calBarTrack}>
           <LinearGradient
-            colors={[T.colors.forge, T.colors.forgeHover]}
+            colors={[T.colors.forge, T.colors.forgeMid]}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-            style={[s.calBarFill, { width: `${calPct}%` as any }]}
+            style={[s.calBarFill, { width: `${calPct}%` }]}
           />
         </View>
 
@@ -152,12 +176,12 @@ export default function NutritionScreen() {
           {[
             { label: 'Protein', value: totalProtein, color: T.colors.green },
             { label: 'Carbs',   value: totalCarbs,   color: T.colors.blue  },
-            { label: 'Fat',     value: totalFat,     color: '#FFD60A'      },
+            { label: 'Fat',     value: totalFat,     color: T.colors.gold  },
           ].map(m => (
             <View key={m.label} style={s.macroStat}>
               <View style={[s.macroDot, { backgroundColor: m.color }]} />
-              <Text style={[s.macroVal, { color: m.color }]}>{m.value}g</Text>
-              <Text style={s.macroLbl}>{m.label}</Text>
+              <Text style={[s.macroVal, { color: m.color }]} maxFontSizeMultiplier={1.2}>{m.value}g</Text>
+              <Text style={s.macroLbl} maxFontSizeMultiplier={1.2}>{m.label}</Text>
             </View>
           ))}
         </View>
@@ -165,25 +189,25 @@ export default function NutritionScreen() {
 
       {/* ── Macro Breakdown Bars ── */}
       <View style={s.section}>
-        <Text style={s.sectionLabel}>Macro Breakdown</Text>
+        <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Macro Breakdown</Text>
         <View style={s.card}>
           <MacroBar label="Protein" value={totalProtein} goal={goalProtein} color={T.colors.green} />
           <MacroBar label="Carbs"   value={totalCarbs}   goal={goalCarbs}   color={T.colors.blue} />
-          <MacroBar label="Fat"     value={totalFat}     goal={goalFat}     color="#FFD60A" />
+          <MacroBar label="Fat"     value={totalFat}     goal={goalFat}     color={T.colors.gold} />
         </View>
       </View>
 
       {/* ── Water Tracker ── */}
       <View style={[s.section, { marginBottom: 0 }]}>
-        <Text style={s.sectionLabel}>Hydration</Text>
+        <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Hydration</Text>
         <View style={s.waterCard}>
           <View style={s.waterLeft}>
             <View style={s.waterIcon}>
               <Droplets size={20} color={T.colors.blue} />
             </View>
             <View>
-              <Text style={s.waterVal}>{waterLiters.toFixed(1)} L</Text>
-              <Text style={s.waterGoal}>Goal: {goalWater} L</Text>
+              <Text style={s.waterVal} maxFontSizeMultiplier={1.2}>{waterLiters.toFixed(1)} L</Text>
+              <Text style={s.waterGoal} maxFontSizeMultiplier={1.2}>Goal: {goalWater} L</Text>
             </View>
           </View>
           <View style={s.waterBarWrap}>
@@ -191,7 +215,7 @@ export default function NutritionScreen() {
               <View
                 style={[
                   s.waterBarFill,
-                  { width: `${Math.min((waterLiters / goalWater) * 100, 100)}%` as any },
+                  { width: `${Math.min((waterLiters / goalWater) * 100, 100)}%` },
                 ]}
               />
             </View>
@@ -211,8 +235,8 @@ export default function NutritionScreen() {
       </View>
 
       {/* ── Meals ── */}
-      <View style={s.section}>
-        <Text style={s.sectionLabel}>Meals</Text>
+      <View style={[s.section, { marginTop: T.spacing.px5 }]}>
+        <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Meals</Text>
         {MEAL_DEFS.map(({ key, label, emoji }) => {
           const meal = nutrition.meals.find(m => m.name === key)
             ?? { name: key, calories: 0, protein: 0, carbs: 0, fat: 0 };
@@ -220,7 +244,7 @@ export default function NutritionScreen() {
           const isEmpty = meal.calories === 0;
 
           return (
-            <View key={key} style={[s.mealCard, { marginBottom: 10 }]}>
+            <View key={key} style={[s.mealCard, { marginBottom: T.spacing.px3 }]}>
               {/* Meal Row */}
               <TouchableOpacity
                 style={s.mealRow}
@@ -231,8 +255,8 @@ export default function NutritionScreen() {
                   <Text style={{ fontSize: 18 }}>{emoji}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.mealLabel}>{label}</Text>
-                  <Text style={s.mealCal}>{isEmpty ? 'Not logged yet' : `${meal.calories} kcal`}</Text>
+                  <Text style={s.mealLabel} maxFontSizeMultiplier={1.2}>{label}</Text>
+                  <Text style={s.mealCal} maxFontSizeMultiplier={1.2}>{isEmpty ? 'Not logged yet' : `${meal.calories} kcal`}</Text>
                 </View>
                 <TouchableOpacity
                   style={s.mealAddBtn}
@@ -254,11 +278,11 @@ export default function NutritionScreen() {
                     {[
                       { label: 'Protein', value: meal.protein, color: T.colors.green },
                       { label: 'Carbs',   value: meal.carbs,   color: T.colors.blue },
-                      { label: 'Fat',     value: meal.fat,     color: '#FFD60A' },
+                      { label: 'Fat',     value: meal.fat,     color: T.colors.gold },
                     ].map(m => (
                       <View key={m.label} style={s.mealDetailStat}>
-                        <Text style={[s.mealDetailVal, { color: m.color }]}>{m.value}g</Text>
-                        <Text style={s.mealDetailLbl}>{m.label}</Text>
+                        <Text style={[s.mealDetailVal, { color: m.color }]} maxFontSizeMultiplier={1.2}>{m.value}g</Text>
+                        <Text style={s.mealDetailLbl} maxFontSizeMultiplier={1.2}>{m.label}</Text>
                       </View>
                     ))}
                   </View>
@@ -281,12 +305,12 @@ const s = StyleSheet.create({
   // Header
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end',
-    paddingHorizontal: 20, paddingTop: 60, paddingBottom: 16,
+    paddingHorizontal: T.spacing.page, paddingTop: 60, paddingBottom: T.spacing.px4,
   },
-  headerSub: { fontSize: 12, color: T.colors.t2, fontWeight: '500', marginBottom: 2 },
-  headerTitle: { fontSize: 24, fontWeight: '700', color: T.colors.t1 },
+  headerSub: { fontSize: T.typography.sizes.bodyS, color: T.colors.t2, fontWeight: '500', marginBottom: 2 },
+  headerTitle: { fontSize: T.typography.sizes.h1, fontWeight: '700', color: T.colors.t1 },
   addBtn: {
-    width: 40, height: 40, borderRadius: 20,
+    width: 40, height: 40, borderRadius: T.radii.full,
     backgroundColor: T.colors.forge,
     alignItems: 'center', justifyContent: 'center',
     shadowColor: T.colors.forge,
@@ -295,89 +319,89 @@ const s = StyleSheet.create({
 
   // Calorie summary
   summaryCard: {
-    marginHorizontal: 20, marginBottom: 20,
-    borderRadius: 20, borderWidth: 1, borderColor: T.colors.b1,
-    overflow: 'hidden', padding: 20,
+    marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5,
+    borderRadius: T.radii.xl, borderWidth: 0.5, borderColor: T.colors.b1,
+    overflow: 'hidden', padding: T.spacing.px5,
   },
   blob: {
     position: 'absolute', top: -40, right: -20,
     width: 120, height: 120,
-    backgroundColor: 'rgba(255,92,46,0.08)',
+    backgroundColor: T.colors.forgeDim,
     borderRadius: 60,
   },
-  calTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+  calTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: T.spacing.px4 },
   calBlock: {},
   calNum: { fontSize: 24, fontWeight: '800', color: T.colors.t1 },
-  calLabel: { fontSize: 11, color: T.colors.t3, marginTop: 2, fontWeight: '500' },
+  calLabel: { fontSize: T.typography.sizes.label, color: T.colors.t3, marginTop: 2, fontWeight: '500' },
   calRingWrap: { alignItems: 'center' },
   calPct: { fontSize: 22, fontWeight: '800', color: T.colors.forge },
-  calGoalLabel: { fontSize: 10, color: T.colors.t3, marginTop: 1 },
+  calGoalLabel: { fontSize: T.typography.sizes.caption, color: T.colors.t3, marginTop: 1 },
 
-  calBarTrack: { height: 6, backgroundColor: T.colors.bg3, borderRadius: 3, overflow: 'hidden', marginBottom: 20 },
-  calBarFill: { height: 6, borderRadius: 3 },
+  calBarTrack: { height: 6, backgroundColor: T.colors.bg3, borderRadius: T.radii.sm, overflow: 'hidden', marginBottom: T.spacing.px5 },
+  calBarFill: { height: 6, borderRadius: T.radii.sm },
 
   macroStatRow: { flexDirection: 'row', justifyContent: 'space-around' },
   macroStat: { alignItems: 'center', gap: 3 },
   macroDot: { width: 8, height: 8, borderRadius: 4, marginBottom: 2 },
-  macroVal: { fontSize: 15, fontWeight: '700' },
-  macroLbl: { fontSize: 10, color: T.colors.t3, fontWeight: '500' },
+  macroVal: { fontSize: T.typography.sizes.body, fontWeight: '700' },
+  macroLbl: { fontSize: T.typography.sizes.caption, color: T.colors.t3, fontWeight: '500' },
 
   // Sections
-  section: { marginHorizontal: 20, marginBottom: 20 },
+  section: { marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5 },
   sectionLabel: {
-    fontSize: 11, fontWeight: '600', color: T.colors.t3,
-    textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 10,
+    fontSize: T.typography.sizes.label, fontWeight: '600', color: T.colors.t3,
+    textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: T.spacing.px2,
   },
   card: {
-    backgroundColor: T.colors.bg1, borderRadius: 16,
-    borderWidth: 0.5, borderColor: T.colors.b1, padding: 16,
+    backgroundColor: T.colors.bg1, borderRadius: T.radii.lg,
+    borderWidth: 0.5, borderColor: T.colors.b1, padding: T.spacing.px4,
   },
 
   // Water
   waterCard: {
-    backgroundColor: T.colors.bg1, borderRadius: 16,
+    backgroundColor: T.colors.bg1, borderRadius: T.radii.lg,
     borderWidth: 0.5, borderColor: T.colors.b1,
-    padding: 16, gap: 14,
+    padding: T.spacing.px4, gap: 14,
   },
   waterLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   waterIcon: {
-    width: 40, height: 40, borderRadius: 12,
-    backgroundColor: 'rgba(10,132,255,0.12)',
+    width: 40, height: 40, borderRadius: T.radii.md,
+    backgroundColor: T.colors.blueDim,
     alignItems: 'center', justifyContent: 'center',
   },
-  waterVal: { fontSize: 20, fontWeight: '700', color: T.colors.t1 },
-  waterGoal: { fontSize: 11, color: T.colors.t3, marginTop: 1 },
+  waterVal: { fontSize: T.typography.sizes.h2, fontWeight: '700', color: T.colors.t1 },
+  waterGoal: { fontSize: T.typography.sizes.label, color: T.colors.t3, marginTop: 1 },
   waterBarWrap: { gap: 8 },
-  waterBarTrack: { height: 5, backgroundColor: T.colors.bg3, borderRadius: 3, overflow: 'hidden' },
-  waterBarFill: { height: 5, backgroundColor: T.colors.blue, borderRadius: 3 },
+  waterBarTrack: { height: 6, backgroundColor: T.colors.bg3, borderRadius: T.radii.sm, overflow: 'hidden' },
+  waterBarFill: { height: 6, backgroundColor: T.colors.blue, borderRadius: T.radii.sm },
   waterDots: { flexDirection: 'row', gap: 6 },
   waterDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: T.colors.bg3 },
   waterDotFilled: { backgroundColor: T.colors.blue },
 
   // Meals
-  mealCard: { backgroundColor: T.colors.bg1, borderRadius: 16, borderWidth: 0.5, borderColor: T.colors.b1, overflow: 'hidden' },
+  mealCard: { backgroundColor: T.colors.bg1, borderRadius: T.radii.lg, borderWidth: 0.5, borderColor: T.colors.b1, overflow: 'hidden' },
   mealRow: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 12 },
   mealIconWrap: {
-    width: 40, height: 40, borderRadius: 12,
+    width: 40, height: 40, borderRadius: T.radii.md,
     backgroundColor: T.colors.bg2,
     alignItems: 'center', justifyContent: 'center',
     flexShrink: 0,
   },
-  mealLabel: { fontSize: 14, fontWeight: '600', color: T.colors.t1 },
-  mealCal: { fontSize: 12, color: T.colors.t3, marginTop: 1 },
+  mealLabel: { fontSize: T.typography.sizes.body, fontWeight: '600', color: T.colors.t1 },
+  mealCal: { fontSize: T.typography.sizes.bodyS, color: T.colors.t3, marginTop: 1 },
   mealAddBtn: {
-    width: 30, height: 30, borderRadius: 15,
-    backgroundColor: 'rgba(255,92,46,0.12)',
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: T.colors.forgeDim,
     alignItems: 'center', justifyContent: 'center',
     marginRight: 4,
   },
   mealDetail: {
     borderTopWidth: 0.5, borderTopColor: T.colors.b1,
-    paddingHorizontal: 16, paddingVertical: 12,
+    paddingHorizontal: T.spacing.px4, paddingVertical: T.spacing.px3,
     backgroundColor: T.colors.bg0,
   },
   mealDetailRow: { flexDirection: 'row', justifyContent: 'space-around' },
   mealDetailStat: { alignItems: 'center' },
-  mealDetailVal: { fontSize: 16, fontWeight: '700' },
-  mealDetailLbl: { fontSize: 10, color: T.colors.t3, marginTop: 2, fontWeight: '500' },
+  mealDetailVal: { fontSize: T.typography.sizes.body, fontWeight: '700' },
+  mealDetailLbl: { fontSize: T.typography.sizes.caption, color: T.colors.t3, marginTop: 2, fontWeight: '500' },
 });

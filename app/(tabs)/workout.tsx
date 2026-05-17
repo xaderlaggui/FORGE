@@ -1,18 +1,56 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'expo-router';
 import dayjs from 'dayjs';
-import { db } from '../../services/firebase';
-import { useWorkouts } from '../../hooks/useWorkouts';
-import type { Exercise } from '../../types';
+import { useRouter } from 'expo-router';
+import { collection, getDocs } from 'firebase/firestore';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
+import { ForgeButton } from '../../components/forge/ForgeButton';
+import { ForgeSegment } from '../../components/forge/ForgeSegment';
+import { ForgeSkeleton } from '../../components/forge/ForgeSkeleton';
 import { ForgeTheme } from '../../constants/ForgeTheme';
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, Easing } from 'react-native-reanimated';
+import { useWorkouts } from '../../hooks/useWorkouts';
+import { db } from '../../services/firebase';
+import type { Exercise } from '../../types';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Skeleton Components
+// ─────────────────────────────────────────────────────────────────────────────
+function SkeletonPlanner() {
+  return (
+    <View style={styles.todayCard}>
+      <ForgeSkeleton width="40%" height={12} radius={4} style={{ marginBottom: 10 }} />
+      <ForgeSkeleton width="70%" height={24} radius={6} style={{ marginBottom: 8 }} />
+      <ForgeSkeleton width="55%" height={14} radius={4} style={{ marginBottom: 32 }} />
+      <ForgeSkeleton width="100%" height={52} radius={ForgeTheme.radii.md} />
+    </View>
+  );
+}
+
+function SkeletonLibrary() {
+  return (
+    <View style={{ gap: 12 }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <View key={i} style={styles.card}>
+          <ForgeSkeleton width="50%" height={16} radius={4} style={{ marginBottom: 8 }} />
+          <ForgeSkeleton width="30%" height={12} radius={4} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main Screen
+// ─────────────────────────────────────────────────────────────────────────────
 export default function WorkoutScreen() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'planner' | 'library'>('planner');
+  const [activeTab, setActiveTab] = useState('Planner');
   
   // Dynamic weekly dates starting from Monday
   const today = dayjs();
@@ -39,69 +77,62 @@ export default function WorkoutScreen() {
   
   // Filter workout for selected day
   const todayWorkout = useMemo(() => {
-    return workouts.find(w => w.date.startsWith(activeDateStr));
+    return workouts?.find(w => w.date.startsWith(activeDateStr));
   }, [workouts, activeDateStr]);
 
-  const buttonPulse = useSharedValue(1);
   const dotOpacity = useSharedValue(0.6);
 
-  React.useEffect(() => {
-    buttonPulse.value = withRepeat(withTiming(1.05, { duration: 1500 }), -1, true);
-    dotOpacity.value = withRepeat(withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }), -1, true);
+  useEffect(() => {
+    dotOpacity.value = withRepeat(
+      withTiming(1, { duration: ForgeTheme.motion.duration.pulse, easing: ForgeTheme.motion.easing.standard }), 
+      -1, 
+      true
+    );
   }, []);
 
-  const buttonPulseStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: buttonPulse.value }],
-  }));
   const dotOpacityStyle = useAnimatedStyle(() => ({
     opacity: dotOpacity.value,
   }));
 
   return (
     <View style={styles.container}>
+      {/* ── Header ───────────────────────────────────────────────────────── */}
       <View style={styles.header}>
-        <Text style={styles.title}>Workout Planner</Text>
+        <Text style={styles.title} maxFontSizeMultiplier={1.2}>Workout Planner</Text>
         
-        {/* Custom Segmented Control */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'planner' && styles.activeTab]}
-            onPress={() => setActiveTab('planner')}
-          >
-            <Text style={[styles.tabText, activeTab === 'planner' && styles.activeTabText]}>PLANNER</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'library' && styles.activeTab]}
-            onPress={() => setActiveTab('library')}
-          >
-            <Text style={[styles.tabText, activeTab === 'library' && styles.activeTabText]}>LIBRARY</Text>
-          </TouchableOpacity>
-        </View>
+        <ForgeSegment
+          options={['Planner', 'Library']}
+          value={activeTab}
+          onChange={setActiveTab}
+        />
       </View>
 
-      {activeTab === 'library' ? (
+      {/* ── Content ──────────────────────────────────────────────────────── */}
+      {activeTab === 'Library' ? (
         // --- EXERCISE LIBRARY VIEW ---
-        isLoadingExercises ? (
-          <ActivityIndicator size="large" color={ForgeTheme.colors.forge} style={{ marginTop: 40 }} />
-        ) : (
-          <FlatList
-            data={exercises}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.list}
-            renderItem={({ item }) => (
-               <View style={styles.card}>
-                 <Text style={styles.cardTitle}>{item.name}</Text>
-                 <Text style={styles.cardSub}>{item.muscleGroups.join(', ')} • {item.equipment}</Text>
-               </View>
-            )}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>No exercises found. Go to Settings and click Seed!</Text>
-            }
-          />
-        )
+        <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
+          {isLoadingExercises ? (
+             <SkeletonLibrary />
+          ) : exercises?.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText} maxFontSizeMultiplier={1.2}>
+                No exercises found. Go to Settings and click Seed!
+              </Text>
+            </View>
+          ) : (
+            exercises?.map((item) => (
+              <View key={item.id} style={styles.card}>
+                <Text style={styles.cardTitle} maxFontSizeMultiplier={1.2}>{item.name}</Text>
+                <Text style={styles.cardSub} maxFontSizeMultiplier={1.2}>
+                  {item.muscleGroups.join(', ')} • {item.equipment}
+                </Text>
+              </View>
+            ))
+          )}
+        </ScrollView>
       ) : (
         // --- WORKOUT PLANNER VIEW ---
-        <ScrollView contentContainerStyle={styles.plannerContainer}>
+        <ScrollView contentContainerStyle={styles.plannerContainer} showsVerticalScrollIndicator={false}>
           <View style={styles.weekRow}>
             {days.map((day, idx) => {
               const isActive = idx === activeDayIdx;
@@ -110,8 +141,9 @@ export default function WorkoutScreen() {
                   key={idx} 
                   onPress={() => setActiveDayIdx(idx)}
                   style={styles.weekDotCol}
+                  activeOpacity={0.7}
                 >
-                  <Text style={styles.dayLabel}>{day.label}</Text>
+                  <Text style={styles.dayLabel} maxFontSizeMultiplier={1.2}>{day.label}</Text>
                   {isActive ? (
                     <Animated.View style={[styles.weekDot, styles.weekDotActive, dotOpacityStyle]} />
                   ) : (
@@ -123,29 +155,32 @@ export default function WorkoutScreen() {
           </View>
 
           {isLoadingWorkouts ? (
-            <ActivityIndicator size="large" color={ForgeTheme.colors.forge} />
+            <SkeletonPlanner />
           ) : todayWorkout ? (
             <View style={styles.todayCard}>
-              <Text style={styles.todayTitle}>SCHEDULED ROUTINE</Text>
-              <Text style={styles.todaySub}>{todayWorkout.notes || 'Custom Workout'}</Text>
-              <Text style={{ color: ForgeTheme.colors.t2, marginBottom: 24, fontSize: 13 }}>{todayWorkout.exercises.length} Exercises Planned</Text>
-              <Animated.View style={[{ borderRadius: 12, backgroundColor: 'rgba(255, 92, 46, 0.4)' }, buttonPulseStyle]}>
-                <TouchableOpacity style={styles.startButton} onPress={() => router.push({ pathname: '/activeWorkout', params: { id: todayWorkout.id } })}>
-                  <Text style={styles.startText}>▶ Start Workout</Text>
-                </TouchableOpacity>
-              </Animated.View>
+              <Text style={styles.todayTitle} maxFontSizeMultiplier={1.2}>Scheduled Routine</Text>
+              <Text style={styles.todaySub} maxFontSizeMultiplier={1.2}>{todayWorkout.notes || 'Custom Workout'}</Text>
+              <Text style={styles.todayMeta} maxFontSizeMultiplier={1.2}>
+                {todayWorkout.exercises.length} Exercises Planned
+              </Text>
+              <ForgeButton 
+                label="▶ Start Workout" 
+                onPress={() => router.push({ pathname: '/activeWorkout', params: { id: todayWorkout.id } })} 
+                pulse 
+              />
             </View>
           ) : (
-            <View style={[styles.todayCard, { alignItems: 'center', paddingVertical: 40 }]}>
-              <Text style={styles.todaySub}>Rest Day</Text>
-              <Text style={{ color: ForgeTheme.colors.t2, textAlign: 'center', marginBottom: 24, fontSize: 13 }}>No workout scheduled for this day.</Text>
+            <View style={[styles.todayCard, styles.todayCardEmpty]}>
+              <Text style={styles.todaySub} maxFontSizeMultiplier={1.2}>Rest Day</Text>
+              <Text style={styles.todayMetaCenter} maxFontSizeMultiplier={1.2}>
+                No workout scheduled for this day.
+              </Text>
               
-              {/* If no workout, start a blank one */}
-              <Animated.View style={[{ borderRadius: 12, backgroundColor: 'rgba(255, 92, 46, 0.4)' }, buttonPulseStyle]}>
-                <TouchableOpacity style={styles.startButton} onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr } })}>
-                  <Text style={styles.startText}>+ New Workout</Text>
-                </TouchableOpacity>
-              </Animated.View>
+              <ForgeButton 
+                label="+ New Workout" 
+                onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr } })}
+                variant="secondary"
+              />
             </View>
           )}
         </ScrollView>
@@ -153,33 +188,139 @@ export default function WorkoutScreen() {
     </View>
   );
 }
+
+const { colors, radii, spacing, typography } = ForgeTheme;
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: ForgeTheme.colors.bg0 },
-  header: { padding: 24, paddingTop: 60, backgroundColor: ForgeTheme.colors.bg0, borderBottomWidth: 0.5, borderBottomColor: ForgeTheme.colors.b1 },
-  title: { fontSize: 20, fontWeight: '700', color: ForgeTheme.colors.t1, marginBottom: 16 },
+  container: { 
+    flex: 1, 
+    backgroundColor: colors.bg0 
+  },
+  header: { 
+    paddingHorizontal: spacing.page,
+    paddingTop: 60,
+    paddingBottom: spacing.px4,
+    backgroundColor: colors.bg0, 
+    borderBottomWidth: 0.5, 
+    borderBottomColor: colors.b1 
+  },
+  title: { 
+    fontSize: typography.sizes.h1, 
+    fontWeight: '700', 
+    color: colors.t1, 
+    marginBottom: spacing.px4 
+  },
   
-  tabContainer: { flexDirection: 'row', backgroundColor: ForgeTheme.colors.bg1, borderRadius: 12, padding: 4, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1 },
-  tab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8 },
-  activeTab: { backgroundColor: ForgeTheme.colors.bg2 },
-  tabText: { fontWeight: '600', color: ForgeTheme.colors.t3, fontSize: 11, letterSpacing: 0.5 },
-  activeTabText: { color: ForgeTheme.colors.t1 },
+  list: { 
+    padding: spacing.page, 
+    paddingBottom: 100 
+  },
+  card: { 
+    backgroundColor: colors.bg1, 
+    padding: spacing.px4, 
+    borderRadius: radii.lg, 
+    marginBottom: spacing.px3, 
+    borderWidth: 0.5, 
+    borderColor: colors.b1 
+  },
+  cardTitle: { 
+    fontSize: typography.sizes.body, 
+    fontWeight: '600', 
+    color: colors.t1, 
+    letterSpacing: 0.2 
+  },
+  cardSub: { 
+    fontSize: typography.sizes.label, 
+    color: colors.t3, 
+    marginTop: spacing.px1, 
+    textTransform: 'uppercase', 
+    fontWeight: '600', 
+    letterSpacing: 0.8 
+  },
+  emptyState: {
+    padding: spacing.px7,
+    alignItems: 'center',
+  },
+  emptyText: { 
+    textAlign: 'center', 
+    color: colors.t3, 
+    fontWeight: '500',
+    fontSize: typography.sizes.bodyS,
+    lineHeight: typography.sizes.bodyS * 1.5,
+  },
 
-  list: { padding: 20, paddingBottom: 100 },
-  card: { backgroundColor: ForgeTheme.colors.bg1, padding: 16, borderRadius: 16, marginBottom: 12, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1 },
-  cardTitle: { fontSize: 14, fontWeight: '600', color: ForgeTheme.colors.t1, letterSpacing: 0.5 },
-  cardSub: { fontSize: 11, color: ForgeTheme.colors.t3, marginTop: 4, textTransform: 'uppercase', fontWeight: '500', letterSpacing: 1 },
-  emptyText: { textAlign: 'center', marginTop: 40, color: ForgeTheme.colors.t3, fontWeight: '500' },
+  plannerContainer: { 
+    padding: spacing.page, 
+    paddingBottom: 100 
+  },
+  weekRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginBottom: spacing.px6, 
+    backgroundColor: colors.bg1, 
+    padding: spacing.px4, 
+    borderRadius: radii.lg, 
+    borderWidth: 0.5, 
+    borderColor: colors.b1 
+  },
+  weekDotCol: { 
+    alignItems: 'center', 
+    gap: 6 
+  },
+  dayLabel: { 
+    fontSize: typography.sizes.caption, 
+    color: colors.t3, 
+    fontWeight: '600' 
+  },
+  weekDot: { 
+    width: 8, 
+    height: 8, 
+    borderRadius: radii.xs, 
+    backgroundColor: colors.bg3 
+  },
+  weekDotActive: { 
+    backgroundColor: colors.forge, 
+    shadowColor: colors.forge, 
+    shadowOffset: { width: 0, height: 0 }, 
+    shadowOpacity: 0.5, 
+    shadowRadius: 6, 
+    elevation: 3 
+  },
 
-  plannerContainer: { padding: 20, paddingBottom: 100 },
-  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, backgroundColor: ForgeTheme.colors.bg1, padding: 16, borderRadius: 16, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1 },
-  weekDotCol: { alignItems: 'center', gap: 6 },
-  dayLabel: { fontSize: 10, color: ForgeTheme.colors.t3, fontWeight: '600' },
-  weekDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: ForgeTheme.colors.bg3 },
-  weekDotActive: { backgroundColor: ForgeTheme.colors.forge, shadowColor: ForgeTheme.colors.forge, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 6, elevation: 3 },
-
-  todayCard: { backgroundColor: ForgeTheme.colors.bg1, padding: 24, borderRadius: 20, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1 },
-  todayTitle: { fontSize: 11, color: ForgeTheme.colors.t3, marginBottom: 6, fontWeight: '600', letterSpacing: 1, textTransform: 'uppercase' },
-  todaySub: { fontSize: 20, fontWeight: '700', color: ForgeTheme.colors.t1, marginBottom: 32 },
-  startButton: { backgroundColor: ForgeTheme.colors.forge, padding: 14, borderRadius: 12, alignItems: 'center' },
-  startText: { color: '#FFF', fontWeight: '700', fontSize: 14 },
+  todayCard: { 
+    backgroundColor: colors.bg1, 
+    padding: spacing.px6, 
+    borderRadius: radii.xl, 
+    borderWidth: 0.5, 
+    borderColor: colors.b1 
+  },
+  todayCardEmpty: {
+    alignItems: 'center', 
+    paddingVertical: 40 
+  },
+  todayTitle: { 
+    fontSize: typography.sizes.label, 
+    color: colors.t3, 
+    marginBottom: 6, 
+    fontWeight: '600', 
+    letterSpacing: 1, 
+    textTransform: 'uppercase' 
+  },
+  todaySub: { 
+    fontSize: typography.sizes.h2, 
+    fontWeight: '700', 
+    color: colors.t1, 
+    marginBottom: spacing.px2 
+  },
+  todayMeta: { 
+    color: colors.t2, 
+    marginBottom: spacing.px6, 
+    fontSize: typography.sizes.bodyS 
+  },
+  todayMetaCenter: {
+    color: colors.t2, 
+    marginBottom: spacing.px6, 
+    fontSize: typography.sizes.bodyS,
+    textAlign: 'center'
+  }
 });
