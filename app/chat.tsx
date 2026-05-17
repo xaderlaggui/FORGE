@@ -1,4 +1,5 @@
 import { MascotImages } from '@/constants/mascotImages';
+import { useForgeTheme } from "@/hooks/useForgeTheme";
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import { addDoc, collection } from 'firebase/firestore';
@@ -17,13 +18,11 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { MascotImage } from '../components/common/MascotImage';
 import { useNutrition } from '../hooks/useNutrition';
 import { useWorkouts } from '../hooks/useWorkouts';
 import { db } from '../services/firebase';
 import { groqComplete, GroqMessage } from '../services/groq';
 import { useAuthStore } from '../stores/authStore';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
 
 const BASE_SYSTEM_PROMPT = `You are FORGE Coach — an energetic, supportive AI fitness coach inside a workout tracking app.
 
@@ -37,8 +36,8 @@ BEHAVIOR RULES:
 type Message = { id: string; text: string; isAi: boolean; logged?: boolean };
 
 export default function ChatScreen() {
-    const { T } = useForgeTheme();
-    const s = useS(T);
+  const { T } = useForgeTheme();
+  const s = useS(T);
   const router = useRouter();
   const { user } = useAuthStore();
   const { data: nutrition } = useNutrition();
@@ -135,8 +134,8 @@ export default function ChatScreen() {
   const renderMessage = ({ item }: { item: Message }) => (
     <View style={[s.msgRow, item.isAi ? s.msgRowAi : s.msgRowUser]}>
       {item.isAi && (
-        <View style={s.avatarWrap}>
-          <Image source={MascotImages.coach} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+        <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
+          <Image source={MascotImages.coach} style={{ width: 70, height: 70, resizeMode: 'contain', position: 'absolute', bottom: -12, left: -22 }} />
         </View>
       )}
       <View style={[s.bubble, item.isAi ? s.bubbleAi : s.bubbleUser]}>
@@ -161,8 +160,8 @@ export default function ChatScreen() {
       {/* ── Header ── */}
       <View style={s.header}>
         <View style={s.headerLeft}>
-          <View style={s.headerAvatar}>
-            <Image source={MascotImages.coach} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+          <View style={[s.headerAvatar, { backgroundColor: 'transparent', borderWidth: 0 }]}>
+            <Image source={MascotImages.coach} style={{ width: 56, height: 56, resizeMode: 'contain', position: 'absolute', bottom: -5, left: -8 }} />
           </View>
           <View>
             <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>FORGE Coach</Text>
@@ -202,8 +201,8 @@ export default function ChatScreen() {
       {/* ── Typing indicator ── */}
       {isTyping && (
         <View style={s.typingWrap}>
-          <View style={s.avatarWrap}>
-            <Image source={MascotImages.coach} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+          <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
+            <Image source={MascotImages.coach} style={{ width: 44, height: 44, resizeMode: 'contain', position: 'absolute', bottom: 0, left: -8 }} />
           </View>
           <View style={s.bubbleAi}>
             <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
@@ -241,83 +240,83 @@ export default function ChatScreen() {
 }
 
 const useS = (T: any) => StyleSheet.create({
-          container: { flex: 1, backgroundColor: T.colors.bg0 },
+  container: { flex: 1, backgroundColor: T.colors.bg0 },
 
-          // Header
-          header: {
-            flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-            paddingTop: 60, paddingBottom: T.spacing.px3, paddingHorizontal: T.spacing.page,
-            borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
-            backgroundColor: T.colors.bg1,
-          },
-          headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-          headerAvatar: {
-            width: 40, height: 40, borderRadius: T.radii.full,
-            backgroundColor: T.colors.forgeDim,
-            alignItems: 'center', justifyContent: 'center',
-            borderWidth: 1, borderColor: 'rgba(255,92,46,0.25)',
-          },
-          headerTitle: { fontSize: T.typography.sizes.body, fontWeight: '700', color: T.colors.t1 },
-          onlineDot: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
-          onlineDotCircle: { width: 6, height: 6, borderRadius: 3, backgroundColor: T.colors.green },
-          onlineText: { fontSize: T.typography.sizes.caption, color: T.colors.t3, fontWeight: '500' },
-          closeBtn: {
-            width: 34, height: 34, borderRadius: 17,
-            backgroundColor: T.colors.bg2,
-            alignItems: 'center', justifyContent: 'center',
-          },
+  // Header
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingTop: 60, paddingBottom: T.spacing.px3, paddingHorizontal: T.spacing.page,
+    borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
+    backgroundColor: T.colors.bg1,
+  },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  headerAvatar: {
+    width: 40, height: 40, borderRadius: T.radii.full,
+    backgroundColor: T.colors.forgeDim,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: 'rgba(255,92,46,0.25)',
+  },
+  headerTitle: { fontSize: T.typography.sizes.body, fontWeight: '700', color: T.colors.t1 },
+  onlineDot: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
+  onlineDotCircle: { width: 6, height: 6, borderRadius: 3, backgroundColor: T.colors.green },
+  onlineText: { fontSize: T.typography.sizes.caption, color: T.colors.t3, fontWeight: '500' },
+  closeBtn: {
+    width: 34, height: 34, borderRadius: 17,
+    backgroundColor: T.colors.bg2,
+    alignItems: 'center', justifyContent: 'center',
+  },
 
-          // List
-          list: { padding: T.spacing.page, gap: 12, paddingBottom: T.spacing.px2 },
+  // List
+  list: { padding: T.spacing.page, gap: 12, paddingBottom: T.spacing.px2 },
 
-          // Bubbles
-          msgRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
-          msgRowAi: { justifyContent: 'flex-start' },
-          msgRowUser: { justifyContent: 'flex-end' },
-          avatarWrap: {
-            width: 28, height: 28, borderRadius: 14,
-            backgroundColor: T.colors.forgeDim,
-            alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-          },
-          bubble: {
-            maxWidth: '78%', paddingHorizontal: 14, paddingVertical: 10, borderRadius: T.radii.lg,
-          },
-          bubbleAi: { backgroundColor: T.colors.bg1, borderBottomLeftRadius: 4, borderWidth: 0.5, borderColor: T.colors.b1 },
-          bubbleUser: { backgroundColor: T.colors.forge, borderBottomRightRadius: 4 },
-          bubbleText: { fontSize: T.typography.sizes.bodyS, lineHeight: T.typography.sizes.bodyS * 1.5 },
-          bubbleTextAi: { color: T.colors.t1 },
-          bubbleTextUser: { color: '#fff', fontWeight: '500' },
+  // Bubbles
+  msgRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
+  msgRowAi: { justifyContent: 'flex-start' },
+  msgRowUser: { justifyContent: 'flex-end' },
+  avatarWrap: {
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: T.colors.forgeDim,
+    alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
+  },
+  bubble: {
+    maxWidth: '78%', paddingHorizontal: 14, paddingVertical: 10, borderRadius: T.radii.lg,
+  },
+  bubbleAi: { backgroundColor: T.colors.bg1, borderBottomLeftRadius: 4, borderWidth: 0.5, borderColor: T.colors.b1 },
+  bubbleUser: { backgroundColor: T.colors.forge, borderBottomRightRadius: 4 },
+  bubbleText: { fontSize: T.typography.sizes.bodyS, lineHeight: T.typography.sizes.bodyS * 1.5 },
+  bubbleTextAi: { color: T.colors.t1 },
+  bubbleTextUser: { color: '#fff', fontWeight: '500' },
 
-          loggedBadge: {
-            fontSize: 9, fontWeight: '700', color: T.colors.forge,
-            letterSpacing: 0.8, marginBottom: 5,
-            textTransform: 'uppercase',
-          },
+  loggedBadge: {
+    fontSize: 9, fontWeight: '700', color: T.colors.forge,
+    letterSpacing: 0.8, marginBottom: 5,
+    textTransform: 'uppercase',
+  },
 
-          // Typing
-          typingWrap: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, paddingHorizontal: T.spacing.page, paddingBottom: T.spacing.px2 },
-          typingDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: T.colors.forge },
+  // Typing
+  typingWrap: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, paddingHorizontal: T.spacing.page, paddingBottom: T.spacing.px2 },
+  typingDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: T.colors.forge },
 
-          // Input bar
-          inputBar: {
-            flexDirection: 'row', alignItems: 'flex-end', gap: 10,
-            padding: 14, paddingBottom: Platform.OS === 'ios' ? 28 : 14,
-            borderTopWidth: 0.5, borderTopColor: T.colors.b1,
-            backgroundColor: T.colors.bg1,
-          },
-          input: {
-            flex: 1, minHeight: 44, maxHeight: 120,
-            backgroundColor: T.colors.bg2,
-            borderRadius: T.radii.full, paddingHorizontal: T.spacing.px4, paddingVertical: 12,
-            fontSize: T.typography.sizes.bodyS, color: T.colors.t1,
-            borderWidth: 0.5, borderColor: T.colors.b1,
-          },
-          sendBtn: {
-            width: 44, height: 44, borderRadius: 22,
-            backgroundColor: T.colors.forge,
-            alignItems: 'center', justifyContent: 'center',
-            shadowColor: T.colors.forge,
-            shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 5,
-          },
-        });
+  // Input bar
+  inputBar: {
+    flexDirection: 'row', alignItems: 'flex-end', gap: 10,
+    padding: 14, paddingBottom: Platform.OS === 'ios' ? 28 : 14,
+    borderTopWidth: 0.5, borderTopColor: T.colors.b1,
+    backgroundColor: T.colors.bg1,
+  },
+  input: {
+    flex: 1, minHeight: 44, maxHeight: 120,
+    backgroundColor: T.colors.bg2,
+    borderRadius: T.radii.full, paddingHorizontal: T.spacing.px4, paddingVertical: 12,
+    fontSize: T.typography.sizes.bodyS, color: T.colors.t1,
+    borderWidth: 0.5, borderColor: T.colors.b1,
+  },
+  sendBtn: {
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: T.colors.forge,
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: T.colors.forge,
+    shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 5,
+  },
+});
