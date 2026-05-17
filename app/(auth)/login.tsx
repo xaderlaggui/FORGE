@@ -1,3 +1,4 @@
+import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { useRouter } from 'expo-router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Lock, Mail } from 'lucide-react-native';
@@ -14,15 +15,15 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
+  withTiming,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { MascotImage } from '../../components/common/MascotImage';
 import { auth } from '../../services/firebase';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
 
 export default function LoginScreen() {
-    const { T } = useForgeTheme();
-    const s = useS(T);
+  const { T } = useForgeTheme();
+  const s = useS(T);
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -172,76 +173,76 @@ export default function LoginScreen() {
 }
 
 const useS = (T: any) => StyleSheet.create({
-          container: { flex: 1, backgroundColor: T.colors.bg0 },
-          scroll: { flexGrow: 1 },
-          inner: {
-            flex: 1, paddingHorizontal: 24,
-            paddingTop: Platform.OS === 'ios' ? 80 : 60, paddingBottom: 24,
-            alignItems: 'center',
-          },
-          bottomContainer: {
-            paddingHorizontal: 24,
-            paddingBottom: Platform.OS === 'ios' ? 40 : 24,
-            backgroundColor: T.colors.bg0,
-          },
+  container: { flex: 1, backgroundColor: T.colors.bg0 },
+  scroll: { flexGrow: 1 },
+  inner: {
+    flex: 1, paddingHorizontal: 24,
+    paddingTop: Platform.OS === 'ios' ? 80 : 60, paddingBottom: 24,
+    alignItems: 'center',
+  },
+  bottomContainer: {
+    paddingHorizontal: 24,
+    paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    backgroundColor: T.colors.bg0,
+  },
 
-          // Brand
-          brandRow: { marginBottom: 10 },
-          wordmark: {
-            fontSize: 36, fontWeight: '800', letterSpacing: 5,
-            color: T.colors.forge,
-            textShadowColor: 'rgba(255,92,46,0.45)',
-            textShadowOffset: { width: 0, height: 0 },
-            textShadowRadius: 18,
-          },
-          subtitle: { fontSize: 14, color: T.colors.t2, textAlign: 'center', marginBottom: 40 },
+  // Brand
+  brandRow: { marginBottom: 10 },
+  wordmark: {
+    fontSize: 36, fontWeight: '800', letterSpacing: 5,
+    color: T.colors.forge,
+    textShadowColor: 'rgba(255,92,46,0.45)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 18,
+  },
+  subtitle: { fontSize: 14, color: T.colors.t2, textAlign: 'center', marginBottom: 40 },
 
-          // Inputs
-          inputWrap: {
-            flexDirection: 'row', alignItems: 'center', gap: 12,
-            width: '100%', height: 56,
-            backgroundColor: T.colors.bg2,
-            borderRadius: 16, paddingHorizontal: 16,
-            marginBottom: 14,
-            borderWidth: 1, borderColor: 'transparent',
-          },
-          inputWrapFocused: {
-            borderColor: T.colors.forge,
-            backgroundColor: T.colors.bg1,
-          },
-          input: {
-            flex: 1, fontSize: 15, color: T.colors.t1,
-          },
+  // Inputs
+  inputWrap: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    width: '100%', height: 56,
+    backgroundColor: T.colors.bg2,
+    borderRadius: 16, paddingHorizontal: 16,
+    marginBottom: 14,
+    borderWidth: 1, borderColor: 'transparent',
+  },
+  inputWrapFocused: {
+    borderColor: T.colors.forge,
+    backgroundColor: T.colors.bg1,
+  },
+  input: {
+    flex: 1, fontSize: 15, color: T.colors.t1,
+  },
 
-          // Button
-          btn: {
-            width: '100%', height: 56,
-            backgroundColor: T.colors.forge,
-            borderRadius: 16, alignItems: 'center', justifyContent: 'center',
-            marginTop: 6,
-            shadowColor: T.colors.forge,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.3, shadowRadius: 16, elevation: 8,
-          },
-          btnText: { color: '#000000', fontSize: 16, fontWeight: '700' },
+  // Button
+  btn: {
+    width: '100%', height: 56,
+    backgroundColor: T.colors.forge,
+    borderRadius: 16, alignItems: 'center', justifyContent: 'center',
+    marginTop: 6,
+    shadowColor: T.colors.forge,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3, shadowRadius: 16, elevation: 8,
+  },
+  btnText: { color: '#000000', fontSize: 16, fontWeight: '700' },
 
-          // Divider
-          divider: { flexDirection: 'row', alignItems: 'center', gap: 12, width: '100%', marginVertical: 28 },
-          dividerLine: { flex: 1, height: 0.5, backgroundColor: T.colors.b1 },
-          dividerText: { fontSize: 11, color: T.colors.t3, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1.5 },
+  // Divider
+  divider: { flexDirection: 'row', alignItems: 'center', gap: 12, width: '100%', marginVertical: 28 },
+  dividerLine: { flex: 1, height: 0.5, backgroundColor: T.colors.b1 },
+  dividerText: { fontSize: 11, color: T.colors.t3, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1.5 },
 
-          // SSO
-          ssoRow: { flexDirection: 'row', gap: 16, marginBottom: 40 },
-          ssoBtn: {
-            flex: 1, height: 56,
-            backgroundColor: T.colors.bg1, borderRadius: 16,
-            borderWidth: 0.5, borderColor: T.colors.b1,
-            alignItems: 'center', justifyContent: 'center',
-          },
-          ssoIcon: { fontSize: 20 },
+  // SSO
+  ssoRow: { flexDirection: 'row', gap: 16, marginBottom: 40 },
+  ssoBtn: {
+    flex: 1, height: 56,
+    backgroundColor: T.colors.bg1, borderRadius: 16,
+    borderWidth: 0.5, borderColor: T.colors.b1,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  ssoIcon: { fontSize: 20 },
 
-          // Footer
-          footer: { flexDirection: 'row', alignItems: 'center' },
-          footerText: { fontSize: 13, color: T.colors.t3 },
-          footerLink: { fontSize: 13, color: T.colors.forge, fontWeight: '600' },
-        });
+  // Footer
+  footer: { flexDirection: 'row', alignItems: 'center' },
+  footerText: { fontSize: 13, color: T.colors.t3 },
+  footerLink: { fontSize: 13, color: T.colors.forge, fontWeight: '600' },
+});
