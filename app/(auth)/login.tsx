@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView, Platform, ScrollView,
   StyleSheet,
   Text, TextInput, TouchableOpacity,
-  View,
+  View, Image
 } from 'react-native';
 import Animated, {
   Easing,
@@ -18,7 +18,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
-import { MascotImage } from '../../components/common/MascotImage';
+import { MascotImages } from '../../constants/mascotImages';
 import { auth } from '../../services/firebase';
 
 export default function LoginScreen() {
@@ -66,13 +66,10 @@ export default function LoginScreen() {
       <View style={s.innerWrapper}>
         <Animated.View style={[s.inner, animStyle]}>
 
-          <MascotImage
-            mascot="welcome"
-            width={180}
-            height={180}
-            animation="slideUp"
+          <Image
+            source={MascotImages.welcome}
+            style={{ width: 280, height: 280, resizeMode: 'contain', alignSelf: 'center', marginBottom: 8 }}
             accessibilityLabel="Forge the bear waving hello"
-            style={{ alignSelf: 'center', marginBottom: 8 }}
           />
           {/* Brand */}
           <View style={s.brandRow}>

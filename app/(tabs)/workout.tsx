@@ -27,7 +27,6 @@ export default function WorkoutScreen() {
       {/* ── Composition: Header ── */}
       <View style={s.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: T.spacing.px4 }}>
-          <Image source={MascotImages.workout} style={{ width: 48, height: 48, resizeMode: 'contain' }} />
           <Text style={s.title} maxFontSizeMultiplier={1.2}>Workout Planner</Text>
         </View>
         <ForgeSegment
@@ -47,6 +46,7 @@ export default function WorkoutScreen() {
         <RoutineList />
       ) : (
         <ScrollView contentContainerStyle={s.plannerContainer} showsVerticalScrollIndicator={false}>
+          <Image source={MascotImages.workout} style={{ width: 220, height: 220, resizeMode: 'contain', alignSelf: 'center', marginBottom: 16 }} />
           <WeeklyCalendar
             days={days}
             activeDayIdx={activeDayIdx}

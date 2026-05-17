@@ -38,7 +38,6 @@ export default function NutritionScreen() {
       {/* ── Composition: Header ── */}
       <View style={s.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <Image source={MascotImages.nutrition} style={{ width: 48, height: 48, resizeMode: 'contain' }} />
           <View>
             <Text style={s.headerSub} maxFontSizeMultiplier={1.2}>
               Today · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
@@ -53,6 +52,10 @@ export default function NutritionScreen() {
         >
           <Plus size={18} color="#fff" strokeWidth={2.5} />
         </TouchableOpacity>
+      </View>
+
+      <View style={{ alignItems: 'center', marginVertical: 16 }}>
+        <Image source={MascotImages.nutrition} style={{ width: 240, height: 240, resizeMode: 'contain' }} />
       </View>
 
       {/* ── Composition: Daily Stats ── */}

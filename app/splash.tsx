@@ -74,10 +74,10 @@ export default function SplashScreen() {
 
       <Animated.View style={[s.wordmarkWrap, wordmarkStyle]}>
         <RNAnimated.Image
-          source={MascotImages.hero}
-          style={{ width: 200, height: 200, opacity: fadeAnim, alignSelf: 'center', marginBottom: 16 } as any}
+          source={MascotImages.app_icon}
+          style={{ width: 160, height: 160, opacity: fadeAnim, alignSelf: 'center', marginBottom: 16 } as any}
           resizeMode="contain"
-          accessibilityLabel="FORGE — Forge the bear"
+          accessibilityLabel="FORGE — App Icon"
         />
         <Text style={s.wordmark}>FORGE</Text>
         <Text style={s.tagline}>Build your best self.</Text>

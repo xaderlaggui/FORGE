@@ -191,13 +191,10 @@ export default function ChatScreen() {
       {/* ── Idle Mascot State ── */}
       {messages.length === 1 && (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <MascotImage
-            mascot="coach"
-            width={170}
-            height={170}
-            animation="none"
+          <Image
+            source={MascotImages.coach}
+            style={{ width: 200, height: 200, resizeMode: 'contain', alignSelf: 'center', marginBottom: 20 }}
             accessibilityLabel="Forge the AI coach bear ready to help you"
-            style={{ alignSelf: 'center', marginBottom: 20 }}
           />
         </View>
       )}

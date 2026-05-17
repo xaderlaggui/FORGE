@@ -2,6 +2,8 @@ import React from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Camera } from 'lucide-react-native';
+import { MascotImages } from '../../constants/mascotImages';
+import { Image } from 'react-native';
 // Feature Modules
 import { useProgressData } from '../../features/progress/hooks/useProgressData';
 import { StatCard } from '../../features/progress/components/StatCard';
@@ -40,6 +42,10 @@ export default function ProgressScreen() {
             ? <ActivityIndicator size="small" color={T.colors.forge} />
             : <Camera size={18} color={T.colors.forge} />}
         </TouchableOpacity>
+      </View>
+
+      <View style={{ alignItems: 'center', marginVertical: 16 }}>
+        <Image source={MascotImages.progress} style={{ width: 240, height: 240, resizeMode: 'contain' }} />
       </View>
 
       {/* ── Composition: Key Stats ── */}
