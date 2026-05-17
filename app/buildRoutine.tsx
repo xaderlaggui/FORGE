@@ -1,25 +1,19 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ArrowUpCircle, ArrowDownCircle, PersonStanding, Check, AlertTriangle, Plus, X } from 'lucide-react-native';
+import { ArrowUpCircle, ArrowDownCircle, PersonStanding, AlertTriangle, Plus, X } from 'lucide-react-native';
 import { ForgeTheme as T } from '../constants/ForgeTheme';
 import { useRoutines } from '../hooks/useRoutines';
-import { ExercisePickerModal } from '../components/forge/ExercisePickerModal';
+import { useExercises } from '../hooks/useExercises';
+
 
 type SplitType = 'push' | 'pull' | 'legs' | 'full';
 
 const SPLITS = {
-  push: { label: 'PUSH', cls: 'push', icon: ArrowUpCircle, color: '#FF5C2E', hint: 'Chest · Shoulders · Triceps', exercises: ['Bench Press (Barbell)', 'Overhead Press (Dumbbell)', 'Lateral Raises', 'Tricep Pushdown'] },
-  pull: { label: 'PULL', cls: 'pull', icon: ArrowDownCircle, color: '#0A84FF', hint: 'Back · Biceps · Rear Delt', exercises: ['Barbell Row', 'Pull-ups', 'Face Pulls', 'Bicep Curl (Dumbbell)'] },
-  legs: { label: 'LEGS', cls: 'legs', icon: PersonStanding, color: '#30D158', hint: 'Quads · Hamstrings · Calves', exercises: ['Squat (Barbell)', 'Romanian Deadlift', 'Leg Press', 'Calf Raises'] },
-  full: { label: 'FULL BODY', cls: 'full', icon: PersonStanding, color: '#BF5AF2', hint: 'All muscle groups', exercises: ['Bench Press (Barbell)', 'Barbell Row', 'Squat (Barbell)', 'Overhead Press (Dumbbell)'] }
-};
-
-const OVERLAPS: Record<string, string[]> = {
-  push: ['Bench Press (Barbell)+Incline DB Press', 'Overhead Press (Dumbbell)+Arnold Press', 'Cable Flyes+Chest Flyes'],
-  pull: ['Pull-ups+Lat Pulldown', 'Bicep Curls+Hammer Curls'],
-  legs: ['Squat (Barbell)+Leg Press'],
-  full: []
+  push: { label: 'PUSH', cls: 'push', icon: ArrowUpCircle, color: '#FF5C2E', hint: 'Chest · Shoulders · Triceps', categories: ['chest', 'shoulders', 'triceps'] },
+  pull: { label: 'PULL', cls: 'pull', icon: ArrowDownCircle, color: '#0A84FF', hint: 'Back · Biceps · Rear Delt', categories: ['back', 'biceps'] },
+  legs: { label: 'LEGS', cls: 'legs', icon: PersonStanding, color: '#30D158', hint: 'Quads · Hamstrings · Calves', categories: ['legs'] },
+  full: { label: 'FULL BODY', cls: 'full', icon: PersonStanding, color: '#BF5AF2', hint: 'All muscle groups', categories: [] }
 };
 
 const PRESETS = ['3×8', '3×10', '3×12', '4×8', '5×5'];
@@ -27,36 +21,73 @@ const PRESETS = ['3×8', '3×10', '3×12', '4×8', '5×5'];
 interface ExData {
   name: string;
   preset: string;
+  category?: string;
 }
 
 export default function BuildRoutineScreen() {
   const router = useRouter();
   const { saveRoutine } = useRoutines();
+  const { data: dbExercises } = useExercises();
   
   const [step, setStep] = useState(1);
   const [name, setName] = useState('');
   const [split, setSplit] = useState<SplitType>('push');
   const [exercises, setExercises] = useState<ExData[]>([]);
-  const [pickerVisible, setPickerVisible] = useState(false);
+
 
   const overlapWarning = useMemo(() => {
-    if (!split) return null;
-    const pairs = OVERLAPS[split] || [];
-    for (const pair of pairs) {
-      const [a, b] = pair.split('+');
-      if (exercises.find(x => x.name === a) && exercises.find(x => x.name === b)) {
-        return `"${a}" and "${b}" target the same muscles. Consider removing one to avoid redundancy.`;
+    const cats = exercises.map(e => e.category).filter(Boolean);
+    const duplicates = cats.filter((item, index) => cats.indexOf(item) !== index);
+    if (duplicates.length > 0) {
+      const dupCat = duplicates[0];
+      const overlappingNames = exercises.filter(e => e.category === dupCat).map(e => e.name);
+      if (overlappingNames.length >= 2) {
+        return `"${overlappingNames[0]}" and "${overlappingNames[1]}" target the same muscle group (${dupCat}). Consider removing one to avoid redundancy.`;
       }
     }
     return null;
-  }, [exercises, split]);
+  }, [exercises]);
 
   const handleNext = () => {
     if (step === 1) {
       if (!name.trim()) return Alert.alert('Missing Name', 'Please name your routine.');
-      // Auto-populate based on split if exercises are empty
-      if (exercises.length === 0) {
-        setExercises(SPLITS[split].exercises.map(name => ({ name, preset: '3×10' })));
+      
+      if (exercises.length === 0 && dbExercises) {
+        const targetCats = SPLITS[split].categories;
+        let pool = dbExercises;
+        if (targetCats.length > 0) {
+          pool = dbExercises.filter(e => targetCats.includes(e.category.toLowerCase()));
+        }
+        
+        // Group by category to try picking diverse exercises
+        const grouped: Record<string, typeof dbExercises> = {};
+        pool.forEach(ex => {
+          const c = ex.category.toLowerCase();
+          if (!grouped[c]) grouped[c] = [];
+          grouped[c].push(ex);
+        });
+
+        const selected: typeof dbExercises = [];
+        const cats = Object.keys(grouped);
+        
+        // Pick one from each available category first
+        cats.forEach(c => {
+          const catPool = grouped[c];
+          if (catPool.length > 0) {
+            const randomEx = catPool[Math.floor(Math.random() * catPool.length)];
+            selected.push(randomEx);
+            grouped[c] = catPool.filter(e => e.id !== randomEx.id); // remove to avoid duplicate selection
+          }
+        });
+
+        // Fill remaining up to 4 if needed
+        let remainingToPick = Math.max(0, 4 - selected.length);
+        const flatRemaining = Object.values(grouped).flat();
+        const shuffledRemaining = flatRemaining.sort(() => 0.5 - Math.random());
+        
+        const finalSelection = [...selected, ...shuffledRemaining.slice(0, remainingToPick)];
+
+        setExercises(finalSelection.map(ex => ({ name: ex.name, preset: '3×10', category: ex.category })));
       }
       setStep(2);
     } else if (step === 2) {
@@ -186,11 +217,6 @@ export default function BuildRoutineScreen() {
               </View>
             ))}
 
-            <TouchableOpacity style={s.addExBtn} onPress={() => setPickerVisible(true)}>
-              <Plus size={16} color={T.colors.forge} strokeWidth={3} />
-              <Text style={s.addExText}>Add Exercise</Text>
-            </TouchableOpacity>
-
             <View style={s.navRow}>
               <TouchableOpacity style={s.navBack} onPress={() => setStep(1)}>
                 <Text style={s.navBackText}>Back</Text>
@@ -237,13 +263,7 @@ export default function BuildRoutineScreen() {
         )}
       </ScrollView>
 
-      <ExercisePickerModal 
-        visible={pickerVisible}
-        onClose={() => setPickerVisible(false)}
-        onSelect={(ex, preset) => {
-          setExercises(prev => [...prev, { name: ex.name, preset: preset?.label || '3×10' }]);
-        }}
-      />
+
     </View>
   );
 }
@@ -298,8 +318,6 @@ const s = StyleSheet.create({
   presetPillOn: { backgroundColor: 'rgba(255, 92, 46, 0.1)', borderColor: '#FF5C2E' },
   presetPillText: { color: T.colors.t3, fontSize: 12, fontWeight: '700' },
 
-  addExBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: T.colors.b1, borderStyle: 'dashed', marginTop: 6, marginBottom: 24 },
-  addExText: { color: T.colors.forge, fontSize: 14, fontWeight: '700' },
 
   navRow: { flexDirection: 'row', gap: 12 },
   navBack: { flex: 1, borderWidth: 0.5, borderColor: T.colors.b1, borderRadius: 14, padding: 16, alignItems: 'center' },

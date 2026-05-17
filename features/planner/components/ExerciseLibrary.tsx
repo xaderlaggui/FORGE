@@ -1,5 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, SafeAreaView, Dimensions } from 'react-native';
+import { X } from 'lucide-react-native';
+import Body from 'react-native-body-highlighter';
 import { ForgeSkeleton } from '../../../components/forge/ForgeSkeleton';
 import { ForgeTheme as T } from '../../../constants/ForgeTheme';
 import type { Exercise } from '../../../types';
@@ -17,33 +19,110 @@ function SkeletonLibrary() {
   );
 }
 
+const mapMusclesToSlugs = (groups: string[]): { slug: string; intensity: number }[] => {
+  const map: Record<string, string[]> = {
+    chest: ['chest'],
+    shoulders: ['deltoids'],
+    triceps: ['triceps'],
+    back: ['upper-back', 'lower-back', 'trapezius'],
+    biceps: ['biceps'],
+    legs: ['quadriceps', 'hamstring', 'calves', 'gluteal'],
+    core: ['abs', 'obliques'],
+    abs: ['abs'],
+    calves: ['calves'],
+    glutes: ['gluteal'],
+    hamstrings: ['hamstring'],
+    quads: ['quadriceps']
+  };
+
+  const slugs = new Set<string>();
+  groups.forEach(g => {
+    const arr = map[g.toLowerCase()];
+    if (arr) arr.forEach(s => slugs.add(s));
+  });
+  
+  return Array.from(slugs).map(slug => ({ slug, intensity: 1 }));
+};
+
 interface ExerciseLibraryProps {
   exercises?: Exercise[];
   isLoading: boolean;
 }
 
 export function ExerciseLibrary({ exercises, isLoading }: ExerciseLibraryProps) {
-  return (
-    <ScrollView contentContainerStyle={s.list} showsVerticalScrollIndicator={false}>
-      {isLoading ? (
-         <SkeletonLibrary />
-      ) : exercises?.length === 0 ? (
-        <View style={s.emptyState}>
-          <Text style={s.emptyText} maxFontSizeMultiplier={1.2}>
-            No exercises found. Go to Settings and click Seed!
+  const [selectedEx, setSelectedEx] = useState<Exercise | null>(null);
+
+  const renderBodyModal = () => {
+    if (!selectedEx) return null;
+    const slugs = mapMusclesToSlugs(selectedEx.muscleGroups);
+
+    return (
+      <Modal visible={!!selectedEx} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setSelectedEx(null)}>
+        <SafeAreaView style={s.modalContainer}>
+          <View style={s.modalHeader}>
+            <Text style={s.modalTitle}>{selectedEx.name}</Text>
+            <TouchableOpacity onPress={() => setSelectedEx(null)} style={s.closeBtn}>
+              <X size={24} color={T.colors.t1} />
+            </TouchableOpacity>
+          </View>
+          
+          <Text style={s.modalSub}>
+            {selectedEx.muscleGroups.join(', ')} • {selectedEx.equipment}
           </Text>
-        </View>
-      ) : (
-        exercises?.map((item) => (
-          <View key={item.id} style={s.card}>
-            <Text style={s.cardTitle} maxFontSizeMultiplier={1.2}>{item.name}</Text>
-            <Text style={s.cardSub} maxFontSizeMultiplier={1.2}>
-              {item.muscleGroups.join(', ')} • {item.equipment}
+
+          <View style={s.bodyRow}>
+            <View style={s.bodyWrapper}>
+              <Body
+                data={slugs}
+                gender="male"
+                side="front"
+                scale={1.2}
+                colors={['#FF5C2E', '#FF5C2E']}
+                border={T.colors.b1}
+              />
+              <Text style={s.bodyLabel}>FRONT</Text>
+            </View>
+            <View style={s.bodyWrapper}>
+              <Body
+                data={slugs}
+                gender="male"
+                side="back"
+                scale={1.2}
+                colors={['#FF5C2E', '#FF5C2E']}
+                border={T.colors.b1}
+              />
+              <Text style={s.bodyLabel}>BACK</Text>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+    );
+  };
+
+  return (
+    <>
+      <ScrollView contentContainerStyle={s.list} showsVerticalScrollIndicator={false}>
+        {isLoading ? (
+           <SkeletonLibrary />
+        ) : exercises?.length === 0 ? (
+          <View style={s.emptyState}>
+            <Text style={s.emptyText} maxFontSizeMultiplier={1.2}>
+              No exercises found. Go to Settings and click Seed!
             </Text>
           </View>
-        ))
-      )}
-    </ScrollView>
+        ) : (
+          exercises?.map((item) => (
+            <TouchableOpacity key={item.id} style={s.card} onPress={() => setSelectedEx(item)} activeOpacity={0.7}>
+              <Text style={s.cardTitle} maxFontSizeMultiplier={1.2}>{item.name}</Text>
+              <Text style={s.cardSub} maxFontSizeMultiplier={1.2}>
+                {item.muscleGroups.join(', ')} • {item.equipment}
+              </Text>
+            </TouchableOpacity>
+          ))
+        )}
+      </ScrollView>
+      {renderBodyModal()}
+    </>
   );
 }
 
@@ -64,4 +143,24 @@ const s = StyleSheet.create({
     textAlign: 'center', color: T.colors.t3, fontWeight: '500',
     fontSize: T.typography.sizes.bodyS, lineHeight: T.typography.sizes.bodyS * 1.5,
   },
+  
+  modalContainer: { flex: 1, backgroundColor: T.colors.bg0 },
+  modalHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: T.spacing.page, paddingTop: 20, paddingBottom: 8,
+  },
+  modalTitle: { fontSize: 22, fontWeight: '800', color: T.colors.t1, flex: 1 },
+  closeBtn: { padding: 4 },
+  modalSub: {
+    fontSize: 14, color: T.colors.forge, fontWeight: '700',
+    paddingHorizontal: T.spacing.page, marginBottom: 40, textTransform: 'uppercase', letterSpacing: 0.5
+  },
+  bodyRow: {
+    flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+    gap: 20, paddingHorizontal: 20,
+  },
+  bodyWrapper: { alignItems: 'center' },
+  bodyLabel: {
+    marginTop: 20, fontSize: 12, fontWeight: '800', color: T.colors.t3, letterSpacing: 1
+  }
 });

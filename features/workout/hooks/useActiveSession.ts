@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import dayjs from 'dayjs';
@@ -11,6 +11,7 @@ export function useActiveSession(id?: string | string[], date?: string | string[
   const { workouts, saveWorkout } = useWorkouts();
   const { routines } = useRoutines();
 
+  const [workoutStarted, setWorkoutStarted] = useState(false);
   const [timer, setTimer] = useState(0);
   const [isResting, setIsResting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -18,6 +19,7 @@ export function useActiveSession(id?: string | string[], date?: string | string[
   const [totalRestTime] = useState(60);
   const [workoutTitle, setWorkoutTitle] = useState('Custom Workout');
   const [exercises, setExercises] = useState<ExerciseState[]>([]);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Numpad state
@@ -73,9 +75,10 @@ export function useActiveSession(id?: string | string[], date?: string | string[
 
   // General Timer
   useEffect(() => {
+    if (!workoutStarted) return;
     const iv = setInterval(() => setTimer(t => t + 1), 1000);
     return () => clearInterval(iv);
-  }, []);
+  }, [workoutStarted]);
 
   // Rest Countdown
   useEffect(() => {
@@ -100,12 +103,8 @@ export function useActiveSession(id?: string | string[], date?: string | string[
       }
     );
     setExercises(copy);
-    if (!copy[exIdx].sets[setIdx].done) return;
     
-    // Trigger rest timer manually
-    setIsResting(true);
-    setIsPaused(true); // Start paused as requested
-    setRestTime(60);
+    // Spec: Does NOT auto-start the rest timer.
   };
 
   const addSet = (exIdx: number) => {
@@ -121,24 +120,16 @@ export function useActiveSession(id?: string | string[], date?: string | string[
     setExercises(copy);
   };
 
-  const addExercise = (exerciseName: string, preset?: { sets: number; reps: number }) => {
-    setExercises(prev => [
-      ...prev,
-      {
-        name: exerciseName,
-        sets: preset 
-          ? Array.from({ length: preset.sets }).map((_, i) => ({
-              id: i + 1,
-              prev: '—',
-              weight: '',
-              reps: preset.reps.toString(),
-              done: false
-            }))
-          : [
-              { id: 1, prev: '—', weight: '', reps: '', done: false },
-            ]
-      }
-    ]);
+  const selectPreset = (exIdx: number, sets: number, reps: number) => {
+    const copy = [...exercises];
+    copy[exIdx].sets = Array.from({ length: sets }).map((_, i) => ({
+      id: i + 1,
+      prev: '—',
+      weight: '',
+      reps: reps.toString(),
+      done: false
+    }));
+    setExercises(copy);
   };
 
   const openNumpad = (exIdx: number, setIdx: number, field: 'weight' | 'reps') => {
@@ -191,12 +182,19 @@ export function useActiveSession(id?: string | string[], date?: string | string[
   const totalExercises = exercises.length;
   const doneExercises = exercises.filter(ex => ex.sets.every(s => s.done)).length;
   const timerLabel = `${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, '0')}`;
+  
+  const allSetsComplete = useMemo(() => {
+    if (exercises.length === 0) return false;
+    return exercises.every(ex => ex.sets.every(s => s.done));
+  }, [exercises]);
 
   return {
+    workoutStarted, setWorkoutStarted,
     timer, timerLabel, isResting, isPaused, restTime, totalRestTime,
     workoutTitle, exercises, numpadVisible, numpadValue, numpadLabel,
-    doneExercises, totalExercises,
+    doneExercises, totalExercises, currentExerciseIndex, setCurrentExerciseIndex,
+    allSetsComplete,
     setNumpadValue, setNumpadVisible, setIsResting, setRestTime, setIsPaused,
-    toggleSet, addSet, addExercise, openNumpad, commitNumpad, finishWorkout
+    toggleSet, addSet, selectPreset, openNumpad, commitNumpad, finishWorkout
   };
 }
