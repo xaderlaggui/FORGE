@@ -12,13 +12,17 @@ const MEAL_DEFS: MealDef[] = [
   { key: 'Snacks',    label: 'Snacks',    emoji: '🍏' },
 ];
 
+import type { GeneratedPlan } from '../../../services/GeneratorEngine';
+
 interface MealLogListProps {
   meals: any[]; // Depending on your DB schema, normally an array of Meal objects
   expandedMeal: string | null;
   setExpandedMeal: (key: string | null) => void;
+  activePlan?: GeneratedPlan | null;
+  updateNutrition?: (newData: any) => Promise<void>;
 }
 
-export function MealLogList({ meals }: MealLogListProps) {
+export function MealLogList({ meals, activePlan, updateNutrition }: MealLogListProps) {
   const router = useRouter();
 
   return (
@@ -38,15 +42,48 @@ export function MealLogList({ meals }: MealLogListProps) {
             </View>
 
             {isEmpty ? (
-              <TouchableOpacity
-                style={[s.mealCard, s.mealCardEmpty]}
-                activeOpacity={0.7}
-                onPress={() => router.push({ pathname: '/addMeal', params: { mealName: key } })}
-              >
-                <View style={s.foodRowCenter}>
-                  <Text style={s.emptyTapText}>Tap + to log {label.toLowerCase()}</Text>
-                </View>
-              </TouchableOpacity>
+              <View style={s.emptyActions}>
+                <TouchableOpacity
+                  style={[s.mealCard, s.mealCardEmpty, { flex: 1, marginBottom: 0 }]}
+                  activeOpacity={0.7}
+                  onPress={() => router.push({ pathname: '/addMeal', params: { mealName: key } })}
+                >
+                  <View style={s.foodRowCenter}>
+                    <Text style={s.emptyTapText}>Tap + to log {label.toLowerCase()}</Text>
+                  </View>
+                </TouchableOpacity>
+
+                {activePlan && updateNutrition && (
+                  <TouchableOpacity
+                    style={s.autoFillBtn}
+                    activeOpacity={0.8}
+                    onPress={async () => {
+                      const aiMeal = activePlan.mealPlan.meals.find((m: any) => m.name === key);
+                      if (aiMeal) {
+                        const newMeals = meals.map(m => m.name === key ? {
+                          ...m,
+                          calories: aiMeal.calories,
+                          protein: aiMeal.protein,
+                          carbs: aiMeal.carbs,
+                          fat: aiMeal.fat,
+                          isAiParsed: true,
+                          items: [{
+                            name: aiMeal.description,
+                            calories: aiMeal.calories,
+                            protein: aiMeal.protein,
+                            carbs: aiMeal.carbs,
+                            fat: aiMeal.fat
+                          }]
+                        } : m);
+                        await updateNutrition({ meals: newMeals });
+                      }
+                    }}
+                  >
+                    <Sparkles size={16} color={T.colors.bg0} />
+                    <Text style={s.autoFillText}>Auto-Fill</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             ) : (
               <View style={s.mealCard}>
                 {/* Assuming isAiParsed or if the backend passes some flag, we check here. We'll show it if it exists */}
@@ -108,4 +145,16 @@ const s = StyleSheet.create({
   foodMacros: { alignItems: 'flex-end' },
   foodCal: { color: T.colors.t1, fontSize: 13, fontWeight: '600' },
   foodPfc: { color: T.colors.t3, fontSize: 10, marginTop: 2 },
+
+  emptyActions: { flexDirection: 'row', gap: 10, marginBottom: 8 },
+  autoFillBtn: {
+    backgroundColor: T.colors.forge,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    gap: 6,
+  },
+  autoFillText: { color: T.colors.bg0, fontSize: 13, fontWeight: '700' },
 });

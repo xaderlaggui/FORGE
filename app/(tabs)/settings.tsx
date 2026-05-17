@@ -1,5 +1,5 @@
 import { signOut } from 'firebase/auth';
-import { Database, LogOut, Moon, Shield, User as UserIcon } from 'lucide-react-native';
+import { Database, LogOut, Moon, Shield, Sparkles, User as UserIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ForgeButton } from '../../components/forge/ForgeButton';
@@ -83,6 +83,8 @@ export default function SettingsScreen() {
           <View style={styles.divider} />
           <SettingRow icon={<UserIcon size={18} color={T.colors.t1} />} label="Edit Profile" onPress={() => {}} />
           <View style={styles.divider} />
+          <SettingRow icon={<Sparkles size={18} color={T.colors.forge} />} label="Generate AI Plan" onPress={() => router.push('/aiPlan')} />
+          <View style={styles.divider} />
           <SettingRow icon={<Shield size={18} color={T.colors.t1} />} label="Privacy & Security" onPress={() => {}} />
         </View>
       </View>
@@ -126,7 +128,7 @@ export default function SettingsScreen() {
               />
               <ForgeButton
                 label="Generate AI Plan"
-                onPress={() => router.push('/plan-generator')}
+                onPress={() => router.push('/aiPlan')}
                 variant="primary"
                 leftIcon={<Database size={16} color="#000" />}
               />

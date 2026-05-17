@@ -1,10 +1,11 @@
 import dayjs from 'dayjs';
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { collection, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
 import { useWorkouts } from '../../../hooks/useWorkouts';
 import type { Exercise } from '../../../types';
+import type { GeneratedPlan } from '../../../services/GeneratorEngine';
 
 import { useAuthStore } from '../../../stores/authStore';
 
@@ -35,12 +36,45 @@ export function usePlannerData() {
   // Dynamic Workouts Fetch
   const { workouts, isLoading: isLoadingWorkouts } = useWorkouts();
   
+  // AI Generated Active Plan Fetch
+  const { data: activePlan } = useQuery({
+    queryKey: ['activePlan', user?.uid],
+    queryFn: async () => {
+      if (!user?.uid) return null;
+      const snap = await getDoc(doc(db, `users/${user.uid}/generatedPlans/active`));
+      if (!snap.exists()) return null;
+      return snap.data() as GeneratedPlan;
+    },
+    enabled: !!user?.uid,
+  });
+
   // Filter workout for selected day
   const loggedWorkout = useMemo(() => {
     return workouts?.find(w => w.date.startsWith(activeDateStr));
   }, [workouts, activeDateStr]);
 
-  const plannedWorkout = (user as any)?.plan?.weeklySchedule?.[activeDayIdx];
+  const plannedWorkout = useMemo(() => {
+    // 1. If we have an AI plan, use it
+    if (activePlan?.workoutWeek) {
+      const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      // activeDayIdx goes from 0 (Monday) to 6 (Sunday)
+      const currentDayName = dayNames[activeDayIdx];
+      const dayPlan = activePlan.workoutWeek.find(d => d.day === currentDayName);
+      
+      if (dayPlan) {
+        if (dayPlan.exercises.length === 0) {
+          return { dayType: 'Rest' };
+        }
+        return {
+          title: dayPlan.focus,
+          exercises: dayPlan.exercises.map(ex => ({ name: ex.name })),
+          dayType: 'Workout'
+        };
+      }
+    }
+    // 2. Fallback to legacy static plan
+    return (user as any)?.plan?.weeklySchedule?.[activeDayIdx];
+  }, [activePlan, activeDayIdx, user]);
 
   return {
     activeTab, setActiveTab,

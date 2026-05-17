@@ -1,15 +1,31 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../../services/firebase';
 import { useNutrition } from '../../../hooks/useNutrition';
 import { useAuthStore } from '../../../stores/authStore';
 import { DailyAggregates } from '../types';
+import type { GeneratedPlan } from '../../../services/GeneratorEngine';
 
 export function useDailyNutrition() {
   const { user } = useAuthStore();
-  const { data: nutrition, isLoading } = useNutrition();
+  const { data: nutrition, isLoading: isLoadingNutrition, updateNutrition } = useNutrition();
   const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
 
-  if (isLoading || !nutrition) {
-    return { isLoading: true, nutrition: null, aggregates: null, expandedMeal, setExpandedMeal };
+  // Fetch active AI plan to get target macros
+  const { data: activePlan } = useQuery({
+    queryKey: ['activePlan', user?.uid],
+    queryFn: async () => {
+      if (!user?.uid) return null;
+      const snap = await getDoc(doc(db, `users/${user.uid}/generatedPlans/active`));
+      if (!snap.exists()) return null;
+      return snap.data() as GeneratedPlan;
+    },
+    enabled: !!user?.uid,
+  });
+
+  if (isLoadingNutrition || !nutrition) {
+    return { isLoading: true, nutrition: null, aggregates: null, expandedMeal, setExpandedMeal, activePlan: null, updateNutrition: async () => {} };
   }
 
   const totalProtein = nutrition.meals.reduce((sum, m) => sum + (m.protein ?? 0), 0);
@@ -21,12 +37,12 @@ export function useDailyNutrition() {
   const waterMl      = nutrition.waterMl ?? 0;
   const waterLiters  = waterMl / 1000;
 
-  // Goals from User Profile
+  // Goals from AI Plan or User Profile Fallback
   const targets = (user as any)?.targets?.nutrition;
-  const goalCal = targets?.calories ?? 2500;
-  const goalProtein = targets?.protein ?? 180;
-  const goalCarbs   = targets?.carbs ?? 250;
-  const goalFat     = targets?.fat ?? 70;
+  const goalCal     = activePlan?.mealPlan?.targetCalories ?? targets?.calories ?? 2500;
+  const goalProtein = activePlan?.mealPlan?.targetProtein  ?? targets?.protein  ?? 180;
+  const goalCarbs   = activePlan?.mealPlan?.targetCarbs    ?? targets?.carbs    ?? 250;
+  const goalFat     = activePlan?.mealPlan?.targetFat      ?? targets?.fat      ?? 70;
   const goalWater   = 2.4;
 
   const calPct = Math.min((totalCal / goalCal) * 100, 100);
@@ -37,5 +53,5 @@ export function useDailyNutrition() {
     calPct, remaining, goalCal, goalProtein, goalCarbs, goalFat, goalWater
   };
 
-  return { isLoading: false, nutrition, aggregates, expandedMeal, setExpandedMeal };
+  return { isLoading: false, nutrition, aggregates, expandedMeal, setExpandedMeal, activePlan, updateNutrition };
 }

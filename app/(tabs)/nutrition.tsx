@@ -18,7 +18,7 @@ export default function NutritionScreen() {
   const router = useRouter();
   
   // Clean Architecture: Logic and data fetching are handled by the hook
-  const { isLoading, nutrition, aggregates, expandedMeal, setExpandedMeal } = useDailyNutrition();
+  const { isLoading, nutrition, aggregates, expandedMeal, setExpandedMeal, activePlan, updateNutrition } = useDailyNutrition();
 
   if (isLoading || !nutrition || !aggregates) {
     return (
@@ -73,7 +73,13 @@ export default function NutritionScreen() {
         </View>
       )}
 
-      <MealLogList meals={nutrition.meals} expandedMeal={null} setExpandedMeal={() => {}} />
+      <MealLogList 
+        meals={nutrition.meals} 
+        expandedMeal={null} 
+        setExpandedMeal={() => {}} 
+        activePlan={activePlan}
+        updateNutrition={updateNutrition}
+      />
 
     </ScrollView>
   );
