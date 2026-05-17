@@ -1,22 +1,22 @@
+import { T } from '@/constants/ForgeTheme';
+import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import { signOut } from 'firebase/auth';
-import { Database, LogOut, Moon, Shield, Sparkles, Sun, Smartphone, User as UserIcon } from 'lucide-react-native';
+import { Database, LogOut, Moon, Shield, Smartphone, Sparkles, Sun, User as UserIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ForgeButton } from '../../components/forge/ForgeButton';
-import { ForgeTheme as ST } from '../../constants/ForgeTheme';
 import { useForgeTheme } from '../../hooks/useForgeTheme';
-import { useThemeStore, type ThemePreference } from '../../stores/themeStore';
 import { auth } from '../../services/firebase';
 import { useAuthStore } from '../../stores/authStore';
+import { useThemeStore, type ThemePreference } from '../../stores/themeStore';
 import { seedExercises } from '../../utils/seedData';
-import { useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'expo-router';
 
 // ─── Theme Toggle ───────────────────────────────────────────────
 const THEME_OPTIONS: { key: ThemePreference; label: string; icon: any }[] = [
-  { key: 'system',  label: 'System', icon: Smartphone },
-  { key: 'light',   label: 'Light',  icon: Sun        },
-  { key: 'dark',    label: 'Dark',   icon: Moon       },
+  { key: 'system', label: 'System', icon: Smartphone },
+  { key: 'light', label: 'Light', icon: Sun },
+  { key: 'dark', label: 'Dark', icon: Moon },
 ];
 
 function ThemeToggle({ T }: { T: any }) {
@@ -30,7 +30,8 @@ function ThemeToggle({ T }: { T: any }) {
             key={key}
             onPress={() => setPreference(key)}
             style={[
-              { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              {
+                flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 paddingVertical: 10, borderRadius: 12, gap: 4,
                 backgroundColor: active ? T.colors.forge + '18' : T.colors.bg2,
                 borderWidth: 1,
@@ -76,13 +77,15 @@ export default function SettingsScreen() {
   const handleLogout = async () => {
     Alert.alert('Log Out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Log Out', style: 'destructive', onPress: async () => {
-        try {
-          await signOut(auth);
-        } catch (error) {
-          console.error(error);
+      {
+        text: 'Log Out', style: 'destructive', onPress: async () => {
+          try {
+            await signOut(auth);
+          } catch (error) {
+            console.error(error);
+          }
         }
-      }},
+      },
     ]);
   };
 
@@ -129,11 +132,11 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <Text style={[styles.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Preferences</Text>
         <View style={[styles.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
-          <SettingRow T={T} icon={<UserIcon size={18} color={T.colors.t1} />} label="Edit Profile" onPress={() => {}} />
+          <SettingRow T={T} icon={<UserIcon size={18} color={T.colors.t1} />} label="Edit Profile" onPress={() => { }} />
           <View style={[styles.divider, { backgroundColor: T.colors.b1 }]} />
           <SettingRow T={T} icon={<Sparkles size={18} color={T.colors.forge} />} label="Generate AI Plan" onPress={() => router.push('/aiPlan')} />
           <View style={[styles.divider, { backgroundColor: T.colors.b1 }]} />
-          <SettingRow T={T} icon={<Shield size={18} color={T.colors.t1} />} label="Privacy & Security" onPress={() => {}} />
+          <SettingRow T={T} icon={<Shield size={18} color={T.colors.t1} />} label="Privacy & Security" onPress={() => { }} />
         </View>
       </View>
 
@@ -201,56 +204,56 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: ST.colors.bg0 },
+  container: { flex: 1, backgroundColor: T.colors.bg0 },
   content: { paddingBottom: 110 },
 
   header: {
-    paddingHorizontal: ST.spacing.page, paddingTop: 60, paddingBottom: ST.spacing.px3,
-    borderBottomWidth: 0.5, borderBottomColor: ST.colors.b1,
-    backgroundColor: ST.colors.bg0,
-    marginBottom: ST.spacing.px5,
+    paddingHorizontal: T.spacing.page, paddingTop: 60, paddingBottom: T.spacing.px3,
+    borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
+    backgroundColor: T.colors.bg0,
+    marginBottom: T.spacing.px5,
   },
-  headerTitle: { fontSize: ST.typography.sizes.h1, fontWeight: '700', color: ST.colors.t1 },
+  headerTitle: { fontSize: T.typography.sizes.h1, fontWeight: '700', color: T.colors.t1 },
 
   profileCard: {
     flexDirection: 'row', alignItems: 'center', gap: 16,
-    marginHorizontal: ST.spacing.page, marginBottom: ST.spacing.px7,
-    padding: ST.spacing.px4, borderRadius: ST.radii.xl,
-    backgroundColor: ST.colors.bg1, borderWidth: 0.5, borderColor: ST.colors.b1,
+    marginHorizontal: T.spacing.page, marginBottom: T.spacing.px7,
+    padding: T.spacing.px4, borderRadius: T.radii.xl,
+    backgroundColor: T.colors.bg1, borderWidth: 0.5, borderColor: T.colors.b1,
   },
   avatar: {
     width: 64, height: 64, borderRadius: 32,
-    backgroundColor: ST.colors.forgeDim,
+    backgroundColor: T.colors.forgeDim,
     alignItems: 'center', justifyContent: 'center',
     borderWidth: 1, borderColor: 'rgba(255,92,46,0.3)',
   },
   profileInfo: { flex: 1 },
-  profileName: { fontSize: ST.typography.sizes.h2, fontWeight: '700', color: ST.colors.t1, marginBottom: 2 },
-  profileEmail: { fontSize: ST.typography.sizes.bodyS, color: ST.colors.t3 },
+  profileName: { fontSize: T.typography.sizes.h2, fontWeight: '700', color: T.colors.t1, marginBottom: 2 },
+  profileEmail: { fontSize: T.typography.sizes.bodyS, color: T.colors.t3 },
 
-  section: { marginHorizontal: ST.spacing.page, marginBottom: ST.spacing.px6 },
+  section: { marginHorizontal: T.spacing.page, marginBottom: T.spacing.px6 },
   sectionLabel: {
-    fontSize: ST.typography.sizes.label, fontWeight: '600', color: ST.colors.t3,
-    textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: ST.spacing.px3,
+    fontSize: T.typography.sizes.label, fontWeight: '600', color: T.colors.t3,
+    textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: T.spacing.px3,
   },
   card: {
-    backgroundColor: ST.colors.bg1, borderRadius: ST.radii.lg,
-    borderWidth: 0.5, borderColor: ST.colors.b1, overflow: 'hidden',
+    backgroundColor: T.colors.bg1, borderRadius: T.radii.lg,
+    borderWidth: 0.5, borderColor: T.colors.b1, overflow: 'hidden',
   },
-  divider: { height: 0.5, backgroundColor: ST.colors.b1, marginLeft: 50 },
+  divider: { height: 0.5, backgroundColor: T.colors.b1, marginLeft: 50 },
 
-  row: { flexDirection: 'row', alignItems: 'center', padding: ST.spacing.px4, gap: 12 },
+  row: { flexDirection: 'row', alignItems: 'center', padding: T.spacing.px4, gap: 12 },
   iconWrap: {
-    width: 36, height: 36, borderRadius: ST.radii.md,
-    backgroundColor: ST.colors.bg2,
+    width: 36, height: 36, borderRadius: T.radii.md,
+    backgroundColor: T.colors.bg2,
     alignItems: 'center', justifyContent: 'center',
   },
-  iconWrapDanger: { backgroundColor: ST.colors.redDim },
+  iconWrapDanger: { backgroundColor: T.colors.redDim },
   rowContent: { flex: 1 },
-  rowLabel: { fontSize: ST.typography.sizes.body, fontWeight: '500', color: ST.colors.t1 },
-  rowLabelDanger: { color: ST.colors.red, fontWeight: '600' },
+  rowLabel: { fontSize: T.typography.sizes.body, fontWeight: '500', color: T.colors.t1 },
+  rowLabelDanger: { color: T.colors.red, fontWeight: '600' },
 
-  devHint: { fontSize: ST.typography.sizes.bodyS, color: ST.colors.t3, marginBottom: ST.spacing.px4, lineHeight: 20 },
+  devHint: { fontSize: T.typography.sizes.bodyS, color: T.colors.t3, marginBottom: T.spacing.px4, lineHeight: 20 },
 
-  version: { textAlign: 'center', fontSize: ST.typography.sizes.label, color: ST.colors.t3, marginTop: ST.spacing.px4, fontWeight: '500' },
+  version: { textAlign: 'center', fontSize: T.typography.sizes.label, color: T.colors.t3, marginTop: T.spacing.px4, fontWeight: '500' },
 });
