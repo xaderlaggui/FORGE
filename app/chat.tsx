@@ -17,6 +17,7 @@ import { db } from '../services/firebase';
 import { useAuthStore } from '../stores/authStore';
 import { useNutrition } from '../hooks/useNutrition';
 import { useWorkouts } from '../hooks/useWorkouts';
+import { MascotImage } from '../components/common/MascotImage';
 
 const BASE_SYSTEM_PROMPT = `You are FORGE Coach — an energetic, supportive AI fitness coach inside a workout tracking app.
 
@@ -178,6 +179,20 @@ export default function ChatScreen() {
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         showsVerticalScrollIndicator={false}
       />
+
+      {/* ── Idle Mascot State ── */}
+      {messages.length === 1 && (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <MascotImage
+            mascot="coach"
+            width={170}
+            height={170}
+            animation="none"
+            accessibilityLabel="Forge the AI coach bear ready to help you"
+            style={{ alignSelf: 'center', marginBottom: 20 }}
+          />
+        </View>
+      )}
 
       {/* ── Typing indicator ── */}
       {isTyping && (

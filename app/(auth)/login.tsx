@@ -1,32 +1,38 @@
+import { useRouter } from 'expo-router';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { Lock, Mail } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Alert,
+  ActivityIndicator, Alert,
   KeyboardAvoidingView, Platform, ScrollView,
+  StyleSheet,
+  Text, TextInput, TouchableOpacity,
+  View,
 } from 'react-native';
 import Animated, {
-  useSharedValue, useAnimatedStyle,
-  withTiming, withDelay, Easing,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
 } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
-import { Mail, Lock } from 'lucide-react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../services/firebase';
+import { MascotImage } from '../../components/common/MascotImage';
 import { ForgeTheme as T } from '../../constants/ForgeTheme';
+import { auth } from '../../services/firebase';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [email, setEmail]       = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   // Entrance animation
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(24);
   React.useEffect(() => {
-    opacity.value    = withDelay(100, withTiming(1,  { duration: 600, easing: Easing.out(Easing.exp) }));
-    translateY.value = withDelay(100, withTiming(0,  { duration: 600, easing: Easing.out(Easing.exp) }));
+    opacity.value = withDelay(100, withTiming(1, { duration: 600, easing: Easing.out(Easing.exp) }));
+    translateY.value = withDelay(100, withTiming(0, { duration: 600, easing: Easing.out(Easing.exp) }));
   }, []);
   const animStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -60,8 +66,6 @@ export default function LoginScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Animated.View style={[s.inner, animStyle]}>
-
-import { MascotImage } from '../../components/common/MascotImage';
 
           <MascotImage
             mascot="welcome"

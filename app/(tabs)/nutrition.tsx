@@ -11,6 +11,7 @@ import { DailyCalorieSummary } from '../../features/nutrition/components/DailyCa
 import { MacroBreakdown } from '../../features/nutrition/components/MacroBreakdown';
 import { HydrationTracker } from '../../features/nutrition/components/HydrationTracker';
 import { MealLogList } from '../../features/nutrition/components/MealLogList';
+import { MascotImage } from '../../components/common/MascotImage';
 
 export default function NutritionScreen() {
   const router = useRouter();
@@ -58,6 +59,19 @@ export default function NutritionScreen() {
       <HydrationTracker aggregates={aggregates} />
 
       {/* ── Composition: Meals ── */}
+      {nutrition.totalCalories === 0 && (
+        <View style={{ alignItems: 'center', marginTop: 32, marginBottom: -16, zIndex: 10 }}>
+          <MascotImage
+            mascot="nutrition"
+            width={160}
+            height={160}
+            animation="none"
+            accessibilityLabel="Forge the bear holding a healthy meal bowl"
+            style={{ alignSelf: 'center', marginBottom: 16 }}
+          />
+        </View>
+      )}
+
       <MealLogList 
         meals={nutrition.meals} 
         expandedMeal={expandedMeal} 

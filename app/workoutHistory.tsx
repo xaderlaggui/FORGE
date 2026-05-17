@@ -8,6 +8,7 @@ import { ForgeTheme as T } from '../constants/ForgeTheme';
 import { useWorkouts } from '../hooks/useWorkouts';
 import { mapMusclesToSlugs } from '../features/planner/components/ExerciseLibrary';
 import { useExercises } from '../hooks/useExercises';
+import { MascotImage } from '../components/common/MascotImage';
 
 export default function WorkoutHistoryScreen() {
   const router = useRouter();
@@ -30,7 +31,17 @@ export default function WorkoutHistoryScreen() {
 
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
         {sortedWorkouts.length === 0 ? (
-          <Text style={s.empty}>No workouts logged yet.</Text>
+          <View style={{ alignItems: 'center', marginTop: 40 }}>
+            <MascotImage
+              mascot="progress"
+              width={160}
+              height={160}
+              animation="none"
+              accessibilityLabel="Forge the bear celebrating progress gains"
+              style={{ alignSelf: 'center', marginBottom: 16 }}
+            />
+            <Text style={[s.empty, { marginTop: 0 }]}>No workouts logged yet.</Text>
+          </View>
         ) : (
           sortedWorkouts.map((session, idx) => {
             let totalVolume = 0;

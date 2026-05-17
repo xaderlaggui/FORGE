@@ -1,34 +1,40 @@
-import React, { useState } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, ScrollView,
-} from 'react-native';
-import Animated, {
-  useSharedValue, useAnimatedStyle,
-  withTiming, withDelay, Easing,
-} from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
-import { Mail, Lock, User } from 'lucide-react-native';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../../services/firebase';
+import { Lock, Mail, User } from 'lucide-react-native';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator, Alert,
+  KeyboardAvoidingView, Platform, ScrollView,
+  StyleSheet,
+  Text, TextInput, TouchableOpacity,
+  View,
+} from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from 'react-native-reanimated';
+import { MascotImage } from '../../components/common/MascotImage';
 import { ForgeTheme as T } from '../../constants/ForgeTheme';
+import { auth, db } from '../../services/firebase';
 
 export default function SignupScreen() {
   const router = useRouter();
-  const [name, setName]                     = useState('');
-  const [email, setEmail]                   = useState('');
-  const [password, setPassword]             = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading]               = useState(false);
-  const [focusedField, setFocusedField]     = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   // Entrance animation
-  const opacity    = useSharedValue(0);
+  const opacity = useSharedValue(0);
   const translateY = useSharedValue(24);
   React.useEffect(() => {
-    opacity.value    = withDelay(100, withTiming(1, { duration: 600, easing: Easing.out(Easing.exp) }));
+    opacity.value = withDelay(100, withTiming(1, { duration: 600, easing: Easing.out(Easing.exp) }));
     translateY.value = withDelay(100, withTiming(0, { duration: 600, easing: Easing.out(Easing.exp) }));
   }, []);
   const animStyle = useAnimatedStyle(() => ({
@@ -116,8 +122,6 @@ export default function SignupScreen() {
           <TouchableOpacity style={s.backRow} onPress={() => router.back()}>
             <Text style={s.backText}>← Back to Login</Text>
           </TouchableOpacity>
-
-import { MascotImage } from '../../components/common/MascotImage';
 
           <MascotImage
             mascot="welcome"

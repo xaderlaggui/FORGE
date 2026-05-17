@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { MascotImage } from '../../../components/common/MascotImage';
 import { ForgeButton } from '../../../components/forge/ForgeButton';
 import { ForgeSkeleton } from '../../../components/forge/ForgeSkeleton';
 import { ForgeTheme as T } from '../../../constants/ForgeTheme';
@@ -23,9 +24,9 @@ interface DailyPlanCardProps {
   activeDateStr: string;
 }
 
+import Body from 'react-native-body-highlighter';
 import { useExercises } from '../../../hooks/useExercises';
 import { mapMusclesToSlugs } from './ExerciseLibrary';
-import Body from 'react-native-body-highlighter';
 
 export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, activeDateStr }: DailyPlanCardProps) {
   const router = useRouter();
@@ -101,6 +102,14 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
 
   return (
     <View style={[s.todayCard, s.todayCardEmpty]}>
+      <MascotImage
+        mascot="workout"
+        width={160}
+        height={160}
+        animation="none"
+        accessibilityLabel="Forge the bear lifting weights — no workout planned yet"
+        style={{ alignSelf: 'center', marginBottom: 16 }}
+      />
       <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>Active Recovery</Text>
       <Text style={s.todayMetaCenter} maxFontSizeMultiplier={1.2}>
         No formal training scheduled. Rest up or do light cardio.

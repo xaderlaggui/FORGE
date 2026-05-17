@@ -1,16 +1,16 @@
+import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSequence,
-  withDelay,
   Easing,
   runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming
 } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
 import { ForgeTheme as T } from '../constants/ForgeTheme';
+import { MascotImages } from '../constants/mascotImages';
 
 /**
  * Splash screen — shown on first app load.
@@ -22,8 +22,8 @@ import { ForgeTheme as T } from '../constants/ForgeTheme';
 export default function SplashScreen() {
   const router = useRouter();
 
-  const opacity   = useSharedValue(0);
-  const scale     = useSharedValue(0.92);
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.92);
   const glowOpacity = useSharedValue(0);
 
   const wordmarkStyle = useAnimatedStyle(() => ({
@@ -36,11 +36,19 @@ export default function SplashScreen() {
 
   const navigate = () => router.replace('/(auth)/welcome');
 
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     // Animate in
-    opacity.value   = withTiming(1, { duration: 900, easing: Easing.out(Easing.exp) });
-    scale.value     = withTiming(1,   { duration: 900, easing: Easing.out(Easing.exp) });
+    opacity.value = withTiming(1, { duration: 900, easing: Easing.out(Easing.exp) });
+    scale.value = withTiming(1, { duration: 900, easing: Easing.out(Easing.exp) });
     glowOpacity.value = withDelay(300, withTiming(1, { duration: 800 }));
+
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
 
     // Navigate out after 2.2s
     const timer = setTimeout(() => {
@@ -58,6 +66,12 @@ export default function SplashScreen() {
       <Animated.View style={[s.glow, glowStyle]} />
 
       <Animated.View style={[s.wordmarkWrap, wordmarkStyle]}>
+        <Animated.Image
+          source={MascotImages.hero}
+          style={{ width: 200, height: 200, opacity: fadeAnim, alignSelf: 'center', marginBottom: 16 } as any}
+          resizeMode="contain"
+          accessibilityLabel="FORGE — Forge the bear"
+        />
         <Text style={s.wordmark}>FORGE</Text>
         <Text style={s.tagline}>Build your best self.</Text>
       </Animated.View>
