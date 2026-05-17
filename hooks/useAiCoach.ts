@@ -23,7 +23,7 @@ export function useAiCoach() {
       if (!user) return "Welcome to your AI Coach! Start logging data to get personalized tips.";
 
       try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         // Gather context context for the AI
         const recentWorkout = workouts?.[0];

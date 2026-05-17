@@ -4,12 +4,15 @@ import { useAuthStore } from '../../stores/authStore';
 import { Flame, Droplet, Activity } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
+import { useRouter } from 'expo-router';
 import { useNutrition } from '../../hooks/useNutrition';
 import { useAiCoach } from '../../hooks/useAiCoach';
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { user } = useAuthStore();
   const { data: nutrition, isLoading } = useNutrition();
+  const { data: aiTip, isLoading: isAiLoading } = useAiCoach();
 
   if (isLoading) {
     return (
@@ -34,8 +37,6 @@ export default function HomeScreen() {
   
   const waterOffset = c - (waterPercent * c);
   const calOffset = c - (calPercent * c);
-
-  const { data: aiTip, isLoading: isAiLoading } = useAiCoach();
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
@@ -68,12 +69,15 @@ export default function HomeScreen() {
           colors={['rgba(210,255,0,0.15)', 'transparent']} 
           style={styles.aiGlow} 
         />
-        <View style={styles.aiCard}>
+        <TouchableOpacity style={styles.aiCard} onPress={() => router.push('/chat')} activeOpacity={0.8}>
           <View style={styles.aiHeader}>
             <View style={styles.aiIconWrapper}>
               <Text style={styles.aiIconText}>AI</Text>
             </View>
-            <Text style={styles.aiTitle}>AI COACH</Text>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={styles.aiTitle}>AI COACH</Text>
+              <Text style={{ fontSize: 10, color: '#D2FF00', fontWeight: '800' }}>TAP TO CHAT ↗</Text>
+            </View>
           </View>
           {isAiLoading ? (
              <ActivityIndicator size="small" color="#D2FF00" style={{ alignSelf: 'flex-start' }} />
@@ -87,7 +91,7 @@ export default function HomeScreen() {
               })}
             </Text>
           )}
-        </View>
+        </TouchableOpacity>
       </View>
 
       {/* Quick Metrics */}
