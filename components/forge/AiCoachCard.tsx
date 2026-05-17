@@ -10,6 +10,7 @@ interface AiCoachCardProps {
 }
 
 export function AiCoachCard({ tip, isLoading, onChatPress }: AiCoachCardProps) {
+  const { T } = useForgeTheme();
     const { T: ForgeTheme } = useForgeTheme();
     const styles = useStyles(ForgeTheme);
   return (
@@ -19,14 +20,14 @@ export function AiCoachCard({ tip, isLoading, onChatPress }: AiCoachCardProps) {
 
       <View style={styles.row}>
         <View style={styles.iconWrap}>
-          <MessageSquare size={18} color={ForgeTheme.colors.forge} />
+          <MessageSquare size={18} color={T.colors.forge} />
         </View>
 
         <View style={styles.content}>
           <Text style={styles.label}>Personalized</Text>
 
           {isLoading ? (
-            <ActivityIndicator size="small" color={ForgeTheme.colors.forge} style={{ alignSelf: 'flex-start', marginVertical: 4 }} />
+            <ActivityIndicator size="small" color={T.colors.forge} style={{ alignSelf: 'flex-start', marginVertical: 4 }} />
           ) : (
             <Text style={styles.tipText} numberOfLines={3}>
               {tip || "You're doing great! Keep pushing your limits today."}
@@ -35,7 +36,7 @@ export function AiCoachCard({ tip, isLoading, onChatPress }: AiCoachCardProps) {
 
           <TouchableOpacity style={styles.chatBtn} onPress={onChatPress} activeOpacity={0.7}>
             <Text style={styles.chatBtnText}>Chat with Coach</Text>
-            <ChevronRight size={14} color={ForgeTheme.colors.forge} />
+            <ChevronRight size={14} color={T.colors.forge} />
           </TouchableOpacity>
         </View>
       </View>
@@ -45,13 +46,13 @@ export function AiCoachCard({ tip, isLoading, onChatPress }: AiCoachCardProps) {
 
 const useStyles = (T: any) => StyleSheet.create({
           card: {
-            backgroundColor: ForgeTheme.colors.bg1,
+            backgroundColor: T.colors.bg1,
             borderRadius: 16,
             borderWidth: 1,
-            borderColor: ForgeTheme.colors.b1,
+            borderColor: T.colors.b1,
             overflow: 'hidden',
             flexDirection: 'row',
-            shadowColor: ForgeTheme.colors.forge,
+            shadowColor: T.colors.forge,
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.04,
             shadowRadius: 20,
@@ -59,7 +60,7 @@ const useStyles = (T: any) => StyleSheet.create({
           },
           accentBar: {
             width: 3,
-            backgroundColor: ForgeTheme.colors.forge,
+            backgroundColor: T.colors.forge,
           },
           row: {
             flex: 1,
@@ -69,28 +70,28 @@ const useStyles = (T: any) => StyleSheet.create({
           },
           iconWrap: {
             width: 38, height: 38, borderRadius: 19,
-            backgroundColor: ForgeTheme.colors.bg2,
+            backgroundColor: T.colors.bg2,
             alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           },
           content: { flex: 1 },
           label: {
             fontSize: 10, fontWeight: '700',
-            color: ForgeTheme.colors.forge,
+            color: T.colors.forge,
             textTransform: 'uppercase', letterSpacing: 0.6,
             marginBottom: 6,
           },
-          tipText: { fontSize: 13, color: ForgeTheme.colors.t1, lineHeight: 20 },
+          tipText: { fontSize: 13, color: T.colors.t1, lineHeight: 20 },
           chatBtn: {
             alignSelf: 'flex-start',
             flexDirection: 'row',
             alignItems: 'center',
             gap: 4,
-            backgroundColor: ForgeTheme.colors.bg2,
+            backgroundColor: T.colors.bg2,
             paddingHorizontal: 12,
             paddingVertical: 6,
             borderRadius: 20,
             marginTop: 12,
           },
-          chatBtnText: { fontSize: 12, fontWeight: '600', color: ForgeTheme.colors.forge },
+          chatBtnText: { fontSize: 12, fontWeight: '600', color: T.colors.forge },
         });

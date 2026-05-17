@@ -7,30 +7,31 @@ import { useForgeTheme } from "@/hooks/useForgeTheme";
 
 const { width, height } = Dimensions.get('window');
 
-const SLIDES = [
-  {
-    id: '1',
-    icon: <Dumbbell size={80} color={T.colors.forge} />,
-    title: 'Train Like A Pro',
-    description: 'Dynamic PPL splits constructed mathematically for your specific body and frequency.',
-  },
-  {
-    id: '2',
-    icon: <Apple size={80} color={T.colors.forge} />,
-    title: 'Macro Precision',
-    description: 'Calculates your exact TDEE to give you perfect caloric targets whether you want to shred or bulk.',
-  },
-  {
-    id: '3',
-    icon: <TrendingUp size={80} color={T.colors.forge} />,
-    title: 'Progressive Overload',
-    description: 'The app remembers your reps and automatically increments your weights every week.',
-  }
-];
-
 export default function WelcomeScreen() {
     const { T } = useForgeTheme();
     const s = useS(T);
+
+  const SLIDES = [
+    {
+      id: '1',
+      icon: <Dumbbell size={80} color={T.colors.forge} />,
+      title: 'Train Like A Pro',
+      description: 'Dynamic PPL splits constructed mathematically for your specific body and frequency.',
+    },
+    {
+      id: '2',
+      icon: <Apple size={80} color={T.colors.forge} />,
+      title: 'Macro Precision',
+      description: 'Calculates your exact TDEE to give you perfect caloric targets whether you want to shred or bulk.',
+    },
+    {
+      id: '3',
+      icon: <TrendingUp size={80} color={T.colors.forge} />,
+      title: 'Progressive Overload',
+      description: 'The app remembers your reps and automatically increments your weights every week.',
+    }
+  ];
+
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);

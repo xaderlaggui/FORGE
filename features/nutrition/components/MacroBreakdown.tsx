@@ -5,16 +5,17 @@ import { useForgeTheme } from "@/hooks/useForgeTheme";
 
 function MacroBar({ label, value, goal, color }: MacroBarProps) {
     const { T } = useForgeTheme();
+  const mb = useMb(T);
     const s = useS(T);
   const pct = Math.min((value / Math.max(goal, 1)) * 100, 100);
   return (
-    <View style={useMb.wrapper}>
-      <View style={useMb.labelRow}>
-        <Text style={useMb.label} maxFontSizeMultiplier={1.2}>{label}</Text>
-        <Text style={useMb.value} maxFontSizeMultiplier={1.2}>{value}<Text style={useMb.goal}>/{goal}g</Text></Text>
+    <View style={mb.wrapper}>
+      <View style={mb.labelRow}>
+        <Text style={mb.label} maxFontSizeMultiplier={1.2}>{label}</Text>
+        <Text style={mb.value} maxFontSizeMultiplier={1.2}>{value}<Text style={mb.goal}>/{goal}g</Text></Text>
       </View>
-      <View style={useMb.track}>
-        <View style={[useMb.fill, { width: `${pct}%`, backgroundColor: color }]} />
+      <View style={mb.track}>
+        <View style={[mb.fill, { width: `${pct}%`, backgroundColor: color }]} />
       </View>
     </View>
   );

@@ -15,6 +15,7 @@ interface MacroDonutRingProps {
 }
 
 export function MacroDonutRing({ calories, calorieGoal, waterLiters, waterGoal }: MacroDonutRingProps) {
+  const { T } = useForgeTheme();
     const { T: ForgeTheme } = useForgeTheme();
     const styles = useStyles(ForgeTheme);
   const SIZE = 96;
@@ -41,7 +42,7 @@ export function MacroDonutRing({ calories, calorieGoal, waterLiters, waterGoal }
           {/* Water ring (outer, blue) */}
           <Circle
             cx="50" cy="50" r={OUTER_R}
-            stroke={ForgeTheme.colors.blue}
+            stroke={T.colors.blue}
             strokeWidth={STROKE}
             fill="none"
             strokeDasharray={outerCircumference}
@@ -51,7 +52,7 @@ export function MacroDonutRing({ calories, calorieGoal, waterLiters, waterGoal }
           {/* Calorie ring (inner, forge) */}
           <Circle
             cx="50" cy="50" r={INNER_R}
-            stroke={ForgeTheme.colors.forge}
+            stroke={T.colors.forge}
             strokeWidth={STROKE}
             fill="none"
             strokeDasharray={innerCircumference}
@@ -70,11 +71,11 @@ export function MacroDonutRing({ calories, calorieGoal, waterLiters, waterGoal }
       {/* Legend */}
       <View style={styles.legend}>
         <View style={styles.legendItem}>
-          <View style={[styles.dot, { backgroundColor: ForgeTheme.colors.forge }]} />
+          <View style={[styles.dot, { backgroundColor: T.colors.forge }]} />
           <Text style={styles.legendLabel}>{calories} cal</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.dot, { backgroundColor: ForgeTheme.colors.blue }]} />
+          <View style={[styles.dot, { backgroundColor: T.colors.blue }]} />
           <Text style={styles.legendLabel}>{waterLiters.toFixed(1)} L</Text>
         </View>
       </View>
@@ -85,9 +86,9 @@ export function MacroDonutRing({ calories, calorieGoal, waterLiters, waterGoal }
 const useStyles = (T: any) => StyleSheet.create({
           wrapper: { alignItems: 'center' },
           center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-          centerText: { fontSize: 11, fontWeight: '700', color: ForgeTheme.colors.t1 },
+          centerText: { fontSize: 11, fontWeight: '700', color: T.colors.t1 },
           legend: { flexDirection: 'row', gap: 12, marginTop: 12 },
           legendItem: { alignItems: 'center', gap: 4 },
           dot: { width: 8, height: 8, borderRadius: 4 },
-          legendLabel: { fontSize: 10, color: ForgeTheme.colors.t2 },
+          legendLabel: { fontSize: 10, color: T.colors.t2 },
         });

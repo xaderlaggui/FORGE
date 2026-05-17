@@ -51,25 +51,25 @@ const useStyles = (T: any) => StyleSheet.create({
           chip: {
             paddingHorizontal: 10, paddingVertical: 3,
             borderRadius: 100,
-            backgroundColor: ForgeTheme.colors.bg3,
+            backgroundColor: T.colors.bg3,
           },
-          chipText: { color: ForgeTheme.colors.t1, fontSize: 11, fontWeight: '500' },
+          chipText: { color: T.colors.t1, fontSize: 11, fontWeight: '500' },
 
           // WorkoutListItem
           row: {
             flexDirection: 'row', alignItems: 'center', gap: 12,
             paddingVertical: 12, paddingHorizontal: 16,
           },
-          rowBorder: { borderBottomWidth: 0.5, borderBottomColor: ForgeTheme.colors.b1 },
+          rowBorder: { borderBottomWidth: 0.5, borderBottomColor: T.colors.b1 },
           iconWrap: {
             width: 38, height: 38, borderRadius: 12,
-            backgroundColor: ForgeTheme.colors.bg2,
+            backgroundColor: T.colors.bg2,
             alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           },
           iconEmoji: { fontSize: 18 },
           textWrap: { flex: 1 },
-          title: { fontSize: 14, fontWeight: '500', color: ForgeTheme.colors.t1 },
-          date: { fontSize: 11, color: ForgeTheme.colors.t3, marginTop: 2 },
+          title: { fontSize: 14, fontWeight: '500', color: T.colors.t1 },
+          date: { fontSize: 11, color: T.colors.t3, marginTop: 2 },
           stat: { fontSize: 11, fontWeight: '600', color: '#34C759' },
         });

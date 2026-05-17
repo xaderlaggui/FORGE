@@ -12,6 +12,7 @@ import { RecentWorkoutsList } from '../../features/dashboard/components/RecentWo
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 
 export default function HomeScreen() {
+  const { T } = useForgeTheme();
     const { T: ForgeTheme } = useForgeTheme();
     const styles = useStyles(ForgeTheme);
   const router = useRouter();
@@ -66,13 +67,13 @@ export default function HomeScreen() {
 const useStyles = (T: any) => StyleSheet.create({
           container: {
             flex: 1,
-            backgroundColor: ForgeTheme.colors.bg0,
+            backgroundColor: T.colors.bg0,
           },
           scrollContent: {
             paddingBottom: 110,
           },
           section: {
-            paddingHorizontal: ForgeTheme.spacing.page,
-            marginBottom: ForgeTheme.spacing.px5,
+            paddingHorizontal: T.spacing.page,
+            marginBottom: T.spacing.px5,
           },
         });

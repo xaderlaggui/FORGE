@@ -23,8 +23,8 @@ interface StreakWidgetProps {
 const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 export function StreakWidget({ streak, weekActivity }: StreakWidgetProps) {
-    const { T: ForgeTheme } = useForgeTheme();
-    const styles = useStyles(ForgeTheme);
+  const { T } = useForgeTheme();
+  const styles = useStyles(T);
   // Flame flicker — subtle scale + opacity pulse
   const flameScale   = useSharedValue(1);
   const flameOpacity = useSharedValue(0.85);
@@ -65,8 +65,8 @@ export function StreakWidget({ streak, weekActivity }: StreakWidgetProps) {
         <Animated.View style={flameStyle}>
           <Flame
             size={26}
-            color={hasStreak ? ForgeTheme.colors.gold : ForgeTheme.colors.t3}
-            fill={hasStreak ? ForgeTheme.colors.gold : 'transparent'}
+            color={hasStreak ? T.colors.gold : T.colors.t3}
+            fill={hasStreak ? T.colors.gold : 'transparent'}
             strokeWidth={1.2}
           />
         </Animated.View>
@@ -104,9 +104,9 @@ export function StreakWidget({ streak, weekActivity }: StreakWidgetProps) {
   );
 }
 
-const { colors, radii, spacing } = ForgeTheme;
-
-const useStyles = (T: any) => StyleSheet.create({
+const useStyles = (T: any) => {
+  const { colors, radii, spacing } = T;
+  return StyleSheet.create({
           wrapper: {
             alignItems: 'center',
             paddingVertical: spacing.px2,
@@ -184,3 +184,4 @@ const useStyles = (T: any) => StyleSheet.create({
             elevation: 2,
           },
         });
+}

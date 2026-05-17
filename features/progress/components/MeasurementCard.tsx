@@ -9,19 +9,19 @@ export function MeasurementCard({ label, value, prevValue, onPress }: MeasCardPr
     const measS = useMeasS(T);
   const delta = value && prevValue ? +(value - prevValue).toFixed(1) : undefined;
   return (
-    <TouchableOpacity style={useMeasS.card} onPress={onPress} activeOpacity={0.75}>
-      <Text style={useMeasS.label} maxFontSizeMultiplier={1.2}>{label}</Text>
-      <Text style={useMeasS.val} maxFontSizeMultiplier={1.2}>{value ?? '—'}</Text>
-      <Text style={useMeasS.unit} maxFontSizeMultiplier={1.2}>inches</Text>
+    <TouchableOpacity style={measS.card} onPress={onPress} activeOpacity={0.75}>
+      <Text style={measS.label} maxFontSizeMultiplier={1.2}>{label}</Text>
+      <Text style={measS.val} maxFontSizeMultiplier={1.2}>{value ?? '—'}</Text>
+      <Text style={measS.unit} maxFontSizeMultiplier={1.2}>inches</Text>
       {delta !== undefined && (
-        <View style={[useMeasS.badge, delta < 0 && useMeasS.badgeDown, delta > 0 && useMeasS.badgeUp]}>
-          <Text style={[useMeasS.badgeText, delta < 0 && { color: T.colors.green }, delta > 0 && { color: T.colors.red }]} maxFontSizeMultiplier={1.2}>
+        <View style={[measS.badge, delta < 0 && measS.badgeDown, delta > 0 && measS.badgeUp]}>
+          <Text style={[measS.badgeText, delta < 0 && { color: T.colors.green }, delta > 0 && { color: T.colors.red }]} maxFontSizeMultiplier={1.2}>
             {delta > 0 ? '+' : ''}{delta} in
           </Text>
         </View>
       )}
-      <View style={useMeasS.row}>
-        <Text style={useMeasS.updateText} maxFontSizeMultiplier={1.2}>Update</Text>
+      <View style={measS.row}>
+        <Text style={measS.updateText} maxFontSizeMultiplier={1.2}>Update</Text>
         <ChevronRight size={12} color={T.colors.forge} />
       </View>
     </TouchableOpacity>

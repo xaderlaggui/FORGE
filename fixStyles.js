@@ -26,12 +26,11 @@ for (const file of files) {
   let content = fs.readFileSync(file, 'utf8');
   let changed = false;
 
-  if (content.includes('useStyles.')) {
-    content = content.replace(/useStyles\./g, 'styles.');
-    changed = true;
-  }
-  if (content.includes('useS.')) {
-    content = content.replace(/useS\./g, 's.');
+  const regex = /use([A-Z][a-zA-Z0-9]*)\./g;
+  if (regex.test(content)) {
+    content = content.replace(regex, (match, p1) => {
+        return p1.charAt(0).toLowerCase() + p1.slice(1) + '.';
+    });
     changed = true;
   }
   

@@ -10,15 +10,16 @@ interface ForgeSegmentProps {
 }
 
 export function ForgeSegment({ options, value, onChange }: ForgeSegmentProps) {
-    const { T: ForgeTheme } = useForgeTheme();
-    const styles = useStyles(ForgeTheme);
+  const { T } = useForgeTheme();
+
+    const styles = useStyles(T);
   const activeIdx = Math.max(0, options.indexOf(value));
   const translateX = useSharedValue(0);
   const [tabWidth, setTabWidth] = React.useState(0);
 
   useEffect(() => {
     if (tabWidth > 0) {
-      translateX.value = withSpring(activeIdx * tabWidth, ForgeTheme.motion.spring);
+      translateX.value = withSpring(activeIdx * tabWidth, T.motion.spring);
     }
   }, [activeIdx, tabWidth]);
 
@@ -66,9 +67,9 @@ export function ForgeSegment({ options, value, onChange }: ForgeSegmentProps) {
   );
 }
 
-const { colors, radii, typography } = ForgeTheme;
-
-const useStyles = (T: any) => StyleSheet.create({
+const useStyles = (T: any) => {
+  const { colors, radii, typography } = T;
+  return StyleSheet.create({
           container: {
             flexDirection: 'row',
             backgroundColor: colors.bg1,
@@ -105,3 +106,4 @@ const useStyles = (T: any) => StyleSheet.create({
             color: colors.t1,
           },
         });
+}

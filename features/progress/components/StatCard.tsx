@@ -10,16 +10,16 @@ export function StatCard({ label, value, unit, delta, onPress }: StatCardProps) 
   const isDown = delta !== undefined && delta < 0;
   const isUp   = delta !== undefined && delta > 0;
   return (
-    <TouchableOpacity style={useSc.card} onPress={onPress} activeOpacity={0.75}>
-      <Text style={useSc.label} maxFontSizeMultiplier={1.2}>{label}</Text>
+    <TouchableOpacity style={sc.card} onPress={onPress} activeOpacity={0.75}>
+      <Text style={sc.label} maxFontSizeMultiplier={1.2}>{label}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 3, marginTop: 6 }}>
-        <Text style={useSc.value} maxFontSizeMultiplier={1.2}>{value}</Text>
-        {unit && <Text style={useSc.unit} maxFontSizeMultiplier={1.2}>{unit}</Text>}
+        <Text style={sc.value} maxFontSizeMultiplier={1.2}>{value}</Text>
+        {unit && <Text style={sc.unit} maxFontSizeMultiplier={1.2}>{unit}</Text>}
       </View>
       {delta !== undefined && (
-        <View style={[useSc.badge, isDown && useSc.badgeDown, isUp && useSc.badgeUp]}>
+        <View style={[sc.badge, isDown && sc.badgeDown, isUp && sc.badgeUp]}>
           {isDown ? <TrendingDown size={10} color={T.colors.green} /> : isUp ? <TrendingUp size={10} color={T.colors.red} /> : <Minus size={10} color={T.colors.t3} />}
-          <Text style={[useSc.badgeText, isDown && { color: T.colors.green }, isUp && { color: T.colors.red }]} maxFontSizeMultiplier={1.2}>
+          <Text style={[sc.badgeText, isDown && { color: T.colors.green }, isUp && { color: T.colors.red }]} maxFontSizeMultiplier={1.2}>
             {Math.abs(delta)} lbs
           </Text>
         </View>
