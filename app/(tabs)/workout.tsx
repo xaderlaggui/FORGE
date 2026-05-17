@@ -15,7 +15,7 @@ export default function WorkoutScreen() {
     activeTab, setActiveTab,
     days, activeDayIdx, setActiveDayIdx, activeDateStr,
     exercises, isLoadingExercises,
-    todayWorkout, isLoadingWorkouts
+    loggedWorkout, plannedWorkout, isLoadingWorkouts
   } = usePlannerData();
 
   return (
@@ -46,7 +46,8 @@ export default function WorkoutScreen() {
           
           <DailyPlanCard 
             isLoading={isLoadingWorkouts}
-            todayWorkout={todayWorkout}
+            loggedWorkout={loggedWorkout}
+            plannedWorkout={plannedWorkout}
             activeDateStr={activeDateStr}
           />
         </ScrollView>

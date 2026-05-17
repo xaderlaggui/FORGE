@@ -6,7 +6,10 @@ import { db } from '../../../services/firebase';
 import { useWorkouts } from '../../../hooks/useWorkouts';
 import type { Exercise } from '../../../types';
 
+import { useAuthStore } from '../../../stores/authStore';
+
 export function usePlannerData() {
+  const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState('Planner');
   
   // Dynamic weekly dates starting from Monday
@@ -33,14 +36,16 @@ export function usePlannerData() {
   const { workouts, isLoading: isLoadingWorkouts } = useWorkouts();
   
   // Filter workout for selected day
-  const todayWorkout = useMemo(() => {
+  const loggedWorkout = useMemo(() => {
     return workouts?.find(w => w.date.startsWith(activeDateStr));
   }, [workouts, activeDateStr]);
+
+  const plannedWorkout = (user as any)?.plan?.weeklySchedule?.[activeDayIdx];
 
   return {
     activeTab, setActiveTab,
     days, activeDayIdx, setActiveDayIdx, activeDateStr,
     exercises, isLoadingExercises,
-    todayWorkout, isLoadingWorkouts
+    loggedWorkout, plannedWorkout, isLoadingWorkouts
   };
 }

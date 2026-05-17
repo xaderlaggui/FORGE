@@ -9,16 +9,20 @@ import { ForgeTheme as T } from '../../../constants/ForgeTheme';
 
 interface TodayPlanCardProps {
   isLoading: boolean;
-  todayWorkout: any;
+  plannedWorkout: any;
+  loggedWorkout: any;
   muscleTags: string[];
 }
 
-export function TodayPlanCard({ isLoading, todayWorkout, muscleTags }: TodayPlanCardProps) {
+export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscleTags }: TodayPlanCardProps) {
   const router = useRouter();
 
   if (isLoading) {
     return <SkeletonHeroCard />;
   }
+
+  const isRestDay = !plannedWorkout || plannedWorkout.dayType === 'Rest';
+  const isCompleted = !!loggedWorkout;
 
   return (
     <View style={s.todayCard}>
@@ -28,22 +32,25 @@ export function TodayPlanCard({ isLoading, todayWorkout, muscleTags }: TodayPlan
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFillObject}
       />
-      {/* Decorative accent blob */}
       <View style={s.blobDecor} />
 
       <View style={s.todayCardContent}>
-        <Text style={s.todayTag} maxFontSizeMultiplier={1.2}>📅 Today's Plan</Text>
+        <Text style={s.todayTag} maxFontSizeMultiplier={1.2}>
+          {isCompleted ? '✅ COMPLETED TODAY' : '📅 Today\'s Plan'}
+        </Text>
         <Text style={s.todayWorkoutName} maxFontSizeMultiplier={1.2}>
-          {todayWorkout ? (todayWorkout.notes ?? 'Custom Workout') : 'Rest Day'}
+          {isRestDay ? 'Active Recovery' : plannedWorkout.title}
         </Text>
         <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
-          {todayWorkout
-            ? `${todayWorkout.exercises.length} exercises · Ready to train?`
-            : 'Time to recover and hydrate.'}
+          {isRestDay
+            ? 'Time to recover and hydrate.'
+            : isCompleted
+              ? 'Great job crushing your session!'
+              : `${plannedWorkout.exercises?.length ?? 0} exercises prescribed · Ready?`}
         </Text>
 
         {/* Muscle chips */}
-        {muscleTags.length > 0 && (
+        {muscleTags.length > 0 && !isRestDay && (
           <View style={s.chipRow}>
             {muscleTags.slice(0, 4).map(tag => (
               <MuscleTagChip key={tag} label={tag} />
@@ -52,14 +59,16 @@ export function TodayPlanCard({ isLoading, todayWorkout, muscleTags }: TodayPlan
         )}
 
         {/* CTA */}
-        <ForgeButton
-          label={todayWorkout ? '▶  Start Workout' : '+  Add Workout'}
-          onPress={() => router.push(todayWorkout ? '/activeWorkout' : '/(tabs)/workout')}
-          variant="primary"
-          size="md"
-          pulse
-          accessibilityLabel={todayWorkout ? "Start today's workout" : "Add a new workout"}
-        />
+        {!isCompleted && !isRestDay && (
+          <ForgeButton
+            label="▶  Start Workout"
+            onPress={() => router.push('/activeWorkout')}
+            variant="primary"
+            size="md"
+            pulse
+            accessibilityLabel="Start today's workout"
+          />
+        )}
       </View>
     </View>
   );

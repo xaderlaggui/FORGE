@@ -30,7 +30,8 @@ export default function HomeScreen() {
       {/* ── Composition: Hero Card ── */}
       <TodayPlanCard 
         isLoading={data.isLoading} 
-        todayWorkout={data.todayWorkout} 
+        plannedWorkout={data.plannedWorkout} 
+        loggedWorkout={data.loggedWorkout}
         muscleTags={data.muscleTags} 
       />
 

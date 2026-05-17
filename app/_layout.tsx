@@ -82,7 +82,7 @@ function RootLayoutNav() {
     if (inSplash) return;
 
     if (!user && !inAuthGroup) {
-      router.replace('/(auth)/login');
+      router.replace('/(auth)/welcome');
     } else if (user) {
       if (!user.isOnboarded && !inOnboardingGroup) {
         router.replace('/(onboarding)');

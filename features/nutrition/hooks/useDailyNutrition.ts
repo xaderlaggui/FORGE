@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNutrition } from '../../../hooks/useNutrition';
+import { useAuthStore } from '../../../stores/authStore';
 import { DailyAggregates } from '../types';
 
 export function useDailyNutrition() {
+  const { user } = useAuthStore();
   const { data: nutrition, isLoading } = useNutrition();
   const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
 
@@ -17,11 +19,12 @@ export function useDailyNutrition() {
   const waterMl      = nutrition.waterMl ?? 0;
   const waterLiters  = waterMl / 1000;
 
-  // Goals (ideally from user profile; using sensible defaults)
-  const goalCal = 2500;
-  const goalProtein = 180;
-  const goalCarbs   = 250;
-  const goalFat     = 70;
+  // Goals from User Profile
+  const targets = (user as any)?.targets?.nutrition;
+  const goalCal = targets?.calories ?? 2500;
+  const goalProtein = targets?.protein ?? 180;
+  const goalCarbs   = targets?.carbs ?? 250;
+  const goalFat     = targets?.fat ?? 70;
   const goalWater   = 2.4;
 
   const calPct = Math.min((totalCal / goalCal) * 100, 100);

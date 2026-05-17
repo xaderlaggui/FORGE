@@ -34,7 +34,7 @@ export default function SplashScreen() {
     opacity: glowOpacity.value,
   }));
 
-  const navigate = () => router.replace('/(auth)/login');
+  const navigate = () => router.replace('/(auth)/welcome');
 
   useEffect(() => {
     // Animate in

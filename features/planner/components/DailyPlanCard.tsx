@@ -18,28 +18,49 @@ function SkeletonPlanner() {
 
 interface DailyPlanCardProps {
   isLoading: boolean;
-  todayWorkout?: any;
+  loggedWorkout?: any;
+  plannedWorkout?: any;
   activeDateStr: string;
 }
 
-export function DailyPlanCard({ isLoading, todayWorkout, activeDateStr }: DailyPlanCardProps) {
+export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, activeDateStr }: DailyPlanCardProps) {
   const router = useRouter();
 
   if (isLoading) {
     return <SkeletonPlanner />;
   }
 
-  if (todayWorkout) {
+  const isRestDay = !plannedWorkout || plannedWorkout.dayType === 'Rest';
+  const isCompleted = !!loggedWorkout;
+
+  if (isCompleted) {
+    return (
+      <View style={s.todayCard}>
+        <Text style={s.todayTitle} maxFontSizeMultiplier={1.2}>✅ Completed</Text>
+        <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{loggedWorkout.notes || 'Workout Logged'}</Text>
+        <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
+          {loggedWorkout.exercises?.length ?? 0} Exercises Completed
+        </Text>
+        <ForgeButton
+          label="View Details"
+          onPress={() => router.push({ pathname: '/activeWorkout', params: { id: loggedWorkout.id } })}
+          variant="secondary"
+        />
+      </View>
+    );
+  }
+
+  if (!isRestDay) {
     return (
       <View style={s.todayCard}>
         <Text style={s.todayTitle} maxFontSizeMultiplier={1.2}>Scheduled Routine</Text>
-        <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{todayWorkout.notes || 'Custom Workout'}</Text>
+        <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{plannedWorkout.title}</Text>
         <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
-          {todayWorkout.exercises.length} Exercises Planned
+          {plannedWorkout.exercises?.length ?? 0} Exercises Prescribed
         </Text>
         <ForgeButton
-          label="▶ Start Workout"
-          onPress={() => router.push({ pathname: '/activeWorkout', params: { id: todayWorkout.id } })}
+          label="▶ Start Routine"
+          onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr } })}
           pulse
         />
       </View>
@@ -48,12 +69,12 @@ export function DailyPlanCard({ isLoading, todayWorkout, activeDateStr }: DailyP
 
   return (
     <View style={[s.todayCard, s.todayCardEmpty]}>
-      <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>Rest Day</Text>
+      <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>Active Recovery</Text>
       <Text style={s.todayMetaCenter} maxFontSizeMultiplier={1.2}>
-        No workout scheduled for this day.
+        No formal training scheduled. Rest up or do light cardio.
       </Text>
       <ForgeButton
-        label="+ New Workout"
+        label="+ Log Extra Workout"
         onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr } })}
         variant="secondary"
       />

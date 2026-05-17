@@ -16,13 +16,16 @@ export function useDashboardData() {
   const waterLiters = (nutrition?.waterMl ?? 0) / 1000;
   const activeCals = nutrition?.totalCalories ?? 0;
   const waterGoal = 2.4;
-  const calGoal = 2500;
+  const calGoal = (user as any)?.targets?.nutrition?.calories ?? 2500;
 
   const todayDate = dayjs().format('YYYY-MM-DD');
-  const todayWorkout = workouts?.find(w => w.date === todayDate);
+  const loggedWorkout = workouts?.find(w => w.date === todayDate);
 
-  const muscleTags: string[] = todayWorkout
-    ? [...new Set(todayWorkout.exercises.flatMap(ex => (ex as any).muscleGroups ?? []))]
+  const todayIdx = dayjs().day() === 0 ? 6 : dayjs().day() - 1; // 0=Mon, 6=Sun
+  const plannedWorkout = (user as any)?.plan?.weeklySchedule?.[todayIdx];
+
+  const muscleTags: string[] = plannedWorkout && plannedWorkout.dayType !== 'Rest'
+    ? [...new Set(plannedWorkout.exercises.flatMap((ex: any) => ex.muscleGroups ?? []))].filter(Boolean)
     : [];
 
   const recentWorkouts = [...(workouts ?? [])]
@@ -44,8 +47,9 @@ export function useDashboardData() {
     activeCals,
     waterGoal,
     calGoal,
-    todayWorkout,
-    muscleTags,
+    plannedWorkout,
+    loggedWorkout,
+    muscleTags: muscleTags as string[],
     recentWorkouts,
     weekActivity,
   };
