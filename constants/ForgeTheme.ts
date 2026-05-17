@@ -1,84 +1,79 @@
-// ForgeTheme — no runtime imports, pure data
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FORGE Design Tokens  v2.0
-// Single source of truth for all styling decisions.
-// 60% neutral foundation · 30% supporting tones · 10% forge accent
-// ─────────────────────────────────────────────────────────────────────────────
+// ForgeTheme — Apple Fitness Edition
+// Pure OLED blacks, bright neon activity rings, and highly rounded shapes.
 
 export const ForgeTheme = {
 
   // ── Color Tokens ─────────────────────────────────────────────────────────
 
   colors: {
-    // Background layers (elevation stack — darkest → lightest)
-    bg0: '#0A0A0C',   // App base — deepest layer
-    bg1: '#121215',   // Card surface — elevation 1
-    bg2: '#1A1A1F',   // Elevated card — elevation 2
-    bg3: '#222228',   // Input fields, chips — elevation 3
-    bg4: '#2A2A32',   // Modals, tooltips — elevation 4
+    // Background layers (Apple system grays)
+    bg0: '#000000',   // Pure OLED Black
+    bg1: '#1C1C1E',   // Secondary system background
+    bg2: '#2C2C2E',   // Tertiary system background
+    bg3: '#3A3A3C',   // Quaternary system background
+    bg4: '#48484A',   // Prominent floating layer
 
     // Border / Separator
-    b0:  '#1F1F26',   // Hairline separator (0.5px)
-    b1:  '#2C2C36',   // Default card border
-    b2:  '#3A3A46',   // Focused / hover border
+    b0:  '#38383A',   // Hairline separator
+    b1:  '#2C2C2E',   // Default card border
+    b2:  '#3A3A3C',   // Focused / hover border
 
-    // Text hierarchy (never use pure white)
-    t1:  '#F2F2F5',   // Primary — headings, important content
-    t2:  '#9A9AA8',   // Secondary — body text, subtitles
-    t3:  '#52525E',   // Tertiary — labels, captions, empty states
-    t4:  '#36363F',   // Quaternary — disabled / placeholder
+    // Text hierarchy
+    t1:  '#FFFFFF',   // Primary text
+    t2:  '#8E8E93',   // Apple System Gray
+    t3:  '#636366',   // Apple System Gray 2
+    t4:  '#48484A',   // Disabled
 
-    // Brand — Forge Orange
-    forge:      '#FF5C2E',    // Primary CTA, active states
-    forgeDim:   '#FF5C2E26', // 15% alpha — glow backgrounds
-    forgeMid:   '#FF7A52',   // Hover / lighter variant
-    forgeMuted: '#CC4A25',   // Pressed / darker variant
+    // Brand — Apple Fitness "Exercise" Neon Green
+    forge:      '#B2FF24',    
+    forgeDim:   '#B2FF2426', 
+    forgeMid:   '#D4FF70',   
+    forgeMuted: '#8FCC1D',   
 
-    // Semantic / Data colors
-    green:   '#30D158',  // Success, completion, nutrition positive
-    greenDim:'#30D15820',
-    blue:    '#0A84FF',  // Info, water tracking
-    blueDim: '#0A84FF20',
-    gold:    '#FFD60A',  // Streak, achievement, XP
-    goldDim: '#FFD60A20',
-    red:     '#FF453A',  // Error, destructive, overload
-    redDim:  '#FF453A20',
-    purple:  '#BF5AF2',  // AI Coach indicator
+    // Semantic / Data colors (Apple Activity Ring palette)
+    green:   '#B2FF24',  // Exercise Green
+    greenDim:'#B2FF2420',
+    blue:    '#00E5FF',  // Stand Blue
+    blueDim: '#00E5FF20',
+    gold:    '#FA114F',  // Move Pink/Red (Replaced gold with Pink)
+    goldDim: '#FA114F20',
+    red:     '#FF3B30',  // System Destructive Red
+    redDim:  '#FF3B3020',
+    purple:  '#BF5AF2',  // System Purple
     purpleDim:'#BF5AF220',
 
     // Overlay
-    overlay: 'rgba(0,0,0,0.65)',
-    overlayLight: 'rgba(0,0,0,0.35)',
+    overlay: 'rgba(0,0,0,0.75)',
+    overlayLight: 'rgba(0,0,0,0.45)',
 
-    // Legacy aliases (keep for backward-compat while migrating)
-    /** @deprecated use forge */       forgeHover: '#FF7A52',
+    // Legacy aliases
+    /** @deprecated use forge */ forgeHover: '#D4FF70',
   },
 
   // ── Typography ──────────────────────────────────────────────────────────
 
   typography: {
-    // Families (ensure these are loaded in _layout.tsx via useFonts)
+    // Stripping out custom fonts to force iOS/Android default System font (San Francisco / Roboto)
     families: {
-      display: 'SpaceMono',   // Hero numbers, wordmark — swap for SpaceGrotesk when loaded
-      heading: 'SpaceMono',   // Section headings
-      body:    undefined,     // System default → SF Pro (iOS) / Roboto (Android)
-      mono:    'SpaceMono',   // Timers, data, metrics
+      display: undefined,
+      heading: undefined,
+      body:    undefined,
+      mono:    undefined, // Fallback to system monospaced for timers
     },
 
-    // Size scale — max 4 in use per screen
+    // Size scale
     sizes: {
-      display: 32,  // Hero metrics, big numbers
-      h1:      24,  // Screen titles
-      h2:      20,  // Section headings
-      h3:      17,  // Card titles, list headers
-      body:    15,  // Main body content
-      bodyS:   13,  // Supporting text, descriptions
-      label:   11,  // Uppercase labels (use with letterSpacing)
-      caption: 10,  // Metadata, timestamps
+      display: 34,  // iOS Large Title
+      h1:      28,  // Title 1
+      h2:      22,  // Title 2
+      h3:      20,  // Title 3
+      body:    17,  // Body
+      bodyS:   15,  // Subheadline
+      label:   13,  // Footnote
+      caption: 11,  // Caption
     },
 
-    // Weight scale — max 2 per screen
+    // Weight scale (Apple uses heavily weighted headings)
     weights: {
       regular:  '400' as const,
       medium:   '500' as const,
@@ -87,116 +82,101 @@ export const ForgeTheme = {
       black:    '800' as const,
     },
 
-    // Line height multipliers
     lineHeights: {
-      tight:  1.2,  // Headings
-      body:   1.5,  // Body text
-      loose:  1.7,  // Readable long-form
+      tight:  1.1,
+      body:   1.3,
+      loose:  1.5,
     },
   },
 
-  // ── Spacing (4pt / 8pt grid) ─────────────────────────────────────────────
+  // ── Spacing ─────────────────────────────────────────────────────────────
 
   spacing: {
-    // Named scale
-    px1: 4,   // Micro — inline gap
-    px2: 8,   // Tight — icon pad, small gap
-    px3: 12,  // Compact — list item vertical
-    px4: 16,  // Standard — card padding
-    px5: 20,  // Page — screen horizontal margin
-    px6: 24,  // Section — between content blocks
-    px7: 32,  // Large — major section gap
-    px8: 48,  // Hero — safe area padding
-    px9: 64,  // Maximum — oversized safe zones
+    px1: 4,
+    px2: 8,
+    px3: 12,
+    px4: 16,
+    px5: 20,
+    px6: 24,
+    px7: 32,
+    px8: 48,
+    px9: 64,
 
-    // Semantic aliases
     xs:   4,
     sm:   8,
     md:   12,
     lg:   16,
     xl:   20,
     xxl:  24,
-    page: 20,  // Standard screen paddingHorizontal
+    page: 20,
   },
 
-  // ── Border Radius ────────────────────────────────────────────────────────
+  // ── Border Radius (Apple's signature squircles) ────────────────────────
 
   radii: {
-    xs:   4,    // Tags, tiny chips
-    sm:   8,    // Small chips, badges
-    md:   12,   // Buttons, segmented controls
-    lg:   16,   // Standard cards
-    xl:   20,   // Hero cards
-    xxl:  28,   // Large modals, bottom sheets
-    full: 9999, // Pills, avatars, circles
+    xs:   8,    // Tighter pills
+    sm:   12,   // Small inputs
+    md:   16,   // Apple style buttons
+    lg:   20,   // Standard cards
+    xl:   24,   // Hero cards
+    xxl:  32,   // Bottom sheets
+    full: 9999, // Perfect circles/pills
   },
 
   // ── Shadows / Elevation ──────────────────────────────────────────────────
 
   shadows: {
-    // Neutral card shadow
     card: {
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 8,
-      elevation: 3,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 10,
+      elevation: 5,
     },
-    // Forge orange glow — use sparingly on active CTAs
     forge: {
-      shadowColor: '#FF5C2E',
+      shadowColor: '#B2FF24', // Green glow
       shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.30,
-      shadowRadius: 12,
-      elevation: 6,
+      shadowOpacity: 0.40,
+      shadowRadius: 16,
+      elevation: 8,
     },
-    // Floating elements — FABs, bottom sheets
     float: {
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.40,
-      shadowRadius: 20,
-      elevation: 12,
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.50,
+      shadowRadius: 24,
+      elevation: 14,
     },
-    // Subtle lift — chips, inline badges
     lift: {
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.15,
-      shadowRadius: 4,
-      elevation: 2,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 6,
+      elevation: 3,
     },
   },
 
   // ── Motion / Animation ───────────────────────────────────────────────────
 
   motion: {
-    // Duration presets (ms)
     duration: {
-      instant:  100,  // Tap feedback
-      fast:     150,  // Press states
-      standard: 250,  // Most UI transitions
-      enter:    350,  // Screen entrances, modals
-      slow:     500,  // Progress rings, elaborate transitions
-      pulse:   1400,  // Breathing / ambient animations
+      instant:  100,
+      fast:     150,
+      standard: 250,
+      enter:    350,
+      slow:     500,
+      pulse:   1400,
     },
-    // Easing descriptors — pass these to withSpring or compose in component
     spring: { damping: 14, stiffness: 120 } as const,
   },
 
-  // ── Touch Targets ────────────────────────────────────────────────────────
-
   touch: {
-    minSize: 44,      // iOS HIG minimum (pt)
-    minSizeMd: 48,    // Material Design minimum (dp)
-    minGap: 8,        // Minimum gap between targets
+    minSize: 44,
+    minSizeMd: 48,
+    minGap: 8,
   },
 } as const;
 
-// ── Convenience re-export ─────────────────────────────────────────────────
-
-/** Short alias: import { T } from '@/constants/ForgeTheme' */
 export const T = ForgeTheme;
-
 export type ForgeColors = typeof ForgeTheme.colors;
 export type ForgeSpacing = typeof ForgeTheme.spacing;

@@ -109,8 +109,8 @@ export default function LoginScreen() {
             activeOpacity={0.85}
           >
             {loading
-              ? <ActivityIndicator color="#fff" />
-              : <Text style={s.btnText}>Get Started</Text>
+              ? <ActivityIndicator color="#000" />
+              : <Text style={s.btnText}>Log In</Text>
             }
           </TouchableOpacity>
 
@@ -192,7 +192,7 @@ const s = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3, shadowRadius: 16, elevation: 8,
   },
-  btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  btnText: { color: '#000000', fontSize: 16, fontWeight: '700' },
 
   // Divider
   divider: { flexDirection: 'row', alignItems: 'center', gap: 12, width: '100%', marginVertical: 28 },

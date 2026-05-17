@@ -56,7 +56,6 @@ const SAMPLE_EXERCISES: Omit<Exercise, 'id'>[] = [
 export async function seedExercises() {
   let count = 0;
   for (const ex of SAMPLE_EXERCISES) {
-    // Generate an ID based on the name (e.g., 'push-up')
     const id = ex.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
     const docRef = doc(db, 'exercises', id);
     
@@ -67,4 +66,49 @@ export async function seedExercises() {
     count++;
   }
   return count;
+}
+
+export async function seedMockUser(uid: string) {
+  if (!uid) return;
+  const userRef = doc(db, 'users', uid);
+  await setDoc(userRef, {
+    displayName: 'Mock Athlete',
+    weight: 186,
+    bmi: 24.5,
+    streak: 14,
+    weightHistory: [
+      { value: 195, date: 'May 1' },
+      { value: 193, date: 'May 8' },
+      { value: 191, date: 'May 10' },
+      { value: 190, date: 'May 15' },
+      { value: 188, date: 'May 20' },
+      { value: 186, date: 'May 29' },
+    ],
+    measurements: [
+      { chest: 41.5, waist: 33.0, arms: 15.2, legs: 24.8 }
+    ],
+    progressPhotos: [
+      { url: 'https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?auto=format&fit=crop&w=800&q=80', date: '2026-01-01' },
+      { url: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?auto=format&fit=crop&w=800&q=80', date: new Date().toISOString() },
+    ]
+  }, { merge: true });
+
+  // Add a sample recent workout
+  const workoutRef = doc(db, `users/${uid}/workouts/mock_workout_1`);
+  await setDoc(workoutRef, {
+    id: 'mock_workout_1',
+    date: new Date().toISOString().split('T')[0], // Today
+    notes: 'Heavy Push Day',
+    exercises: [
+      {
+        exerciseId: 'bench-press',
+        name: 'Bench Press',
+        muscleGroups: ['chest', 'triceps'],
+        sets: [
+          { id: '1', weight: 225, reps: 5, completed: true },
+          { id: '2', weight: 225, reps: 5, completed: true },
+        ]
+      }
+    ]
+  });
 }

@@ -106,7 +106,7 @@ export function ForgeButton({
         {loading ? (
           <ActivityIndicator
             size="small"
-            color={variant === 'primary' || variant === 'danger' ? '#fff' : ForgeTheme.colors.forge}
+            color={variant === 'primary' ? '#000' : variant === 'danger' ? '#fff' : ForgeTheme.colors.forge}
           />
         ) : (
           <View style={styles.inner}>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   label_md: { fontSize: 15 },
   label_lg: { fontSize: 17 },
 
-  labelColor_primary:   { color: '#fff' },
+  labelColor_primary:   { color: '#000000' },
   labelColor_secondary: { color: colors.forge },
   labelColor_ghost:     { color: colors.forge },
   labelColor_danger:    { color: '#fff' },

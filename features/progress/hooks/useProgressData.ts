@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -13,46 +13,30 @@ export function useProgressData() {
   const [isUploading, setIsUploading] = useState(false);
 
   // ── Weight data ──
-  const fallbackHistory: WeightEntry[] = [
-    { value: 195, date: 'May 1' },
-    { value: 193, date: 'May 8' },
-    { value: 191, date: 'May 10' },
-    { value: 190, date: 'May 15' },
-    { value: 188, date: 'May 20' },
-    { value: (user as any)?.weight || 186, date: 'May 29' },
-  ];
-  
-  const rawHistory: WeightEntry[] = (user as any)?.weightHistory?.length 
-    ? (user as any).weightHistory 
-    : fallbackHistory;
+  const rawHistory: WeightEntry[] = (user as any)?.weightHistory || [];
     
-  const lineData = rawHistory.map(item => ({ value: item.value, label: item.date.slice(0, 5) }));
+  const lineData = rawHistory.length > 0 
+    ? rawHistory.map(item => ({ value: item.value, label: item.date.slice(0, 5) })) 
+    : [{ value: 0, label: 'No Data' }];
 
-  const currentWeight = rawHistory[rawHistory.length - 1].value;
-  const startWeight   = rawHistory[0].value;
-  const weightDiff    = +(currentWeight - startWeight).toFixed(1);
+  const currentWeight = rawHistory.length > 0 ? rawHistory[rawHistory.length - 1].value : 0;
+  const startWeight   = rawHistory.length > 0 ? rawHistory[0].value : 0;
+  const weightDiff    = startWeight > 0 ? +(currentWeight - startWeight).toFixed(1) : 0;
 
-  const minVal = Math.min(...rawHistory.map(r => r.value));
-  const maxVal = Math.max(...rawHistory.map(r => r.value));
+  const minVal = rawHistory.length > 0 ? Math.min(...rawHistory.map(r => r.value)) : 0;
+  const maxVal = rawHistory.length > 0 ? Math.max(...rawHistory.map(r => r.value)) : 0;
 
   // ── Measurements ──
-  const measurements: MeasurementEntry[] = (user as any)?.measurements?.length
-    ? (user as any).measurements
-    : [{ chest: 41.5, waist: 33.0, arms: 15.2, legs: 24.8 }];
+  const measurements: MeasurementEntry[] = (user as any)?.measurements || [];
   
-  const latest = measurements[measurements.length - 1];
+  const latest = measurements.length > 0 ? measurements[measurements.length - 1] : {};
   const prev   = measurements.length > 1 ? measurements[measurements.length - 2] : undefined;
 
   // ── Photos ──
-  const photos = (user as any)?.progressPhotos?.length
-    ? (user as any).progressPhotos
-    : [
-        { url: 'https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?auto=format&fit=crop&w=800&q=80', date: '2026-01-01' },
-        { url: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?auto=format&fit=crop&w=800&q=80', date: new Date().toISOString() },
-      ];
+  const photos = (user as any)?.progressPhotos || [];
   
-  const firstPhoto = photos[0];
-  const lastPhoto  = photos[photos.length - 1];
+  const firstPhoto = photos.length > 0 ? photos[0] : null;
+  const lastPhoto  = photos.length > 0 ? photos[photos.length - 1] : null;
 
   // ── Camera ──
   const uploadPhoto = async (uri: string) => {

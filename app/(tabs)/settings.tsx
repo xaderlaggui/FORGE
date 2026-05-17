@@ -99,6 +99,26 @@ export default function SettingsScreen() {
                 loading={seeding}
                 variant="secondary"
                 leftIcon={<Database size={16} color={T.colors.forge} />}
+                style={{ marginBottom: 12 }}
+              />
+              <ForgeButton
+                label="Inject Mock User Data"
+                onPress={async () => {
+                  try {
+                    if (!user?.uid) return;
+                    setSeeding(true);
+                    const { seedMockUser } = await import('../../utils/seedData');
+                    await seedMockUser(user.uid);
+                    Alert.alert('Success', 'Mock profile and workouts injected to Firestore!');
+                  } catch (e: any) {
+                    Alert.alert('Error', e.message);
+                  } finally {
+                    setSeeding(false);
+                  }
+                }}
+                loading={seeding}
+                variant="secondary"
+                leftIcon={<Database size={16} color={T.colors.forge} />}
               />
             </View>
           </View>

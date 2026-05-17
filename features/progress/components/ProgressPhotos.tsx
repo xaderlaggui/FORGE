@@ -5,8 +5,8 @@ import { ForgeButton } from '../../../components/forge/ForgeButton';
 import { ForgeTheme as T } from '../../../constants/ForgeTheme';
 
 interface ProgressPhotosProps {
-  firstPhoto: { url: string; date: string };
-  lastPhoto: { url: string; date: string };
+  firstPhoto?: { url: string; date: string } | null;
+  lastPhoto?: { url: string; date: string } | null;
   isUploading: boolean;
   onTakePhoto: () => void;
 }
@@ -18,7 +18,13 @@ export function ProgressPhotos({ firstPhoto, lastPhoto, isUploading, onTakePhoto
       <View style={s.photoGrid}>
         {[{ photo: firstPhoto, badge: 'Before' }, { photo: lastPhoto, badge: 'Current' }].map(({ photo, badge }) => (
           <View key={badge} style={s.photoCard}>
-            <Image source={{ uri: photo.url }} style={StyleSheet.absoluteFill as any} resizeMode="cover" />
+            {photo?.url ? (
+              <Image source={{ uri: photo.url }} style={StyleSheet.absoluteFill as any} resizeMode="cover" />
+            ) : (
+              <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: 0.3 }]}>
+                <Camera size={24} color={T.colors.t2} />
+              </View>
+            )}
             <View style={s.photoBadgeWrap}>
               <Text style={s.photoBadgeText} maxFontSizeMultiplier={1.2}>{badge}</Text>
             </View>
