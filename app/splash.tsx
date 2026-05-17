@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, Text, View, Animated as RNAnimated } from 'react-native';
 import Animated, {
   Easing,
   runOnJS,
@@ -36,7 +36,7 @@ export default function SplashScreen() {
 
   const navigate = () => router.replace('/(auth)/welcome');
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new RNAnimated.Value(0)).current;
 
   useEffect(() => {
     // Animate in
@@ -44,7 +44,7 @@ export default function SplashScreen() {
     scale.value = withTiming(1, { duration: 900, easing: Easing.out(Easing.exp) });
     glowOpacity.value = withDelay(300, withTiming(1, { duration: 800 }));
 
-    Animated.timing(fadeAnim, {
+    RNAnimated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       useNativeDriver: true,
@@ -66,7 +66,7 @@ export default function SplashScreen() {
       <Animated.View style={[s.glow, glowStyle]} />
 
       <Animated.View style={[s.wordmarkWrap, wordmarkStyle]}>
-        <Animated.Image
+        <RNAnimated.Image
           source={MascotImages.hero}
           style={{ width: 200, height: 200, opacity: fadeAnim, alignSelf: 'center', marginBottom: 16 } as any}
           resizeMode="contain"

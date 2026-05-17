@@ -62,7 +62,7 @@ export function ForgeSkeleton({
         },
         animStyle,
         style,
-      ]}
+      ] as any}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
     />

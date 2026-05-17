@@ -73,7 +73,7 @@ export function ExerciseLibrary({ exercises, isLoading }: ExerciseLibraryProps) 
           <View style={s.bodyRow}>
             <View style={s.bodyWrapper}>
               <Body
-                data={slugs}
+                data={slugs as any}
                 gender="male"
                 side="front"
                 scale={1.2}
@@ -84,7 +84,7 @@ export function ExerciseLibrary({ exercises, isLoading }: ExerciseLibraryProps) 
             </View>
             <View style={s.bodyWrapper}>
               <Body
-                data={slugs}
+                data={slugs as any}
                 gender="male"
                 side="back"
                 scale={1.2}

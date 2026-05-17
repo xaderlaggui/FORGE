@@ -88,7 +88,7 @@ export function MealLogList({ meals, expandedMeal, setExpandedMeal }: MealLogLis
                     { label: 'Carbs',   value: meal.carbs || 0,   color: T.colors.blue },
                     { label: 'Fat',     value: meal.fat || 0,     color: T.colors.gold },
                     { label: 'Fiber',   value: meal.fiber || 0,   color: T.colors.purple },
-                    { label: 'Sugar',   value: meal.sugar || 0,   color: T.colors.orange },
+                    { label: 'Sugar',   value: meal.sugar || 0,   color: T.colors.red },
                   ].map(m => (
                     <View key={m.label} style={s.mealDetailStat}>
                       <Text style={[s.mealDetailVal, { color: m.color }]} maxFontSizeMultiplier={1.2}>{Math.round(m.value)}g</Text>
