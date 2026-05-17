@@ -31,7 +31,7 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
     <View style={{ position: 'relative', overflow: 'visible', marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5 }}>
       <View style={[s.todayCard, { marginHorizontal: 0, marginBottom: 0 }]}>
         <LinearGradient
-          colors={['#1C1C22', '#0E0E11']}
+          colors={[T.colors.bg1, T.colors.bg2]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFillObject}

@@ -52,13 +52,14 @@ function ThemeToggle({ T }: { T: any }) {
 
 // ─── Sub-component ─────────────────────────────────────────
 function SettingRow({ T, icon, label, onPress, isDanger = false }: { T: any; icon: React.ReactNode; label: string; onPress: () => void; isDanger?: boolean }) {
+  const s = useS(T);
   return (
-    <View style={styles.row}>
-      <View style={[styles.iconWrap, isDanger && { backgroundColor: T.colors.redDim }]}>
+    <View style={s.row}>
+      <View style={[s.iconWrap, isDanger && { backgroundColor: T.colors.redDim }]}>
         {icon}
       </View>
-      <View style={styles.rowContent}>
-        <Text style={[styles.rowLabel, { color: isDanger ? T.colors.red : T.colors.t1 }]} maxFontSizeMultiplier={1.2}>
+      <View style={s.rowContent}>
+        <Text style={[s.rowLabel, { color: isDanger ? T.colors.red : T.colors.t1 }]} maxFontSizeMultiplier={1.2}>
           {label}
         </Text>
       </View>
@@ -72,6 +73,7 @@ export default function SettingsScreen() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const { T } = useForgeTheme();
+  const s = useS(T);
   const [seeding, setSeeding] = useState(false);
 
   const handleLogout = async () => {
@@ -103,50 +105,50 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: T.colors.bg0 }]} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <ScrollView style={[s.container, { backgroundColor: T.colors.bg0 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
       {/* ── Header ── */}
-      <View style={[styles.header, { borderBottomColor: T.colors.b1, backgroundColor: T.colors.bg0 }]}>
-        <Text style={[styles.headerTitle, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>Settings</Text>
+      <View style={[s.header, { borderBottomColor: T.colors.b1, backgroundColor: T.colors.bg0 }]}>
+        <Text style={[s.headerTitle, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>Settings</Text>
       </View>
 
       {/* ── Profile Card ── */}
-      <View style={[styles.profileCard, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
-        <View style={[styles.avatar, { backgroundColor: T.colors.forgeDim }]}>
+      <View style={[s.profileCard, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
+        <View style={[s.avatar, { backgroundColor: T.colors.forgeDim }]}>
           <UserIcon size={32} color={T.colors.forge} />
         </View>
-        <View style={styles.profileInfo}>
-          <Text style={[styles.profileName, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>{user?.displayName || 'Athlete'}</Text>
-          <Text style={[styles.profileEmail, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>{user?.email || 'No email linked'}</Text>
+        <View style={s.profileInfo}>
+          <Text style={[s.profileName, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>{user?.displayName || 'Athlete'}</Text>
+          <Text style={[s.profileEmail, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>{user?.email || 'No email linked'}</Text>
         </View>
       </View>
 
       {/* ── Appearance ── */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Appearance</Text>
-        <View style={[styles.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
+      <View style={s.section}>
+        <Text style={[s.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Appearance</Text>
+        <View style={[s.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
           <ThemeToggle T={T} />
         </View>
       </View>
 
       {/* ── Preferences Section ── */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Preferences</Text>
-        <View style={[styles.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
+      <View style={s.section}>
+        <Text style={[s.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Preferences</Text>
+        <View style={[s.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
           <SettingRow T={T} icon={<UserIcon size={18} color={T.colors.t1} />} label="Edit Profile" onPress={() => { }} />
-          <View style={[styles.divider, { backgroundColor: T.colors.b1 }]} />
+          <View style={[s.divider, { backgroundColor: T.colors.b1 }]} />
           <SettingRow T={T} icon={<Sparkles size={18} color={T.colors.forge} />} label="Generate AI Plan" onPress={() => router.push('/aiPlan')} />
-          <View style={[styles.divider, { backgroundColor: T.colors.b1 }]} />
+          <View style={[s.divider, { backgroundColor: T.colors.b1 }]} />
           <SettingRow T={T} icon={<Shield size={18} color={T.colors.t1} />} label="Privacy & Security" onPress={() => { }} />
         </View>
       </View>
 
       {/* ── Developer / Admin Section ── */}
       {__DEV__ && (
-        <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Developer</Text>
-          <View style={[styles.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
+        <View style={s.section}>
+          <Text style={[s.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Developer</Text>
+          <View style={[s.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
             <View style={{ padding: T.spacing.px4 }}>
-              <Text style={styles.devHint} maxFontSizeMultiplier={1.2}>
+              <Text style={s.devHint} maxFontSizeMultiplier={1.2}>
                 Need test data? Seed the Firestore database with default exercises.
               </Text>
               <ForgeButton
@@ -189,21 +191,21 @@ export default function SettingsScreen() {
       )}
 
       {/* ── Actions ── */}
-      <View style={styles.section}>
+      <View style={s.section}>
         <ForgeButton
           label="Log Out"
           onPress={handleLogout}
           variant="danger"
           leftIcon={<LogOut size={16} color="#fff" />}
         />
-        <Text style={styles.version} maxFontSizeMultiplier={1.2}>FORGE App v1.0.0</Text>
+        <Text style={s.version} maxFontSizeMultiplier={1.2}>FORGE App v1.0.0</Text>
       </View>
 
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const useS = (T: any) => StyleSheet.create({
   container: { flex: 1, backgroundColor: T.colors.bg0 },
   content: { paddingBottom: 110 },
 

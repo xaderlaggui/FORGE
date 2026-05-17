@@ -365,7 +365,7 @@ No markdown, no explanation. Raw JSON array only.`;
 
             {overlapWarning && (
               <View style={s.warnCard}>
-                <AlertTriangle size={16} color="#FFD60A" style={{ marginTop: 2 }} />
+                <AlertTriangle size={16} color={T.colors.gold} style={{ marginTop: 2 }} />
                 <Text style={s.warnText}>{overlapWarning}</Text>
               </View>
             )}
@@ -572,10 +572,10 @@ const useS = (T: any) => StyleSheet.create({
           nextBtnText: { color: '#000', fontSize: 16, fontWeight: '800' },
 
           warnCard: {
-            backgroundColor: 'rgba(255, 214, 10, 0.1)', borderWidth: 0.5, borderColor: 'rgba(255, 214, 10, 0.3)',
+            backgroundColor: T.colors.goldDim, borderWidth: 0.5, borderColor: T.colors.gold,
             borderRadius: 12, padding: 12, flexDirection: 'row', gap: 10, marginBottom: 20,
           },
-          warnText: { color: '#FFD60A', fontSize: 13, lineHeight: 18, flex: 1, fontWeight: '500' },
+          warnText: { color: T.colors.t1, fontSize: 13, lineHeight: 18, flex: 1, fontWeight: '500' },
 
           exItem: { backgroundColor: T.colors.bg1, borderWidth: 0.5, borderColor: T.colors.b1, borderRadius: 14, padding: 14, marginBottom: 10 },
           exItemTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },

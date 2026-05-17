@@ -37,7 +37,7 @@ export default function TabLayout() {
           tabBarActiveTintColor: T.colors.forge,
           tabBarInactiveTintColor: T.colors.t3,
           tabBarStyle: {
-            backgroundColor: 'rgba(10,10,12,0.95)', // bg0 with slight transparency for blur effect
+            backgroundColor: T.colors.bg0, // bg0 with slight transparency for blur effect
             borderTopWidth: 0.5,
             borderTopColor: T.colors.b1,
             height: 85,

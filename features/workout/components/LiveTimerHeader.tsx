@@ -48,7 +48,7 @@ const useStyles = (T: any) => StyleSheet.create({
           header: {
             flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
             paddingTop: 60, paddingBottom: T.spacing.px3, paddingHorizontal: T.spacing.page,
-            backgroundColor: 'rgba(10,10,12,0.95)',
+            backgroundColor: T.colors.bg0,
             borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
           },
           backBtn: {

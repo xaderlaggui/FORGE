@@ -16,7 +16,7 @@ export function DailyCalorieSummary({ aggregates }: DailyCalorieSummaryProps) {
   return (
     <View style={s.summaryCard}>
       <LinearGradient
-        colors={['#1C1C22', '#0E0E11']}
+        colors={[T.colors.bg1, T.colors.bg2]}
         start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFillObject}
       />
