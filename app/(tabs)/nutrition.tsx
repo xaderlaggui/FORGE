@@ -1,10 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Search, ScanLine, Plus } from 'lucide-react-native';
-import Svg, { Circle } from 'react-native-svg';
+import { Text, View, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { ForgeTheme } from '../../constants/ForgeTheme';
 import { useNutrition } from '../../hooks/useNutrition';
-
 export default function NutritionScreen() {
   const router = useRouter();
   const { data: nutrition, isLoading } = useNutrition();
@@ -12,7 +10,7 @@ export default function NutritionScreen() {
   if (isLoading || !nutrition) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#D2FF00" />
+        <ActivityIndicator size="large" color={ForgeTheme.colors.forge} />
       </View>
     );
   }
@@ -22,146 +20,140 @@ export default function NutritionScreen() {
   const totalCarbs = nutrition.meals.reduce((sum, m) => sum + m.carbs, 0);
   const totalFat = nutrition.meals.reduce((sum, m) => sum + m.fat, 0);
   const totalCal = nutrition.meals.reduce((sum, m) => sum + m.calories, 0);
-  
-  // Goal constants (In a real app, these come from UserProfile goals)
-  const goalPro = 150;
-  const goalCarbs = 200;
-  const goalFat = 70;
-  const goalCal = 2400;
+  const waterLiters = ((nutrition.waterMl || 0) / 1000).toFixed(1);
 
-  // SVG Calculations (Circumference = 2 * PI * r)
-  const calcOffset = (val: number, goal: number, r: number) => {
-    const c = 2 * Math.PI * r;
-    const percent = Math.min(val / goal, 1);
-    return c - (percent * c);
-  };
-
-  const proOffset = calcOffset(totalProtein, goalPro, 28);
-  const carbOffset = calcOffset(totalCarbs, goalCarbs, 38);
-  const fatOffset = calcOffset(totalFat, goalFat, 48);
+  const goalCal = 2500;
   const calPercent = Math.min((totalCal / goalCal) * 100, 100);
+
+  const renderMealSection = (title: string, emoji: string, meal: any) => {
+    return (
+      <View style={styles.mealSection}>
+        <View style={styles.mealSectionHeader}>
+          <View>
+            <Text style={styles.mealSectionTitle}>{emoji} {title}</Text>
+            <Text style={[styles.mealKcal, meal.calories === 0 && { color: ForgeTheme.colors.t3 }]}>
+              {meal.calories} kcal
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => router.push({ pathname: '/addMeal', params: { mealName: meal.name } })}>
+            <Text style={styles.addMealBtn}>+ Add</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.card, meal.calories === 0 && { opacity: 0.5 }]}>
+          {meal.calories > 0 ? (
+            <View style={styles.mealItem}>
+              <View>
+                <Text style={styles.mealItemName}>{meal.name} Summary</Text>
+                <View style={styles.macroChips}>
+                  <Text style={[styles.macroChip, styles.macroChipP]}>{meal.protein}g P</Text>
+                  <Text style={[styles.macroChip, styles.macroChipC]}>{meal.carbs}g C</Text>
+                  <Text style={[styles.macroChip, styles.macroChipF]}>{meal.fat}g F</Text>
+                </View>
+              </View>
+              <Text style={styles.mealItemKcal}>{meal.calories}</Text>
+            </View>
+          ) : (
+            <View style={{ padding: 16, alignItems: 'center' }}>
+              <Text style={{ fontSize: 12, color: ForgeTheme.colors.t3 }}>No meals logged yet</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    );
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>NUTRITION <Text style={{ color: '#D2FF00' }}>TRACKER</Text></Text>
-        
-        <View style={styles.searchContainer}>
-          <View style={styles.searchIcon}><Search size={20} color="#8A8A93" /></View>
-          <TextInput 
-            style={styles.searchInput}
-            placeholder="Search food or scan barcode..."
-            placeholderTextColor="#8A8A93"
+        <Text style={styles.title}>Nutrition</Text>
+        <View style={styles.todayTag}>
+          <Text style={styles.todayTagText}>Today</Text>
+        </View>
+      </View>
+
+      {/* Daily Summary */}
+      <View style={styles.nutritionSummary}>
+        <View style={styles.calRow}>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+            <Text style={styles.calConsumed}>{totalCal}</Text>
+            <Text style={styles.calGoal}> / {goalCal} kcal</Text>
+          </View>
+          <Text style={{ fontSize: 11, color: ForgeTheme.colors.green, fontWeight: '600' }}>{Math.round(calPercent)}%</Text>
+        </View>
+        <View style={styles.calBarWrap}>
+          <LinearGradient
+            colors={[ForgeTheme.colors.forge, ForgeTheme.colors.forgeHover]}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+            style={[styles.calBar, { width: `${calPercent}%` }]}
           />
-          <TouchableOpacity style={styles.scanBtn}>
-            <ScanLine size={18} color="#000" strokeWidth={2.5} />
-          </TouchableOpacity>
         </View>
-      </View>
-
-      <View style={styles.macroSection}>
-        <View style={styles.ringContainer}>
-          <Svg height="192" width="192" viewBox="0 0 100 100" style={{ transform: [{ rotate: '-90deg' }] }}>
-            {/* Protein (Inner) */}
-            <Circle cx="50" cy="50" r="28" fill="transparent" stroke="#16161A" strokeWidth="6" />
-            <Circle cx="50" cy="50" r="28" fill="transparent" stroke="#D2FF00" strokeWidth="6" strokeDasharray={2 * Math.PI * 28} strokeDashoffset={proOffset} strokeLinecap="round" />
-            
-            {/* Carbs (Middle) */}
-            <Circle cx="50" cy="50" r="38" fill="transparent" stroke="#16161A" strokeWidth="6" />
-            <Circle cx="50" cy="50" r="38" fill="transparent" stroke="#3b82f6" strokeWidth="6" strokeDasharray={2 * Math.PI * 38} strokeDashoffset={carbOffset} strokeLinecap="round" />
-            
-            {/* Fat (Outer) */}
-            <Circle cx="50" cy="50" r="48" fill="transparent" stroke="#16161A" strokeWidth="6" />
-            <Circle cx="50" cy="50" r="48" fill="transparent" stroke="#ef4444" strokeWidth="6" strokeDasharray={2 * Math.PI * 48} strokeDashoffset={fatOffset} strokeLinecap="round" />
-          </Svg>
-          
-          <View style={styles.ringCenterText}>
-            <Text style={styles.ringValue}>{totalCal}</Text>
-            <Text style={styles.ringLabel}>EATEN</Text>
+        <View style={styles.macroRow}>
+          <View style={styles.macroStat}>
+            <Text style={[styles.macroStatNum, { color: ForgeTheme.colors.green }]}>{totalProtein}g</Text>
+            <Text style={styles.macroStatLabel}>Protein</Text>
           </View>
-        </View>
-
-        <View style={styles.progressContainer}>
-          <View style={styles.progressHeader}>
-            <Text style={styles.progressTitle}>CALORIES</Text>
-            <Text style={styles.progressStats}>{totalCal} / <Text style={{ color: '#D2FF00' }}>{goalCal}</Text></Text>
+          <View style={styles.macroStat}>
+            <Text style={[styles.macroStatNum, { color: ForgeTheme.colors.blue }]}>{totalCarbs}g</Text>
+            <Text style={styles.macroStatLabel}>Carbs</Text>
           </View>
-          <View style={styles.progressBarBg}>
-            <View style={[styles.progressBarFill, { width: `${calPercent}%` }]} />
+          <View style={styles.macroStat}>
+            <Text style={[styles.macroStatNum, { color: '#FFD60A' }]}>{totalFat}g</Text>
+            <Text style={styles.macroStatLabel}>Fat</Text>
+          </View>
+          <View style={styles.macroStat}>
+            <Text style={[styles.macroStatNum, { color: ForgeTheme.colors.blue }]}>{waterLiters}L</Text>
+            <Text style={styles.macroStatLabel}>Water</Text>
           </View>
         </View>
       </View>
 
-      <View style={styles.mealsSection}>
-        <Text style={styles.sectionTitle}>MEAL LOG</Text>
-        
-        <View style={styles.mealsList}>
-          {nutrition.meals.map((meal, idx) => (
-            <View key={idx} style={styles.mealCard}>
-              <View>
-                <Text style={styles.mealName}>{meal.name}</Text>
-                {meal.calories > 0 ? (
-                  <Text style={styles.mealMacros}>{meal.protein}P / {meal.carbs}C / {meal.fat}F</Text>
-                ) : (
-                  <Text style={styles.mealNotLogged}>Not logged yet</Text>
-                )}
-              </View>
-              
-              <View style={styles.mealAction}>
-                {meal.calories > 0 ? (
-                  <Text style={styles.mealCals}>{meal.calories} <Text style={styles.mealCalsLabel}>kcal</Text></Text>
-                ) : (
-                  <TouchableOpacity 
-                    style={styles.addBtn}
-                    onPress={() => router.push({ pathname: '/addMeal', params: { mealName: meal.name } })}
-                  >
-                    <Plus size={16} color="#D2FF00" strokeWidth={3} />
-                  </TouchableOpacity>
-                )}
-              </View>
-            </View>
-          ))}
-        </View>
-      </View>
+      {/* Meals */}
+      {renderMealSection('Breakfast', '🌅', nutrition.meals.find(m => m.name === 'Breakfast') || nutrition.meals[0])}
+      {renderMealSection('Lunch', '☀️', nutrition.meals.find(m => m.name === 'Lunch') || nutrition.meals[1])}
+      {renderMealSection('Dinner', '🌙', nutrition.meals.find(m => m.name === 'Dinner') || nutrition.meals[2])}
+      {renderMealSection('Snacks', '🍎', nutrition.meals.find(m => m.name === 'Snacks') || nutrition.meals[3])}
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0C0C0E' },
-  scrollContent: { padding: 24, paddingTop: 48 },
-  
-  header: { marginBottom: 40 },
-  title: { fontSize: 24, fontWeight: '900', color: '#FFF', marginBottom: 24, letterSpacing: 1 },
-  
-  searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#16161A', borderRadius: 30, borderWidth: 1, borderColor: '#242429', paddingHorizontal: 16, paddingVertical: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 20, elevation: 10 },
-  searchIcon: { marginRight: 12 },
-  searchInput: { flex: 1, color: '#FFF', fontSize: 14, fontWeight: '500' },
-  scanBtn: { backgroundColor: '#D2FF00', width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  container: { flex: 1, backgroundColor: ForgeTheme.colors.bg0 },
+  scrollContent: { paddingBottom: 100 },
 
-  macroSection: { alignItems: 'center', marginBottom: 40 },
-  ringContainer: { position: 'relative', width: 192, height: 192, marginBottom: 24, alignItems: 'center', justifyContent: 'center' },
-  ringCenterText: { position: 'absolute', alignItems: 'center' },
-  ringValue: { fontSize: 32, fontWeight: '900', color: '#FFF', letterSpacing: -1 },
-  ringLabel: { fontSize: 10, fontWeight: '800', color: '#8A8A93', letterSpacing: 2 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8 },
+  title: { fontSize: 20, fontWeight: '700', color: ForgeTheme.colors.t1 },
+  todayTag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 100, backgroundColor: ForgeTheme.colors.forge },
+  todayTagText: { fontSize: 11, fontWeight: '600', color: '#fff' },
 
-  progressContainer: { width: '100%', maxWidth: 320 },
-  progressHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  progressTitle: { fontSize: 12, fontWeight: '800', color: '#8A8A93', letterSpacing: 1 },
-  progressStats: { fontSize: 12, fontWeight: '800', color: '#FFF' },
-  progressBarBg: { height: 12, backgroundColor: '#16161A', borderRadius: 6, borderWidth: 1, borderColor: '#242429', overflow: 'hidden' },
-  progressBarFill: { height: '100%', width: '45%', backgroundColor: '#D2FF00', borderRadius: 6, shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 5 },
+  nutritionSummary: { marginHorizontal: 20, marginTop: 12, marginBottom: 24, backgroundColor: ForgeTheme.colors.bg1, borderRadius: 16, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1, padding: 16 },
+  calRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 },
+  calConsumed: { fontSize: 22, fontWeight: '800', color: ForgeTheme.colors.t1 },
+  calGoal: { fontSize: 12, color: ForgeTheme.colors.t2 },
+  calBarWrap: { height: 6, backgroundColor: ForgeTheme.colors.bg3, borderRadius: 3, marginBottom: 16, overflow: 'hidden' },
+  calBar: { height: 6, borderRadius: 3 },
 
-  mealsSection: {},
-  sectionTitle: { fontSize: 12, fontWeight: '800', color: '#8A8A93', letterSpacing: 1, marginBottom: 16 },
-  mealsList: { gap: 12 },
-  mealCard: { backgroundColor: '#16161A', borderRadius: 16, padding: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: '#242429' },
-  mealName: { fontSize: 18, fontWeight: '800', color: '#FFF', marginBottom: 4 },
-  mealMacros: { fontSize: 12, fontWeight: '600', color: '#8A8A93', letterSpacing: 0.5 },
-  mealNotLogged: { fontSize: 12, fontWeight: '500', color: '#8A8A93', fontStyle: 'italic' },
-  
-  mealAction: { flexDirection: 'row', alignItems: 'center' },
-  mealCals: { fontSize: 18, fontWeight: '900', color: '#D2FF00' },
-  mealCalsLabel: { fontSize: 12, color: '#8A8A93' },
-  addBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#0C0C0E', borderWidth: 1, borderColor: '#242429', alignItems: 'center', justifyContent: 'center' }
+  macroRow: { flexDirection: 'row', gap: 8 },
+  macroStat: { flex: 1, alignItems: 'center' },
+  macroStatNum: { fontSize: 14, fontWeight: '700' },
+  macroStatLabel: { fontSize: 10, color: ForgeTheme.colors.t3, marginTop: 2 },
+
+  mealSection: { marginHorizontal: 20, marginBottom: 16 },
+  mealSectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10 },
+  mealSectionTitle: { fontSize: 13, fontWeight: '600', color: ForgeTheme.colors.t1 },
+  mealKcal: { fontSize: 11, color: ForgeTheme.colors.t2 },
+  addMealBtn: { fontSize: 11, fontWeight: '600', color: ForgeTheme.colors.forge },
+
+  card: { backgroundColor: ForgeTheme.colors.bg1, borderRadius: 16, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1, overflow: 'hidden' },
+  mealItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
+  mealItemName: { fontSize: 13, color: ForgeTheme.colors.t1, fontWeight: '600' },
+  mealItemKcal: { fontSize: 13, fontWeight: '700', color: ForgeTheme.colors.t2 },
+
+  macroChips: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginTop: 6 },
+  macroChip: { fontSize: 10, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 100, fontWeight: '600', overflow: 'hidden' },
+  macroChipP: { backgroundColor: 'rgba(52,199,89,0.15)', color: ForgeTheme.colors.green },
+  macroChipC: { backgroundColor: 'rgba(10,132,255,0.15)', color: ForgeTheme.colors.blue },
+  macroChipF: { backgroundColor: 'rgba(255,214,10,0.15)', color: '#FFD60A' },
 });

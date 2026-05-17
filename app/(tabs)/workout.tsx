@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { db } from '../../services/firebase';
 import { useWorkouts } from '../../hooks/useWorkouts';
 import type { Exercise } from '../../types';
+import { ForgeTheme } from '../../constants/ForgeTheme';
 
 export default function WorkoutScreen() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function WorkoutScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>WORKOUT <Text style={{ color: '#D2FF00' }}>PLAN</Text></Text>
+        <Text style={styles.title}>Workout Planner</Text>
         
         {/* Custom Segmented Control */}
         <View style={styles.tabContainer}>
@@ -65,7 +66,7 @@ export default function WorkoutScreen() {
       {activeTab === 'library' ? (
         // --- EXERCISE LIBRARY VIEW ---
         isLoadingExercises ? (
-          <ActivityIndicator size="large" color="#D2FF00" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color={ForgeTheme.colors.forge} style={{ marginTop: 40 }} />
         ) : (
           <FlatList
             data={exercises}
@@ -92,35 +93,35 @@ export default function WorkoutScreen() {
                 <TouchableOpacity 
                   key={idx} 
                   onPress={() => setActiveDayIdx(idx)}
-                  style={[styles.dayCircle, isActive && styles.activeDayCircle]}
+                  style={styles.weekDotCol}
                 >
-                  <Text style={[styles.dayText, isActive && styles.activeDayText]}>{day.label}</Text>
-                  <Text style={[styles.dateText, isActive && styles.activeDateText]}>{day.date}</Text>
+                  <Text style={styles.dayLabel}>{day.label}</Text>
+                  <View style={[styles.weekDot, isActive && styles.weekDotActive]} />
                 </TouchableOpacity>
               )
             })}
           </View>
 
           {isLoadingWorkouts ? (
-            <ActivityIndicator size="large" color="#D2FF00" />
+            <ActivityIndicator size="large" color={ForgeTheme.colors.forge} />
           ) : todayWorkout ? (
             <View style={styles.todayCard}>
               <Text style={styles.todayTitle}>SCHEDULED ROUTINE</Text>
               <Text style={styles.todaySub}>{todayWorkout.notes || 'Custom Workout'}</Text>
-              <Text style={{ color: '#8A8A93', marginBottom: 24 }}>{todayWorkout.exercises.length} Exercises Planned</Text>
+              <Text style={{ color: ForgeTheme.colors.t2, marginBottom: 24, fontSize: 13 }}>{todayWorkout.exercises.length} Exercises Planned</Text>
               
               <TouchableOpacity style={styles.startButton} onPress={() => router.push({ pathname: '/activeWorkout', params: { id: todayWorkout.id } })}>
-                <Text style={styles.startText}>▶ START WORKOUT</Text>
+                <Text style={styles.startText}>▶ Start Workout</Text>
               </TouchableOpacity>
             </View>
           ) : (
             <View style={[styles.todayCard, { alignItems: 'center', paddingVertical: 40 }]}>
               <Text style={styles.todaySub}>Rest Day</Text>
-              <Text style={{ color: '#8A8A93', textAlign: 'center', marginBottom: 24 }}>No workout scheduled for this day.</Text>
+              <Text style={{ color: ForgeTheme.colors.t2, textAlign: 'center', marginBottom: 24, fontSize: 13 }}>No workout scheduled for this day.</Text>
               
               {/* If no workout, start a blank one */}
               <TouchableOpacity style={styles.startButton} onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr } })}>
-                <Text style={styles.startText}>+ NEW WORKOUT</Text>
+                <Text style={styles.startText}>+ New Workout</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -130,34 +131,32 @@ export default function WorkoutScreen() {
   );
 }
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0C0C0E' },
-  header: { padding: 24, paddingTop: 48, backgroundColor: '#0C0C0E' },
-  title: { fontSize: 24, fontWeight: '900', color: '#FFF', marginBottom: 24, letterSpacing: 1 },
+  container: { flex: 1, backgroundColor: ForgeTheme.colors.bg0 },
+  header: { padding: 24, paddingTop: 60, backgroundColor: ForgeTheme.colors.bg0, borderBottomWidth: 0.5, borderBottomColor: ForgeTheme.colors.b1 },
+  title: { fontSize: 20, fontWeight: '700', color: ForgeTheme.colors.t1, marginBottom: 16 },
   
-  tabContainer: { flexDirection: 'row', backgroundColor: '#16161A', borderRadius: 12, padding: 4, borderWidth: 1, borderColor: '#242429' },
+  tabContainer: { flexDirection: 'row', backgroundColor: ForgeTheme.colors.bg1, borderRadius: 12, padding: 4, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1 },
   tab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8 },
-  activeTab: { backgroundColor: '#D2FF00', shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 10, elevation: 5 },
-  tabText: { fontWeight: '800', color: '#8A8A93', fontSize: 12, letterSpacing: 1 },
-  activeTabText: { color: '#000' },
+  activeTab: { backgroundColor: ForgeTheme.colors.bg2 },
+  tabText: { fontWeight: '600', color: ForgeTheme.colors.t3, fontSize: 11, letterSpacing: 0.5 },
+  activeTabText: { color: ForgeTheme.colors.t1 },
 
-  list: { padding: 24 },
-  card: { backgroundColor: '#16161A', padding: 20, borderRadius: 16, marginBottom: 12, borderWidth: 1, borderColor: '#242429' },
-  cardTitle: { fontSize: 16, fontWeight: '800', color: '#FFF', letterSpacing: 0.5 },
-  cardSub: { fontSize: 12, color: '#8A8A93', marginTop: 6, textTransform: 'uppercase', fontWeight: '700', letterSpacing: 1 },
-  emptyText: { textAlign: 'center', marginTop: 40, color: '#8A8A93', fontWeight: '600' },
+  list: { padding: 20, paddingBottom: 100 },
+  card: { backgroundColor: ForgeTheme.colors.bg1, padding: 16, borderRadius: 16, marginBottom: 12, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1 },
+  cardTitle: { fontSize: 14, fontWeight: '600', color: ForgeTheme.colors.t1, letterSpacing: 0.5 },
+  cardSub: { fontSize: 11, color: ForgeTheme.colors.t3, marginTop: 4, textTransform: 'uppercase', fontWeight: '500', letterSpacing: 1 },
+  emptyText: { textAlign: 'center', marginTop: 40, color: ForgeTheme.colors.t3, fontWeight: '500' },
 
-  plannerContainer: { padding: 24 },
-  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 40 },
-  dayCircle: { width: 44, height: 56, borderRadius: 22, backgroundColor: '#16161A', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#242429' },
-  activeDayCircle: { backgroundColor: '#D2FF00', borderColor: '#D2FF00', shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 6 },
-  dayText: { fontSize: 10, fontWeight: '800', color: '#8A8A93', marginBottom: 4 },
-  activeDayText: { color: '#000' },
-  dateText: { fontSize: 16, fontWeight: '900', color: '#FFF' },
-  activeDateText: { color: '#000' },
+  plannerContainer: { padding: 20, paddingBottom: 100 },
+  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, backgroundColor: ForgeTheme.colors.bg1, padding: 16, borderRadius: 16, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1 },
+  weekDotCol: { alignItems: 'center', gap: 6 },
+  dayLabel: { fontSize: 10, color: ForgeTheme.colors.t3, fontWeight: '600' },
+  weekDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: ForgeTheme.colors.bg3 },
+  weekDotActive: { backgroundColor: ForgeTheme.colors.forge, shadowColor: ForgeTheme.colors.forge, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 6, elevation: 3 },
 
-  todayCard: { backgroundColor: '#16161A', padding: 24, borderRadius: 20, borderWidth: 1, borderColor: '#242429' },
-  todayTitle: { fontSize: 12, color: '#8A8A93', marginBottom: 6, fontWeight: '800', letterSpacing: 1 },
-  todaySub: { fontSize: 22, fontWeight: '900', color: '#FFF', marginBottom: 32, letterSpacing: -0.5 },
-  startButton: { backgroundColor: '#D2FF00', padding: 16, borderRadius: 12, alignItems: 'center', shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 6 },
-  startText: { color: '#000', fontWeight: '900', fontSize: 14, letterSpacing: 1 },
+  todayCard: { backgroundColor: ForgeTheme.colors.bg1, padding: 24, borderRadius: 20, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1 },
+  todayTitle: { fontSize: 11, color: ForgeTheme.colors.t3, marginBottom: 6, fontWeight: '600', letterSpacing: 1, textTransform: 'uppercase' },
+  todaySub: { fontSize: 20, fontWeight: '700', color: ForgeTheme.colors.t1, marginBottom: 32 },
+  startButton: { backgroundColor: ForgeTheme.colors.forge, padding: 14, borderRadius: 12, alignItems: 'center' },
+  startText: { color: '#FFF', fontWeight: '700', fontSize: 14 },
 });

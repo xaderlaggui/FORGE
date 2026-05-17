@@ -2,24 +2,37 @@ import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 import { useColorScheme } from '@/components/useColorScheme';
+import { ForgeTheme } from '../../constants/ForgeTheme';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
 }) {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome size={22} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  // We can use our primary color #C15A28
-  const activeColor = '#C15A28';
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: activeColor,
-        headerShown: true, // We can hide it later if we build custom headers
+        tabBarActiveTintColor: ForgeTheme.colors.forge,
+        tabBarInactiveTintColor: ForgeTheme.colors.t3,
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: 'rgba(10,10,11,0.92)',
+          borderTopWidth: 0.5,
+          borderTopColor: ForgeTheme.colors.b1,
+          height: 80,
+          paddingBottom: 24,
+          paddingTop: 12,
+        },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: '500',
+          marginTop: 4,
+        }
       }}>
       <Tabs.Screen
         name="index"

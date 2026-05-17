@@ -8,13 +8,13 @@ import { useRouter } from 'expo-router';
 import { db } from '../../services/firebase';
 import { Camera } from 'lucide-react-native';
 import { useAuthStore } from '../../stores/authStore';
+import { ForgeTheme } from '../../constants/ForgeTheme';
 
 export default function ProgressScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
-  const [timeframe, setTimeframe] = useState('1M');
+  const [timeframe, setTimeframe] = useState('7D');
 
-  // Use real user weight history if available, else seed initial data for the design
   const rawHistory = user?.weightHistory?.length 
     ? user.weightHistory 
     : [
@@ -27,7 +27,7 @@ export default function ProgressScreen() {
 
   const lineData = rawHistory.map(item => ({
     value: item.value,
-    label: item.date.slice(0, 5) // short date for label
+    label: item.date.slice(0, 5)
   }));
 
   const currentWeight = rawHistory[rawHistory.length - 1].value;
@@ -81,7 +81,6 @@ export default function ProgressScreen() {
     }
   };
 
-  // Resolve photos
   const photos = user?.progressPhotos?.length ? user.progressPhotos : [
     { url: 'https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', date: '2026-01-01' },
     { url: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', date: new Date().toISOString() }
@@ -93,188 +92,168 @@ export default function ProgressScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>YOUR <Text style={{ color: '#D2FF00' }}>PROGRESS</Text></Text>
-        <Text style={styles.subtitle}>Consistency compounds.</Text>
+        <Text style={styles.title}>Progress</Text>
       </View>
 
-      {/* Analytics Chart */}
-      <View style={styles.chartSection}>
-        <View style={styles.chartHeaderRow}>
-          <Text style={styles.sectionTitle}>WEIGHT TREND</Text>
-          
-          <View style={styles.timeframeToggle}>
-            {["7D", "1M", "3M", "YTD"].map((tf) => (
-              <TouchableOpacity 
-                key={tf} 
-                onPress={() => setTimeframe(tf)}
-                style={[styles.tfBtn, timeframe === tf && styles.tfBtnActive]}
-              >
-                <Text style={[styles.tfText, timeframe === tf && styles.tfTextActive]}>{tf}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+      {/* Timeframe Pills */}
+      <View style={styles.timeframePills}>
+        {["7D", "1M", "3M", "YTD"].map((tf) => (
+          <TouchableOpacity 
+            key={tf} 
+            onPress={() => setTimeframe(tf)}
+            style={[styles.tfPill, timeframe === tf ? styles.tfActive : styles.tfIdle]}
+          >
+            <Text style={[styles.tfText, timeframe === tf ? { color: '#fff' } : { color: ForgeTheme.colors.t3 }]}>{tf}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
-        <View style={styles.chartCard}>
-          <View style={styles.weightHeader}>
-            <Text style={styles.currentWeight}>{currentWeight}<Text style={styles.weightUnit}>lbs</Text></Text>
-            <View style={[styles.badge, weightDiff > 0 && { backgroundColor: 'rgba(239,68,68,0.1)' }]}>
-              <Text style={[styles.badgeText, weightDiff > 0 && { color: '#ef4444' }]}>{diffPrefix}{weightDiff} lbs</Text>
+      {/* Weight Chart */}
+      <View style={styles.weightChartWrap}>
+        <View style={styles.card}>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 4 }}>
+            <Text style={styles.weightBig}>{currentWeight}</Text>
+            <Text style={{ fontSize: 13, color: ForgeTheme.colors.t2, marginLeft: 4 }}>lbs</Text>
+            <View style={styles.weightDeltaBadge}>
+              <Text style={{ fontSize: 11, fontWeight: '600', color: ForgeTheme.colors.green }}>↓ {Math.abs(weightDiff)} lbs</Text>
             </View>
           </View>
+          <Text style={{ fontSize: 11, color: ForgeTheme.colors.t3, marginBottom: 12 }}>vs. last week</Text>
           
-          <View style={{ marginTop: 20, marginLeft: -20 }}>
+          <View style={{ marginLeft: -20 }}>
             <LineChart
               data={lineData}
               areaChart
               hideDataPoints
-              color="#D2FF00"
-              thickness={3}
-              startFillColor="#D2FF00"
-              endFillColor="#D2FF00"
-              startOpacity={0.3}
+              color={ForgeTheme.colors.forge}
+              thickness={2}
+              startFillColor={ForgeTheme.colors.forge}
+              endFillColor={ForgeTheme.colors.forge}
+              startOpacity={0.2}
               endOpacity={0}
-              xAxisColor="transparent"
+              xAxisColor={ForgeTheme.colors.b1}
               yAxisColor="transparent"
-              yAxisTextStyle={{ color: '#8A8A93', fontSize: 10, fontWeight: '600' }}
-              xAxisLabelTextStyle={{ color: '#8A8A93', fontSize: 10, fontWeight: '600' }}
+              yAxisTextStyle={{ color: ForgeTheme.colors.t3, fontSize: 10, fontWeight: '500' }}
+              xAxisLabelTextStyle={{ color: ForgeTheme.colors.t3, fontSize: 10, fontWeight: '500' }}
               hideRules
               yAxisOffset={180}
               stepValue={5}
               maxValue={200}
               noOfSections={4}
-              height={180}
+              height={140}
             />
           </View>
         </View>
       </View>
 
-      {/* Photo Grid */}
-      <View style={styles.photoSection}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text style={styles.sectionTitle}>TRANSFORMATION</Text>
-          <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn} disabled={isUploading}>
-            <Camera size={14} color="#000" strokeWidth={3} />
-            <Text style={styles.cameraBtnText}>{isUploading ? 'SAVING...' : 'TAKE PHOTO'}</Text>
-          </TouchableOpacity>
+      {/* Transformation */}
+      <View style={styles.px}>
+        <Text style={styles.sectionLabel}>Transformation</Text>
+        <View style={styles.transformGrid}>
+          <View style={styles.transformPhoto}>
+            <Image source={{ uri: firstPhoto.url }} style={[StyleSheet.absoluteFill, { opacity: 0.8 }]} />
+            <View style={styles.transformPhotoLabelBg}>
+              <Text style={styles.transformPhotoLabelText}>BEFORE</Text>
+            </View>
+          </View>
+          <View style={styles.transformPhoto}>
+            <Image source={{ uri: lastPhoto.url }} style={StyleSheet.absoluteFill} />
+            <View style={styles.transformPhotoLabelBg}>
+              <Text style={styles.transformPhotoLabelText}>CURRENT</Text>
+            </View>
+          </View>
         </View>
         
-        <View style={styles.photoGrid}>
-          {/* Before Photo */}
-          <View style={styles.photoWrapper}>
-            <Image 
-              source={{ uri: firstPhoto.url }} 
-              style={[styles.photo, { opacity: 0.7 }]} 
-            />
-            <View style={styles.photoOverlay}>
-              <View style={styles.badgeBefore}>
-                <Text style={styles.badgeBeforeText}>BEFORE</Text>
-              </View>
-              <Text style={styles.photoDate}>{firstPhoto.date.slice(0, 10)}</Text>
-            </View>
-          </View>
-          
-          {/* Current Photo */}
-          <View style={[styles.photoWrapper, styles.photoCurrentWrapper]}>
-            <Image 
-              source={{ uri: lastPhoto.url }} 
-              style={styles.photo} 
-            />
-            <View style={styles.photoOverlay}>
-              <View style={styles.badgeCurrent}>
-                <Text style={styles.badgeCurrentText}>CURRENT</Text>
-              </View>
-              <Text style={styles.photoDate}>{lastPhoto.date.slice(0, 10)}</Text>
-            </View>
-          </View>
-        </View>
+        <TouchableOpacity style={styles.takePhotoBtn} onPress={takePhoto} disabled={isUploading}>
+          <Camera size={16} color={ForgeTheme.colors.forge} />
+          <Text style={styles.takePhotoBtnText}>{isUploading ? 'SAVING...' : 'Take Progress Photo'}</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Body Measurements Section */}
-      <View style={styles.measurementSection}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text style={styles.sectionTitle}>BODY MEASUREMENTS</Text>
-          <TouchableOpacity onPress={() => router.push('/measurements')} style={styles.cameraBtn}>
-            <Text style={styles.cameraBtnText}>UPDATE</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.measurementsCard}>
+      {/* Body Measurements */}
+      <View style={styles.px}>
+        <Text style={styles.sectionLabel}>Body Measurements</Text>
+        <View style={styles.measurementsGrid}>
           {(() => {
-            const latest = user?.measurements?.length ? user.measurements[user.measurements.length - 1] : { chest: 42, waist: 34, arms: 15, legs: 24 };
+            const latest = user?.measurements?.length ? user.measurements[user.measurements.length - 1] : { chest: 41.5, waist: 33.0, arms: 15.2, legs: 24.8 };
             return (
-              <View style={styles.measurementGrid}>
-                <View style={styles.mCol}>
-                  <Text style={styles.mLabel}>CHEST</Text>
-                  <Text style={styles.mValue}>{latest.chest || '--'} <Text style={styles.mUnit}>in</Text></Text>
+              <>
+                <View style={styles.measCard}>
+                  <Text style={styles.measLabel}>Chest</Text>
+                  <Text style={styles.measVal}>{latest.chest}</Text>
+                  <Text style={styles.measUnit}>inches</Text>
+                  <TouchableOpacity style={styles.updateBtn} onPress={() => router.push('/measurements')}>
+                    <Text style={styles.updateBtnText}>Update</Text>
+                  </TouchableOpacity>
                 </View>
-                <View style={styles.mCol}>
-                  <Text style={styles.mLabel}>WAIST</Text>
-                  <Text style={styles.mValue}>{latest.waist || '--'} <Text style={styles.mUnit}>in</Text></Text>
+                <View style={styles.measCard}>
+                  <Text style={styles.measLabel}>Waist</Text>
+                  <Text style={styles.measVal}>{latest.waist}</Text>
+                  <Text style={styles.measUnit}>inches</Text>
+                  <TouchableOpacity style={styles.updateBtn} onPress={() => router.push('/measurements')}>
+                    <Text style={styles.updateBtnText}>Update</Text>
+                  </TouchableOpacity>
                 </View>
-                <View style={styles.mCol}>
-                  <Text style={styles.mLabel}>ARMS</Text>
-                  <Text style={styles.mValue}>{latest.arms || '--'} <Text style={styles.mUnit}>in</Text></Text>
+                <View style={styles.measCard}>
+                  <Text style={styles.measLabel}>Arms</Text>
+                  <Text style={styles.measVal}>{latest.arms}</Text>
+                  <Text style={styles.measUnit}>inches</Text>
+                  <TouchableOpacity style={styles.updateBtn} onPress={() => router.push('/measurements')}>
+                    <Text style={styles.updateBtnText}>Update</Text>
+                  </TouchableOpacity>
                 </View>
-                <View style={styles.mCol}>
-                  <Text style={styles.mLabel}>LEGS</Text>
-                  <Text style={styles.mValue}>{latest.legs || '--'} <Text style={styles.mUnit}>in</Text></Text>
+                <View style={styles.measCard}>
+                  <Text style={styles.measLabel}>Legs</Text>
+                  <Text style={styles.measVal}>{latest.legs}</Text>
+                  <Text style={styles.measUnit}>inches</Text>
+                  <TouchableOpacity style={styles.updateBtn} onPress={() => router.push('/measurements')}>
+                    <Text style={styles.updateBtnText}>Update</Text>
+                  </TouchableOpacity>
                 </View>
-              </View>
+              </>
             );
           })()}
         </View>
       </View>
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0C0C0E' },
-  scrollContent: { padding: 24, paddingTop: 48, paddingBottom: 100 },
+  container: { flex: 1, backgroundColor: ForgeTheme.colors.bg0 },
+  scrollContent: { paddingBottom: 100 },
+  px: { paddingHorizontal: 20, marginBottom: 24 },
   
-  header: { marginBottom: 32 },
-  title: { fontSize: 24, fontWeight: '900', color: '#FFF', marginBottom: 8, letterSpacing: 1 },
-  subtitle: { fontSize: 14, color: '#8A8A93' },
+  header: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 4 },
+  title: { fontSize: 20, fontWeight: '700', color: ForgeTheme.colors.t1 },
   
-  chartSection: { marginBottom: 40 },
-  chartHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  sectionTitle: { fontSize: 12, fontWeight: '800', color: '#8A8A93', letterSpacing: 1 },
-  
-  timeframeToggle: { flexDirection: 'row', backgroundColor: '#16161A', borderRadius: 20, borderWidth: 1, borderColor: '#242429', padding: 4 },
-  tfBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 },
-  tfBtnActive: { backgroundColor: '#242429' },
-  tfText: { fontSize: 10, fontWeight: '800', color: '#8A8A93' },
-  tfTextActive: { color: '#FFF' },
+  timeframePills: { flexDirection: 'row', gap: 6, paddingHorizontal: 20, paddingVertical: 12 },
+  tfPill: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 100 },
+  tfActive: { backgroundColor: ForgeTheme.colors.forge },
+  tfIdle: { backgroundColor: ForgeTheme.colors.bg2 },
+  tfText: { fontSize: 11, fontWeight: '600' },
 
-  chartCard: { backgroundColor: '#16161A', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#242429' },
-  weightHeader: { flexDirection: 'row', alignItems: 'center' },
-  currentWeight: { fontSize: 32, fontWeight: '900', color: '#FFF', letterSpacing: -1 },
-  weightUnit: { fontSize: 14, color: '#8A8A93', marginLeft: 4 },
-  badge: { backgroundColor: 'rgba(210,255,0,0.1)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, marginLeft: 12 },
-  badgeText: { color: '#D2FF00', fontSize: 10, fontWeight: '800' },
+  weightChartWrap: { marginHorizontal: 20, marginBottom: 24 },
+  card: { backgroundColor: ForgeTheme.colors.bg1, borderRadius: 16, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1, padding: 16 },
+  weightBig: { fontSize: 24, fontWeight: '700', color: ForgeTheme.colors.t1 },
+  weightDeltaBadge: { backgroundColor: 'rgba(52,199,89,0.12)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 100, marginLeft: 8 },
 
-  photoSection: {},
-  photoGrid: { flexDirection: 'row', gap: 16, marginTop: 16 },
-  photoWrapper: { flex: 1, aspectRatio: 0.75, borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: '#242429', position: 'relative' },
-  photoCurrentWrapper: { borderColor: '#D2FF00', shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 15, elevation: 5 },
-  photo: { width: '100%', height: '100%', resizeMode: 'cover' },
+  sectionLabel: { fontSize: 11, fontWeight: '500', color: ForgeTheme.colors.t3, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 },
   
-  photoOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 12, paddingTop: 40, backgroundColor: 'rgba(0,0,0,0.5)' },
-  badgeBefore: { backgroundColor: 'rgba(0,0,0,0.7)', alignSelf: 'flex-start', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginBottom: 4 },
-  badgeBeforeText: { color: '#D2FF00', fontSize: 9, fontWeight: '900', letterSpacing: 1 },
-  badgeCurrent: { backgroundColor: '#D2FF00', alignSelf: 'flex-start', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginBottom: 4 },
-  badgeCurrentText: { color: '#000', fontSize: 9, fontWeight: '900', letterSpacing: 1 },
-  photoDate: { color: '#FFF', fontSize: 11, fontWeight: '800' },
+  transformGrid: { flexDirection: 'row', gap: 8 },
+  transformPhoto: { flex: 1, aspectRatio: 0.75, backgroundColor: ForgeTheme.colors.bg2, borderRadius: 12, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1, position: 'relative', overflow: 'hidden' },
+  transformPhotoLabelBg: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingVertical: 8, backgroundColor: 'rgba(10,10,11,0.8)' },
+  transformPhotoLabelText: { fontSize: 10, fontWeight: '600', letterSpacing: 1, textTransform: 'uppercase', color: ForgeTheme.colors.t2, textAlign: 'center' },
   
-  cameraBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#D2FF00', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
-  cameraBtnText: { color: '#000', fontSize: 10, fontWeight: '900', letterSpacing: 1 },
+  takePhotoBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', marginTop: 10, paddingVertical: 11, borderRadius: 12, backgroundColor: 'rgba(255,92,46,0.1)', borderWidth: 0.5, borderColor: 'rgba(255,92,46,0.3)' },
+  takePhotoBtnText: { color: ForgeTheme.colors.forge, fontSize: 13, fontWeight: '600' },
 
-  measurementSection: { marginTop: 40 },
-  measurementsCard: { backgroundColor: '#16161A', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#242429' },
-  measurementGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
-  mCol: { width: '45%' },
-  mLabel: { color: '#8A8A93', fontSize: 10, fontWeight: '800', letterSpacing: 1, marginBottom: 4 },
-  mValue: { color: '#FFF', fontSize: 24, fontWeight: '900', letterSpacing: -0.5 },
-  mUnit: { color: '#8A8A93', fontSize: 12, fontWeight: '700' }
+  measurementsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  measCard: { width: '48%', backgroundColor: ForgeTheme.colors.bg1, borderRadius: 14, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1, padding: 14 },
+  measLabel: { fontSize: 10, color: ForgeTheme.colors.t3, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 },
+  measVal: { fontSize: 20, fontWeight: '700', color: ForgeTheme.colors.t1 },
+  measUnit: { fontSize: 11, color: ForgeTheme.colors.t2, marginTop: 1 },
+  updateBtn: { alignSelf: 'flex-start', marginTop: 8, backgroundColor: 'rgba(255,92,46,0.1)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  updateBtnText: { color: ForgeTheme.colors.forge, fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 }
 });

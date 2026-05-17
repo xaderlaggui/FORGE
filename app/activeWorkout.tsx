@@ -4,6 +4,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Check, Clock } from 'lucide-react-native';
 import { useWorkouts } from '../hooks/useWorkouts';
 import dayjs from 'dayjs';
+import { ForgeTheme } from '../constants/ForgeTheme';
 
 export default function ActiveWorkoutScreen() {
   const router = useRouter();
@@ -53,6 +54,12 @@ export default function ActiveWorkoutScreen() {
     return () => clearInterval(interval);
   }, [isResting, restTime]);
 
+  useEffect(() => {
+    // Workout timer
+    const interval = setInterval(() => setTimer(t => t + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const toggleSet = (exIdx: number, setIdx: number) => {
     const newExercises = [...exercises];
     const isDone = newExercises[exIdx].sets[setIdx].done;
@@ -99,7 +106,7 @@ export default function ActiveWorkoutScreen() {
       {isResting && (
         <View style={styles.restTimerContainer}>
           <View style={styles.restBanner}>
-            <Clock size={20} color="#D2FF00" />
+            <Clock size={20} color={ForgeTheme.colors.forge} />
             <Text style={styles.restText}>00:{restTime.toString().padStart(2, '0')}</Text>
           </View>
           <TouchableOpacity onPress={() => setIsResting(false)} style={styles.skipButton}>
@@ -120,21 +127,34 @@ export default function ActiveWorkoutScreen() {
               <Text style={styles.colCheck}>DONE</Text>
             </View>
 
-            {ex.sets.map((set, setIdx) => (
+            {ex.sets.map((set: any, setIdx: number) => (
               <View key={setIdx} style={[styles.row, set.done && styles.rowDone]}>
                 <Text style={styles.colSetValue}>{setIdx + 1}</Text>
-                <TextInput style={[styles.input, styles.colKgValue]} keyboardType="numeric" defaultValue={set.weight} />
-                <TextInput style={[styles.input, styles.colRepsValue]} keyboardType="numeric" defaultValue={set.reps} />
+                <TextInput style={[styles.input, styles.colKgValue]} keyboardType="numeric" defaultValue={set.weight} onChangeText={t => { const e = [...exercises]; e[exIdx].sets[setIdx].weight = t; setExercises(e); }} />
+                <TextInput style={[styles.input, styles.colRepsValue]} keyboardType="numeric" defaultValue={set.reps} onChangeText={t => { const e = [...exercises]; e[exIdx].sets[setIdx].reps = t; setExercises(e); }} />
                 <View style={styles.colCheckValue}>
                   <TouchableOpacity 
                     style={[styles.checkBtn, set.done && styles.checkBtnDone]} 
                     onPress={() => toggleSet(exIdx, setIdx)}
                   >
-                    <Check size={16} color={set.done ? '#000' : 'transparent'} strokeWidth={4} />
+                    <Check size={16} color={set.done ? '#FFF' : 'transparent'} strokeWidth={4} />
                   </TouchableOpacity>
                 </View>
               </View>
             ))}
+            
+            {/* Add Set Button */}
+            <TouchableOpacity 
+              style={styles.addSetBtn} 
+              onPress={() => {
+                const e = [...exercises];
+                const lastSet = e[exIdx].sets[e[exIdx].sets.length - 1];
+                e[exIdx].sets.push({ id: e[exIdx].sets.length + 1, weight: lastSet ? lastSet.weight : '0', reps: lastSet ? lastSet.reps : '0', done: false });
+                setExercises(e);
+              }}
+            >
+              <Text style={styles.addSetText}>+ Add Set</Text>
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
@@ -147,40 +167,43 @@ export default function ActiveWorkoutScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0C0C0E', paddingTop: 48 },
+  container: { flex: 1, backgroundColor: ForgeTheme.colors.bg0, paddingTop: 60 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 24, paddingBottom: 16 },
-  subtitle: { color: '#8A8A93', fontSize: 12, fontWeight: '800', letterSpacing: 1, marginBottom: 4 },
-  title: { fontSize: 24, fontWeight: '900', color: '#FFF', letterSpacing: -0.5 },
-  timer: { fontSize: 24, fontWeight: '900', color: '#D2FF00' },
+  subtitle: { color: ForgeTheme.colors.t3, fontSize: 11, fontWeight: '600', letterSpacing: 1, marginBottom: 4 },
+  title: { fontSize: 20, fontWeight: '700', color: ForgeTheme.colors.t1, letterSpacing: -0.5 },
+  timer: { fontSize: 24, fontWeight: '700', color: ForgeTheme.colors.forge },
   
-  restTimerContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 24, marginBottom: 16, backgroundColor: '#16161A', padding: 16, borderRadius: 16, borderWidth: 1, borderColor: '#242429' },
+  restTimerContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 24, marginBottom: 16, backgroundColor: ForgeTheme.colors.bg1, padding: 16, borderRadius: 16, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1 },
   restBanner: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  restText: { color: '#FFF', fontWeight: '900', fontSize: 24, letterSpacing: 1 },
-  skipButton: { backgroundColor: '#242429', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
-  skipText: { color: '#FFF', fontWeight: '800', fontSize: 12, letterSpacing: 1 },
+  restText: { color: ForgeTheme.colors.t1, fontWeight: '700', fontSize: 24, letterSpacing: 1 },
+  skipButton: { backgroundColor: ForgeTheme.colors.bg2, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
+  skipText: { color: ForgeTheme.colors.t1, fontWeight: '600', fontSize: 12, letterSpacing: 1 },
 
-  content: { padding: 24 },
-  exerciseCard: { backgroundColor: '#16161A', borderRadius: 16, marginBottom: 24, borderWidth: 1, borderColor: '#242429', overflow: 'hidden' },
-  exName: { fontSize: 18, fontWeight: '900', color: '#FFF', padding: 20, letterSpacing: 0.5 },
+  content: { padding: 20, paddingBottom: 100 },
+  exerciseCard: { backgroundColor: ForgeTheme.colors.bg1, borderRadius: 16, marginBottom: 24, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1, overflow: 'hidden' },
+  exName: { fontSize: 14, fontWeight: '700', color: ForgeTheme.colors.t1, padding: 16, paddingBottom: 12, letterSpacing: 0.5 },
   
-  tableHeader: { flexDirection: 'row', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#242429', backgroundColor: 'rgba(12, 12, 14, 0.5)' },
-  colSet: { flex: 1, fontSize: 10, fontWeight: '800', color: '#8A8A93', textAlign: 'center', letterSpacing: 1 },
-  colKg: { flex: 2, fontSize: 10, fontWeight: '800', color: '#8A8A93', textAlign: 'center', letterSpacing: 1 },
-  colReps: { flex: 2, fontSize: 10, fontWeight: '800', color: '#8A8A93', textAlign: 'center', letterSpacing: 1 },
-  colCheck: { flex: 1, fontSize: 10, fontWeight: '800', color: '#8A8A93', textAlign: 'center', letterSpacing: 1 },
+  tableHeader: { flexDirection: 'row', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: ForgeTheme.colors.b1, backgroundColor: 'rgba(10, 10, 11, 0.5)' },
+  colSet: { flex: 1, fontSize: 10, fontWeight: '600', color: ForgeTheme.colors.t3, textAlign: 'center', letterSpacing: 1 },
+  colKg: { flex: 2, fontSize: 10, fontWeight: '600', color: ForgeTheme.colors.t3, textAlign: 'center', letterSpacing: 1 },
+  colReps: { flex: 2, fontSize: 10, fontWeight: '600', color: ForgeTheme.colors.t3, textAlign: 'center', letterSpacing: 1 },
+  colCheck: { flex: 1, fontSize: 10, fontWeight: '600', color: ForgeTheme.colors.t3, textAlign: 'center', letterSpacing: 1 },
   
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#242429' },
-  rowDone: { backgroundColor: 'rgba(210,255,0,0.05)' },
+  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: ForgeTheme.colors.b1 },
+  rowDone: { backgroundColor: 'rgba(255,92,46,0.05)' },
   
-  colSetValue: { flex: 1, fontWeight: '800', color: '#8A8A93', textAlign: 'center', fontSize: 16 },
-  colKgValue: { flex: 2, textAlign: 'center', color: '#FFF', fontWeight: '900', fontSize: 18 },
-  colRepsValue: { flex: 2, textAlign: 'center', color: '#FFF', fontWeight: '900', fontSize: 18 },
+  colSetValue: { flex: 1, fontWeight: '600', color: ForgeTheme.colors.t2, textAlign: 'center', fontSize: 14 },
+  colKgValue: { flex: 2, textAlign: 'center', color: ForgeTheme.colors.t1, fontWeight: '700', fontSize: 16 },
+  colRepsValue: { flex: 2, textAlign: 'center', color: ForgeTheme.colors.t1, fontWeight: '700', fontSize: 16 },
   colCheckValue: { flex: 1, alignItems: 'center' },
   
   input: { backgroundColor: 'transparent', marginHorizontal: 4 },
-  checkBtn: { width: 32, height: 32, backgroundColor: '#0C0C0E', borderRadius: 8, borderWidth: 1, borderColor: '#242429', alignItems: 'center', justifyContent: 'center' },
-  checkBtnDone: { backgroundColor: '#D2FF00', borderColor: '#D2FF00', shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 10, elevation: 5 },
+  checkBtn: { width: 30, height: 30, backgroundColor: ForgeTheme.colors.bg2, borderRadius: 8, borderWidth: 0.5, borderColor: ForgeTheme.colors.b1, alignItems: 'center', justifyContent: 'center' },
+  checkBtnDone: { backgroundColor: ForgeTheme.colors.forge, borderColor: ForgeTheme.colors.forge, shadowColor: ForgeTheme.colors.forge, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 10, elevation: 5 },
 
-  finishBtn: { backgroundColor: '#D2FF00', margin: 24, padding: 18, borderRadius: 12, alignItems: 'center', shadowColor: '#D2FF00', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 6 },
-  finishText: { color: '#000', fontSize: 16, fontWeight: '900', letterSpacing: 1 }
+  addSetBtn: { paddingVertical: 14, alignItems: 'center', borderTopWidth: 0.5, borderTopColor: ForgeTheme.colors.b1 },
+  addSetText: { color: ForgeTheme.colors.t2, fontSize: 12, fontWeight: '600' },
+
+  finishBtn: { backgroundColor: ForgeTheme.colors.forge, margin: 24, padding: 16, borderRadius: 12, alignItems: 'center', position: 'absolute', bottom: 0, left: 0, right: 0 },
+  finishText: { color: '#FFF', fontSize: 14, fontWeight: '700', letterSpacing: 1 }
 });

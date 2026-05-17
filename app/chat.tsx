@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
-import { useAuthStore } from '../stores/authStore';
-import { db } from '../services/firebase';
-import { collection, addDoc } from 'firebase/firestore';
-import { useRouter } from 'expo-router';
-import { Send, Bot, User as UserIcon, X } from 'lucide-react-native';
 import dayjs from 'dayjs';
+import { useRouter } from 'expo-router';
+import { addDoc, collection } from 'firebase/firestore';
+import { Bot, Send, User as UserIcon, X } from 'lucide-react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ForgeTheme } from '../constants/ForgeTheme';
+import { db } from '../services/firebase';
+import { useAuthStore } from '../stores/authStore';
+
 
 const genAI = new GoogleGenerativeAI(process.env.EXPO_PUBLIC_GEMINI_API_KEY || '');
 
-const logActivityDeclaration = {
+const logActivityDeclaration: any = {
   name: "log_activity",
   description: "Log a user's fitness activity like walking, running, cycling, or lifting weights to their database.",
   parameters: {
@@ -43,15 +45,15 @@ export default function ChatScreen() {
     { id: '1', text: "Hey! I'm your AI Coach. Tell me what you did today (e.g. 'I walked 15km') and I'll log it for you!", isAi: true }
   ]);
   const [isTyping, setIsTyping] = useState(false);
-  
+
   const chatSessionRef = useRef<any>(null);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     // Initialize Gemini Chat Session with Tools
-    const model = genAI.getGenerativeModel({ 
+    const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
-      tools: [{ functionDeclarations: [logActivityDeclaration] }],
+      tools: [{ functionDeclarations: [logActivityDeclaration as any] }],
       systemInstruction: "You are an energetic, supportive fitness coach. If the user tells you about an exercise or activity they did, ALWAYS call the log_activity function to save it for them. Keep your responses short, punchy, and encouraging."
     });
     chatSessionRef.current = model.startChat({ history: [] });
@@ -59,7 +61,7 @@ export default function ChatScreen() {
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
-    
+
     const userMsg = inputText.trim();
     setInputText('');
     setMessages(prev => [...prev, { id: Date.now().toString(), text: userMsg, isAi: false }]);
@@ -68,15 +70,15 @@ export default function ChatScreen() {
     try {
       const result = await chatSessionRef.current.sendMessage(userMsg);
       const response = result.response;
-      
+
       const functionCalls = response.functionCalls();
-      
+
       if (functionCalls && functionCalls.length > 0) {
         const call = functionCalls[0];
-        
+
         if (call.name === "log_activity") {
           const { activityName, durationMinutes, notes } = call.args as any;
-          
+
           // Execute the function: Save to Firestore
           const workoutRef = collection(db, `users/${user?.uid}/workouts`);
           await addDoc(workoutRef, {
@@ -94,7 +96,7 @@ export default function ChatScreen() {
               response: { success: true, message: `Successfully logged ${activityName} for ${durationMinutes} minutes.` }
             }
           }]);
-          
+
           setMessages(prev => [...prev, { id: Date.now().toString(), text: functionResponseResult.response.text(), isAi: true }]);
         }
       } else {
@@ -124,16 +126,17 @@ export default function ChatScreen() {
     </View>
   );
 
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {/* Header */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>AI <Text style={{ color: '#D2FF00' }}>COACH</Text></Text>
-          <Text style={styles.headerSub}>Powered by Gemini 2.5 Flash</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Bot size={20} color={ForgeTheme.colors.forge} />
+          <Text style={styles.headerTitle}>AI Coach</Text>
         </View>
         <TouchableOpacity onPress={() => router.back()} style={styles.closeBtn}>
-          <X size={20} color="#8A8A93" />
+          <X size={20} color={ForgeTheme.colors.t2} />
         </TouchableOpacity>
       </View>
 
@@ -149,7 +152,7 @@ export default function ChatScreen() {
 
       {isTyping && (
         <View style={styles.typingIndicator}>
-          <ActivityIndicator size="small" color="#D2FF00" />
+          <ActivityIndicator size="small" color={ForgeTheme.colors.forge} />
           <Text style={styles.typingText}>Coach is typing...</Text>
         </View>
       )}
@@ -158,14 +161,14 @@ export default function ChatScreen() {
       <View style={styles.inputArea}>
         <TextInput
           style={styles.input}
-          placeholder="I walked 15km today..."
-          placeholderTextColor="#8A8A93"
+          placeholder="Message AI Coach..."
+          placeholderTextColor={ForgeTheme.colors.t3}
           value={inputText}
           onChangeText={setInputText}
           onSubmitEditing={handleSend}
         />
         <TouchableOpacity style={styles.sendBtn} onPress={handleSend} disabled={!inputText.trim() || isTyping}>
-          <Send size={20} color="#000" />
+          <Send size={18} color="#FFF" />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -173,32 +176,31 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0C0C0E' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 24, paddingTop: 40, borderBottomWidth: 1, borderBottomColor: '#16161A', backgroundColor: '#0C0C0E' },
-  headerTitle: { fontSize: 20, fontWeight: '900', color: '#FFF', letterSpacing: 1 },
-  headerSub: { fontSize: 11, color: '#8A8A93', marginTop: 2, fontWeight: '700' },
-  closeBtn: { padding: 8, backgroundColor: '#16161A', borderRadius: 20 },
-  
-  chatList: { padding: 20, paddingBottom: 40, gap: 16 },
-  
-  msgContainer: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, width: '100%', marginBottom: 16 },
+  container: { flex: 1, backgroundColor: ForgeTheme.colors.bg0 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 24, paddingTop: 60, borderBottomWidth: 0.5, borderBottomColor: ForgeTheme.colors.b1, backgroundColor: ForgeTheme.colors.bg1 },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: ForgeTheme.colors.t1, letterSpacing: 0.5 },
+  closeBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: ForgeTheme.colors.bg2, alignItems: 'center', justifyContent: 'center' },
+
+  chatList: { padding: 20, paddingBottom: 40, gap: 18 },
+
+  msgContainer: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, width: '100%', marginBottom: 16 },
   msgAi: { justifyContent: 'flex-start' },
   msgUser: { justifyContent: 'flex-end' },
-  
-  iconBg: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#D2FF00', justifyContent: 'center', alignItems: 'center' },
-  
-  bubble: { maxWidth: '75%', padding: 14, borderRadius: 18 },
-  bubbleAi: { backgroundColor: '#16161A', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: '#242429' },
-  bubbleUser: { backgroundColor: '#2A2A35', borderBottomRightRadius: 4 },
-  
-  msgText: { fontSize: 14, lineHeight: 20, fontWeight: '500' },
-  msgTextAi: { color: '#FFF' },
-  msgTextUser: { color: '#FFF' },
-  
-  typingIndicator: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, paddingBottom: 16 },
-  typingText: { color: '#8A8A93', fontSize: 12, fontWeight: '700' },
 
-  inputArea: { flexDirection: 'row', padding: 16, paddingBottom: 32, backgroundColor: '#16161A', borderTopWidth: 1, borderTopColor: '#242429', alignItems: 'center', gap: 12 },
-  input: { flex: 1, backgroundColor: '#0C0C0E', borderWidth: 1, borderColor: '#242429', borderRadius: 24, paddingHorizontal: 20, paddingVertical: 14, color: '#FFF', fontSize: 15, fontWeight: '600' },
-  sendBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#D2FF00', justifyContent: 'center', alignItems: 'center' }
+  iconBg: { width: 30, height: 30, borderRadius: 15, backgroundColor: ForgeTheme.colors.bg2, justifyContent: 'center', alignItems: 'center', marginTop: 2 },
+
+  bubble: { maxWidth: '80%', padding: 12, paddingHorizontal: 14, borderRadius: 16 },
+  bubbleAi: { backgroundColor: ForgeTheme.colors.bg2, borderBottomLeftRadius: 4 },
+  bubbleUser: { backgroundColor: ForgeTheme.colors.forge, borderBottomRightRadius: 4 },
+
+  msgText: { fontSize: 14, lineHeight: 21, fontWeight: '400' },
+  msgTextAi: { color: ForgeTheme.colors.t1 },
+  msgTextUser: { color: '#FFF' },
+
+  typingIndicator: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, paddingBottom: 16 },
+  typingText: { color: ForgeTheme.colors.t2, fontSize: 12, fontWeight: '600' },
+
+  inputArea: { flexDirection: 'row', padding: 16, paddingBottom: 32, backgroundColor: ForgeTheme.colors.bg1, borderTopWidth: 0.5, borderTopColor: ForgeTheme.colors.b1, alignItems: 'center', gap: 10 },
+  input: { flex: 1, backgroundColor: ForgeTheme.colors.bg2, borderRadius: 22, height: 44, paddingHorizontal: 16, color: ForgeTheme.colors.t1, fontSize: 14 },
+  sendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: ForgeTheme.colors.forge, justifyContent: 'center', alignItems: 'center' }
 });

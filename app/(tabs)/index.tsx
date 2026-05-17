@@ -1,15 +1,15 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { useAuthStore } from '../../stores/authStore';
-import { Flame, Droplet, Activity } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
-import { useRouter } from 'expo-router';
-import { useNutrition } from '../../hooks/useNutrition';
-import { useAiCoach } from '../../hooks/useAiCoach';
-import { useWorkouts } from '../../hooks/useWorkouts';
-import { ForgeTheme } from '../../constants/ForgeTheme';
 import dayjs from 'dayjs';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { Flame } from 'lucide-react-native';
+import React from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Svg, { Circle, Path } from 'react-native-svg';
+import { ForgeTheme } from '../../constants/ForgeTheme';
+import { useAiCoach } from '../../hooks/useAiCoach';
+import { useNutrition } from '../../hooks/useNutrition';
+import { useWorkouts } from '../../hooks/useWorkouts';
+import { useAuthStore } from '../../stores/authStore';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -27,8 +27,8 @@ export default function HomeScreen() {
   }
 
   const waterLiters = ((nutrition?.waterMl || 0) / 1000).toFixed(1);
-  const activeCals = nutrition?.totalCalories || 0; 
-  
+  const activeCals = nutrition?.totalCalories || 0;
+
   const waterGoal = 2.4;
   const calGoal = 2500;
 
@@ -37,9 +37,9 @@ export default function HomeScreen() {
   const c = 2 * Math.PI * r;
   const waterPercent = Math.min(parseFloat(waterLiters) / waterGoal, 1);
   const calPercent = Math.min(activeCals / calGoal, 1);
-  
+
   const waterOffset = c - (waterPercent * c);
-  
+
   const r2 = 32;
   const c2 = 2 * Math.PI * r2;
   const calOffset = c2 - (calPercent * c2);
@@ -55,7 +55,7 @@ export default function HomeScreen() {
         <Text style={styles.wordmark}>FORGE</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke={ForgeTheme.colors.t2} strokeWidth="1.8" strokeLinecap="round">
-            <Path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><Path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            <Path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><Path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </Svg>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{user?.displayName?.charAt(0) || 'A'}</Text>
@@ -71,18 +71,20 @@ export default function HomeScreen() {
 
       {/* Today Card */}
       <View style={styles.todayCard}>
-        <LinearGradient colors={['#1C1C20', '#0A0A0B']} start={{x:0,y:0}} end={{x:1,y:1}} style={StyleSheet.absoluteFillObject} />
+        <LinearGradient colors={['#1C1C20', '#0A0A0B']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
         <View style={styles.todayCardContent}>
           <Text style={styles.todayTag}>📅 TODAY'S PLAN</Text>
-          <Text style={styles.todayWorkout}>{todayWorkout ? todayWorkout.title : 'Rest Day'}</Text>
+          <Text style={styles.todayWorkout}>{todayWorkout ? (todayWorkout.notes || 'Custom Workout') : 'Rest Day'}</Text>
           <Text style={styles.todayMeta}>{todayWorkout ? `${todayWorkout.exercises.length} exercises · Ready to train?` : 'Time to recover and hydrate.'}</Text>
-          
-          <TouchableOpacity 
-            style={styles.btnPrimary} 
-            onPress={() => router.push(todayWorkout ? '/activeWorkout' : '/(tabs)/workout')}
-          >
-            <Text style={styles.btnPrimaryText}>{todayWorkout ? '▶ Start Workout' : '+ Add Workout'}</Text>
-          </TouchableOpacity>
+
+          <Animated.View style={[{ borderRadius: 100, backgroundColor: 'rgba(255, 92, 46, 0.4)' }, pulseStyle]}>
+            <TouchableOpacity
+              style={styles.btnPrimary}
+              onPress={() => router.push(todayWorkout ? '/activeWorkout' : '/(tabs)/workout')}
+            >
+              <Text style={styles.btnPrimaryText}>{todayWorkout ? '▶ Start Workout' : '+ Add Workout'}</Text>
+            </TouchableOpacity>
+          </Animated.View>
         </View>
       </View>
 
@@ -114,7 +116,7 @@ export default function HomeScreen() {
 
         <View style={styles.cardStreak}>
           <View style={styles.flameWrap}>
-             <Flame size={24} color={ForgeTheme.colors.forge} />
+            <Flame size={24} color={ForgeTheme.colors.forge} />
           </View>
           <Text style={styles.streakNum}>{user?.streak || 0}</Text>
           <Text style={{ fontSize: 10, color: ForgeTheme.colors.t2, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2, fontWeight: '600' }}>Day Streak</Text>
@@ -130,20 +132,20 @@ export default function HomeScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 10, fontWeight: '700', color: ForgeTheme.colors.forge, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>Personalized</Text>
-              
+
               {isAiLoading ? (
                 <ActivityIndicator size="small" color={ForgeTheme.colors.forge} style={{ alignSelf: 'flex-start' }} />
               ) : (
                 <Text style={{ fontSize: 13, color: ForgeTheme.colors.t1, lineHeight: 20 }}>
-                   {aiTip?.split(/(\*.*?\*|`.*?`)/g).map((chunk: string, i: number) => {
-                      if (chunk.startsWith('*') && chunk.endsWith('*')) {
-                        return <Text key={i} style={{ color: '#fff', fontWeight: 'bold' }}>{chunk.slice(1, -1)}</Text>;
-                      }
-                      return chunk;
-                    })}
+                  {aiTip?.split(/(\*.*?\*|`.*?`)/g).map((chunk: string, i: number) => {
+                    if (chunk.startsWith('*') && chunk.endsWith('*')) {
+                      return <Text key={i} style={{ color: '#fff', fontWeight: 'bold' }}>{chunk.slice(1, -1)}</Text>;
+                    }
+                    return chunk;
+                  })}
                 </Text>
               )}
-              
+
               <TouchableOpacity style={styles.chatBtn} onPress={() => router.push('/chat')}>
                 <Text style={{ fontSize: 12, fontWeight: '600', color: ForgeTheme.colors.forge }}>Chat with Coach ↗</Text>
               </TouchableOpacity>
@@ -181,7 +183,7 @@ const styles = StyleSheet.create({
   ringsRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 20, marginBottom: 20 },
   cardRings: { flex: 1, backgroundColor: ForgeTheme.colors.bg1, borderRadius: 16, borderWidth: 1, borderColor: ForgeTheme.colors.b1, padding: 16, alignItems: 'center' },
   cardStreak: { flex: 1, backgroundColor: ForgeTheme.colors.bg1, borderRadius: 16, borderWidth: 1, borderColor: ForgeTheme.colors.b1, padding: 16, alignItems: 'center', justifyContent: 'center' },
-  
+
   flameWrap: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255,92,46,0.1)', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
   streakNum: { fontSize: 28, fontWeight: '800', color: ForgeTheme.colors.t1 },
 
