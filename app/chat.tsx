@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
-import { GoogleGenerativeAI, FunctionDeclaration, Schema, Type } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { useAuthStore } from '../stores/authStore';
 import { db } from '../services/firebase';
 import { collection, addDoc } from 'firebase/firestore';
@@ -10,22 +10,22 @@ import dayjs from 'dayjs';
 
 const genAI = new GoogleGenerativeAI(process.env.EXPO_PUBLIC_GEMINI_API_KEY || '');
 
-const logActivityDeclaration: FunctionDeclaration = {
+const logActivityDeclaration = {
   name: "log_activity",
   description: "Log a user's fitness activity like walking, running, cycling, or lifting weights to their database.",
   parameters: {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
       activityName: {
-        type: Type.STRING,
+        type: SchemaType.STRING,
         description: "The name of the activity, e.g. 'Walking', 'Running', 'Weightlifting'",
       },
       durationMinutes: {
-        type: Type.INTEGER,
+        type: SchemaType.INTEGER,
         description: "Estimated duration of the activity in minutes. Make an educated guess if the user provides distance instead of time (e.g. 15km walk is roughly 150 mins).",
       },
       notes: {
-        type: Type.STRING,
+        type: SchemaType.STRING,
         description: "Any extra notes about the activity, like distance, intensity, etc. (e.g. '15km').",
       }
     },
