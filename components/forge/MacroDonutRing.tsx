@@ -2,93 +2,100 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { Flame, Droplet } from 'lucide-react-native';
 
 interface MacroDonutRingProps {
-  /** Calories consumed */
   calories: number;
-  /** Calorie goal */
   calorieGoal: number;
-  /** Water consumed in liters */
   waterLiters: number;
-  /** Water goal in liters */
   waterGoal: number;
 }
 
-export function MacroDonutRing({ calories, calorieGoal, waterLiters, waterGoal }: MacroDonutRingProps) {
-  const { T } = useForgeTheme();
-    const { T: ForgeTheme } = useForgeTheme();
-    const styles = useStyles(ForgeTheme);
-  const SIZE = 96;
-  const OUTER_R = 44;
-  const INNER_R = 32;
-  const STROKE = 8;
-
-  const outerCircumference = 2 * Math.PI * OUTER_R;
-  const innerCircumference = 2 * Math.PI * INNER_R;
-
-  const waterPercent = Math.min(waterLiters / waterGoal, 1);
-  const calPercent = Math.min(calories / calorieGoal, 1);
-
-  const waterOffset = outerCircumference - waterPercent * outerCircumference;
-  const calOffset = innerCircumference - calPercent * innerCircumference;
+const SingleDonut = ({
+  value,
+  goal,
+  color,
+  trackColor,
+  icon: Icon,
+  unit,
+  size = 64
+}: {
+  value: number;
+  goal: number;
+  color: string;
+  trackColor: string;
+  icon: any;
+  unit: string;
+  size?: number;
+}) => {
+  const STROKE = 6;
+  const R = (size - STROKE) / 2;
+  const CIRCUMFERENCE = 2 * Math.PI * R;
+  const percent = goal > 0 ? Math.min(value / goal, 1) : 0;
+  const offset = CIRCUMFERENCE - percent * CIRCUMFERENCE;
 
   return (
-    <View style={styles.wrapper}>
-      <View style={{ width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center' }}>
-        <Svg width={SIZE} height={SIZE} viewBox="0 0 100 100" style={{ transform: [{ rotate: '-90deg' }] }}>
-          {/* Track rings */}
-          <Circle cx="50" cy="50" r={OUTER_R} stroke="#1A2035" strokeWidth={STROKE} fill="none" />
-          <Circle cx="50" cy="50" r={INNER_R} stroke="#251614" strokeWidth={STROKE} fill="none" />
-          {/* Water ring (outer, blue) */}
+    <View style={{ alignItems: 'center' }}>
+      <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+        <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: [{ rotate: '-90deg' }] }}>
+          {/* Track ring */}
           <Circle
-            cx="50" cy="50" r={OUTER_R}
-            stroke={T.colors.blue}
+            cx={size / 2} cy={size / 2} r={R}
+            stroke={trackColor}
             strokeWidth={STROKE}
             fill="none"
-            strokeDasharray={outerCircumference}
-            strokeDashoffset={waterOffset}
-            strokeLinecap="round"
           />
-          {/* Calorie ring (inner, forge) */}
+          {/* Progress ring */}
           <Circle
-            cx="50" cy="50" r={INNER_R}
-            stroke={T.colors.forge}
+            cx={size / 2} cy={size / 2} r={R}
+            stroke={color}
             strokeWidth={STROKE}
             fill="none"
-            strokeDasharray={innerCircumference}
-            strokeDashoffset={calOffset}
+            strokeDasharray={CIRCUMFERENCE}
+            strokeDashoffset={offset}
             strokeLinecap="round"
           />
         </Svg>
-        {/* Center label */}
         <View style={StyleSheet.absoluteFillObject as any} pointerEvents="none">
-          <View style={styles.center}>
-            <Text style={styles.centerText}>{Math.round(calPercent * 100)}%</Text>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon size={14} color={color} style={{ marginBottom: 2 }} />
+            <Text style={{ fontSize: 10, fontWeight: '700', color: color }}>
+              {value > 0 ? value : '--'}
+            </Text>
           </View>
         </View>
       </View>
+      <Text style={{ fontSize: 10, color: '#888', marginTop: 4, fontWeight: '500' }}>{unit}</Text>
+    </View>
+  );
+};
 
-      {/* Legend */}
-      <View style={styles.legend}>
-        <View style={styles.legendItem}>
-          <View style={[styles.dot, { backgroundColor: T.colors.forge }]} />
-          <Text style={styles.legendLabel}>{calories} cal</Text>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.dot, { backgroundColor: T.colors.blue }]} />
-          <Text style={styles.legendLabel}>{waterLiters.toFixed(1)} L</Text>
-        </View>
-      </View>
+export function MacroDonutRing({ calories, calorieGoal, waterLiters, waterGoal }: MacroDonutRingProps) {
+  const { T } = useForgeTheme();
+  
+  return (
+    <View style={styles.wrapper}>
+      <SingleDonut
+        value={calories}
+        goal={calorieGoal}
+        color={T.colors.forge}
+        trackColor="#2A1A1A"
+        icon={Flame}
+        unit="kcal"
+      />
+      <SingleDonut
+        value={waterLiters}
+        goal={waterGoal}
+        color="#0ea5e9"
+        trackColor="#082f49"
+        icon={Droplet}
+        unit="L"
+      />
     </View>
   );
 }
 
-const useStyles = (T: any) => StyleSheet.create({
-          wrapper: { alignItems: 'center' },
-          center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-          centerText: { fontSize: 11, fontWeight: '700', color: T.colors.t1 },
-          legend: { flexDirection: 'row', gap: 12, marginTop: 12 },
-          legendItem: { alignItems: 'center', gap: 4 },
-          dot: { width: 8, height: 8, borderRadius: 4 },
-          legendLabel: { fontSize: 10, color: T.colors.t2 },
-        });
+const styles = StyleSheet.create({
+  wrapper: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', alignItems: 'center' },
+});
+
