@@ -21,7 +21,11 @@ export function useNutrition(dateStr: string = dayjs().format('YYYY-MM-DD')) {
         .maybeSingle();
       if (error) throw error;
 
-      if (data) return data as NutritionLog;
+      if (data) {
+        const meals = (data.meals || []) as any[];
+        const totalCalories = meals.reduce((sum, m) => sum + (m.calories || 0), 0);
+        return { ...data, totalCalories } as NutritionLog;
+      }
 
       // Default empty state
       return {
@@ -42,9 +46,13 @@ export function useNutrition(dateStr: string = dayjs().format('YYYY-MM-DD')) {
   const mutation = useMutation({
     mutationFn: async (newData: Partial<NutritionLog>) => {
       if (!user?.uid) return;
+      
+      // Strip out derived fields like totalCalories before saving
+      const { totalCalories, ...dbData } = newData as any;
+      
       const { error } = await supabase
         .from('nutrition_logs')
-        .upsert({ ...newData, user_id: user.uid, date: dateStr }, { onConflict: 'user_id,date' });
+        .upsert({ ...dbData, user_id: user.uid, date: dateStr }, { onConflict: 'user_id,date' });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),

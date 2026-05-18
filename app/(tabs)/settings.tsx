@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { Database, LogOut, Moon, Shield, Smartphone, Sparkles, Sun, User as UserIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ForgeButton } from '../../components/forge/ForgeButton';
 import { useForgeTheme } from '../../hooks/useForgeTheme';
@@ -113,10 +113,14 @@ export default function SettingsScreen() {
       {/* ── Profile Card ── */}
       <View style={[s.profileCard, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
         <LinearGradient colors={[T.colors.forge, '#b33e1d']} style={{ width: 64, height: 64, borderRadius: 32, padding: 3 }}>
-          <View style={[s.avatar, { backgroundColor: T.colors.bg0, flex: 1, width: '100%', height: '100%', borderRadius: 32 }]}>
-            <Text style={{ fontSize: 24, fontWeight: '800', color: T.colors.t1 }}>
-              {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'A'}
-            </Text>
+          <View style={[s.avatar, { backgroundColor: T.colors.bg0, flex: 1, width: '100%', height: '100%', borderRadius: 32, overflow: 'hidden' }]}>
+            {(user?.photoURL || (user as any)?.photo_url) ? (
+              <Image source={{ uri: user?.photoURL || (user as any)?.photo_url }} style={{ width: '100%', height: '100%' }} />
+            ) : (
+              <Text style={{ fontSize: 24, fontWeight: '800', color: T.colors.t1 }}>
+                {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'A'}
+              </Text>
+            )}
           </View>
         </LinearGradient>
         <View style={s.profileInfo}>

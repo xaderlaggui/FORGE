@@ -4,6 +4,7 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import 'react-native-url-polyfill/auto';
 
 import { supabase } from '@/services/supabase';
 import { useAuthStore } from '@/stores/authStore';

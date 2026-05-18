@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import dayjs from 'dayjs';
 import { getGreeting, getInitial } from '../utils';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
@@ -8,9 +8,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 interface DashboardHeaderProps {
   displayName?: string | null;
+  photoUrl?: string | null;
 }
 
-export function DashboardHeader({ displayName }: DashboardHeaderProps) {
+export function DashboardHeader({ displayName, photoUrl }: DashboardHeaderProps) {
     const { T } = useForgeTheme();
     const s = useS(T);
   return (
@@ -25,11 +26,15 @@ export function DashboardHeader({ displayName }: DashboardHeaderProps) {
           </View>
           <LinearGradient colors={[T.colors.forge, '#b33e1d']} style={s.avatarWrap}>
             <View
-              style={s.avatarInner}
+              style={[s.avatarInner, { overflow: 'hidden' }]}
               accessibilityLabel={`Profile: ${displayName ?? 'Athlete'}`}
               accessibilityRole="button"
             >
-              <Text style={s.avatarText}>{getInitial(displayName)}</Text>
+              {photoUrl ? (
+                <Image source={{ uri: photoUrl }} style={{ width: '100%', height: '100%' }} />
+              ) : (
+                <Text style={s.avatarText}>{getInitial(displayName)}</Text>
+              )}
             </View>
           </LinearGradient>
         </View>

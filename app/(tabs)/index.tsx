@@ -28,7 +28,10 @@ export default function HomeScreen() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── Composition: Header & Greeting ── */}
-      <DashboardHeader displayName={data.user?.displayName} />
+      <DashboardHeader 
+        displayName={data.user?.displayName} 
+        photoUrl={data.user?.photoURL || (data.user as any)?.photo_url} 
+      />
 
       {/* ── Composition: Hero Card ── */}
       <TodayPlanCard 

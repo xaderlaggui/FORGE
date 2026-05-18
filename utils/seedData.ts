@@ -72,13 +72,15 @@ export async function seedExercises() {
 
 export async function seedMockUser(uid: string) {
   if (!uid) return;
-  const userRef = doc(db, 'users', uid);
-  await setDoc(userRef, {
-    displayName: 'Mock Athlete',
+  
+  const { error: profileError } = await supabase.from('profiles').upsert({
+    id: uid,
+    email: 'mock@athlete.com',
+    display_name: 'Mock Athlete',
     weight: 186,
     bmi: 24.5,
     streak: 14,
-    weightHistory: [
+    bmi_history: [
       { value: 195, date: 'May 1' },
       { value: 193, date: 'May 8' },
       { value: 191, date: 'May 10' },
@@ -87,15 +89,18 @@ export async function seedMockUser(uid: string) {
       { value: 186, date: 'May 29' },
     ],
     measurements: [{ chest: 41.5, waist: 33.0, arms: 15.2, legs: 24.8 }],
-    progressPhotos: [
+    progress_photos: [
       { url: 'https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?auto=format&fit=crop&w=800&q=80', date: '2026-01-01' },
       { url: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?auto=format&fit=crop&w=800&q=80', date: new Date().toISOString() },
     ]
-  }, { merge: true });
+  });
 
-  const workoutRef = doc(db, `users/${uid}/workouts/mock_workout_1`);
-  await setDoc(workoutRef, {
-    id: 'mock_workout_1',
+  if (profileError) {
+    console.error('Error seeding mock profile:', profileError);
+  }
+
+  const { error: workoutError } = await supabase.from('workouts').insert({
+    user_id: uid,
     date: new Date().toISOString().split('T')[0],
     notes: 'Heavy Push Day',
     exercises: [
@@ -110,4 +115,8 @@ export async function seedMockUser(uid: string) {
       }
     ]
   });
+
+  if (workoutError) {
+    console.error('Error seeding mock workout:', workoutError);
+  }
 }

@@ -25,8 +25,8 @@ create table if not exists public.profiles (
   targets_nutrition jsonb,
   targets_workout_split text,
   plan_weekly_schedule jsonb,
-  allowFollow boolean default true,
-  twoFAEnabled boolean default false,
+  "allowFollow" boolean default true,
+  "twoFAEnabled" boolean default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -35,7 +35,7 @@ create table if not exists public.exercises (
   id text primary key,
   name text not null,
   category text,
-  muscleGroups jsonb,
+  "muscleGroups" jsonb,
   equipment text,
   difficulty text,
   purpose text,
@@ -48,7 +48,7 @@ create table if not exists public.workouts (
   user_id uuid references public.profiles(id) on delete cascade not null,
   date text not null,
   notes text,
-  durationMin integer,
+  "durationMin" integer,
   calories integer,
   exercises jsonb default '[]'::jsonb,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
@@ -69,7 +69,7 @@ create table if not exists public.nutrition_logs (
   user_id uuid references public.profiles(id) on delete cascade not null,
   date text not null,
   meals jsonb default '[]'::jsonb,
-  waterMl integer default 0,
+  "waterMl" integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   unique(user_id, date)
 );
@@ -122,6 +122,8 @@ create policy "Users can insert own generated plans." on public.generated_plans 
 create policy "Users can update own generated plans." on public.generated_plans for update using (auth.uid() = user_id);
 
 -- STORAGE BUCKET
-insert into storage.buckets (id, name, public) values ('progress', 'progress', true);
+insert into storage.buckets (id, name, public) values ('progress', 'progress', true) on conflict (id) do nothing;
+drop policy if exists "Public Access" on storage.objects;
 create policy "Public Access" on storage.objects for select using (bucket_id = 'progress');
+drop policy if exists "Authenticated users can upload photos" on storage.objects;
 create policy "Authenticated users can upload photos" on storage.objects for insert with check (bucket_id = 'progress' and auth.role() = 'authenticated');
