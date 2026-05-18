@@ -22,7 +22,7 @@ function aggregateVolumeByDay(workouts: any[]): Record<string, number> {
 }
 
 export function useProgressData() {
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const { workouts } = useWorkouts();
   const [timeframe, setTimeframe] = useState<'1W' | '1M'>('1W');
   const [isUploading, setIsUploading] = useState(false);
@@ -134,9 +134,15 @@ export function useProgressData() {
         .single();
         
       const existing = profile?.progress_photos || [];
+      const updatedPhotos = [...existing, { url: publicUrl, date: new Date().toISOString() }];
+      
       await supabase.from('profiles').update({
-        progress_photos: [...existing, { url: publicUrl, date: new Date().toISOString() }]
+        progress_photos: updatedPhotos
       }).eq('id', user.uid);
+      
+      // Instantly update local state so the Transformation section re-renders
+      setUser({ ...user, progress_photos: updatedPhotos } as any);
+      
       alert('Progress photo saved!');
     } catch (err: any) {
       console.error('[uploadPhoto] error:', err?.message ?? err);

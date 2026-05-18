@@ -6,7 +6,7 @@ import { useAuthStore } from '../stores/authStore';
 
 export default function MeasurementsScreen() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
 
   const [chest, setChest] = useState('');
   const [waist, setWaist] = useState('');
@@ -35,11 +35,16 @@ export default function MeasurementsScreen() {
         .eq('id', user?.uid)
         .single();
       const existing = profile?.measurements || [];
+      const updatedMeasurements = [...existing, newEntry];
       const { error } = await supabase
         .from('profiles')
-        .update({ measurements: [...existing, newEntry] })
+        .update({ measurements: updatedMeasurements })
         .eq('id', user?.uid);
       if (error) throw error;
+      
+      // Instantly update local state so the Progress screen re-renders
+      setUser({ ...user, measurements: updatedMeasurements } as any);
+      
       router.back();
     } catch (e) {
       Alert.alert('Error', 'Failed to save measurements.');

@@ -44,7 +44,7 @@ create table if not exists public.exercises (
 
 -- WORKOUTS
 create table if not exists public.workouts (
-  id uuid default uuid_generate_v4() primary key,
+  id text primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   date text not null,
   notes text,
@@ -56,9 +56,10 @@ create table if not exists public.workouts (
 
 -- ROUTINES
 create table if not exists public.routines (
-  id uuid default uuid_generate_v4() primary key,
+  id text primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   name text not null,
+  split text,
   exercises jsonb default '[]'::jsonb,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
