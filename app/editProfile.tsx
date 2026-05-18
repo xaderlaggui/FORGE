@@ -22,6 +22,8 @@ export default function EditProfileScreen() {
   const { user, setUser } = useAuthStore();
 
   const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [handle, setHandle] = useState((user as any)?.handle || '');
+  const [dob, setDob] = useState((user as any)?.dateOfBirth || '');
   const [height, setHeight] = useState(user?.height?.toString() || '');
   const [weight, setWeight] = useState(user?.weight?.toString() || '');
   const [heightUnit, setHeightUnit] = useState<'cm' | 'ft'>('cm');
@@ -57,6 +59,8 @@ export default function EditProfileScreen() {
       const updated = {
         ...user,
         displayName,
+        handle,
+        dateOfBirth: dob,
         height: heightVal,
         weight: weightVal,
         photoURL: photoUri || user.photoURL,
@@ -160,6 +164,31 @@ export default function EditProfileScreen() {
                 value={displayName}
                 onChangeText={setDisplayName}
                 placeholder="Your name"
+                placeholderTextColor={T.colors.t3}
+              />
+            </View>
+            <View style={s.divider} />
+
+            <View style={s.field}>
+              <Text style={s.fieldLabel}>Username / Handle</Text>
+              <TextInput
+                style={s.input}
+                value={handle}
+                onChangeText={setHandle}
+                placeholder="@username"
+                placeholderTextColor={T.colors.t3}
+                autoCapitalize="none"
+              />
+            </View>
+            <View style={s.divider} />
+
+            <View style={s.field}>
+              <Text style={s.fieldLabel}>Date of Birth</Text>
+              <TextInput
+                style={s.input}
+                value={dob}
+                onChangeText={setDob}
+                placeholder="YYYY-MM-DD"
                 placeholderTextColor={T.colors.t3}
               />
             </View>

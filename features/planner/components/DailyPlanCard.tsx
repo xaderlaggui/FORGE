@@ -117,9 +117,15 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
             {plannedWorkout.exercises?.length ?? 0} Exercises Prescribed
           </Text>
           {data.length > 0 && (
-            <View style={s.heatmapFigures}>
-              <Body data={data} gender="male" side="front" scale={0.4} colors={['#333', T.colors.forge]} />
-              <Body data={data} gender="male" side="back" scale={0.4} colors={['#333', T.colors.forge]} />
+            <View style={{ alignItems: 'center', marginBottom: 16 }}>
+              <View style={s.heatmapFigures}>
+                <Body data={data} gender="male" side="front" scale={0.4} colors={['#333', T.colors.forge]} />
+                <Body data={data} gender="male" side="back" scale={0.4} colors={['#333', T.colors.forge]} />
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: T.colors.forge }} />
+                <Text style={{ fontSize: 10, color: T.colors.t3, fontWeight: '600', textTransform: 'uppercase' }}>Target Muscles</Text>
+              </View>
             </View>
           )}
           <ForgeButton
