@@ -1,8 +1,10 @@
+import { BEAR } from '@/constants/bearAssets';
 import { MascotImages } from '@/constants/mascotImages';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
-import { Send, User as UserIcon, X } from 'lucide-react-native';
+import { Flame, MapPin, Send, Timer, User as UserIcon, X } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   FlatList,
@@ -19,8 +21,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useNutrition } from '../hooks/useNutrition';
 import { useWorkouts } from '../hooks/useWorkouts';
-import { supabase } from '../services/supabase';
 import { groqComplete, GroqMessage } from '../services/groq';
+import { supabase } from '../services/supabase';
 import { useAuthStore } from '../stores/authStore';
 
 const BASE_SYSTEM_PROMPT = `You are FORGE Coach — an energetic, supportive AI fitness coach inside a workout tracking app.
@@ -28,11 +30,21 @@ const BASE_SYSTEM_PROMPT = `You are FORGE Coach — an energetic, supportive AI 
 BEHAVIOR RULES:
 1. Keep replies SHORT (1–3 sentences). Be punchy and motivating.
 2. If the user describes any physical activity (walking, running, gym, cycling, etc.), you MUST respond with valid JSON in this exact format — nothing else, no extra text:
-   {"action":"log_activity","activityName":"<name>","durationMinutes":<number>,"notes":"<optional notes>","message":"<your motivating reply>"}
+   {"action":"log_activity","activityName":"<name>","type":"<strength|run|walk|cardio>","durationMinutes":<number>,"distanceKm":<number or null>,"notes":"<optional notes>","message":"<your motivating reply>"}
+   - "type" MUST be one of: "strength", "run", "walk", or "cardio".
+   - "distanceKm" should be a number if the user mentions distance (in km). Convert miles to km if needed. Use null if no distance is mentioned.
 3. For all other messages, reply as plain conversational text (no JSON).
 4. Never use markdown. Never use asterisks.`;
 
-type Message = { id: string; text: string; isAi: boolean; logged?: boolean };
+interface LoggedActivity {
+  activityName: string;
+  type: string;
+  durationMinutes: number;
+  distanceKm?: number | null;
+  calories?: number;
+}
+
+type Message = { id: string; text: string; isAi: boolean; logged?: boolean; activity?: LoggedActivity };
 
 export default function ChatScreen() {
   const { T } = useForgeTheme();
@@ -41,6 +53,7 @@ export default function ChatScreen() {
   const { user } = useAuthStore();
   const { data: nutrition } = useNutrition();
   const { workouts } = useWorkouts();
+  const queryClient = useQueryClient();
 
   const [inputText, setInputText] = useState('');
   const [messages, setMessages] = useState<Message[]>([
@@ -94,24 +107,46 @@ export default function ChatScreen() {
       let displayText = raw;
       let logged = false;
 
+      let activity: LoggedActivity | undefined;
+
       try {
         // Extract JSON if it's embedded in text
         const jsonMatch = raw.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
           if (parsed.action === 'log_activity' && user?.uid) {
+            const actType = parsed.type || 'strength';
+            const duration = parsed.durationMinutes ?? 0;
+            const distance = parsed.distanceKm ?? null;
+            const estCalories = Math.round(duration * (actType === 'run' ? 10 : actType === 'walk' ? 4 : 5));
+
+            const workoutId = `chat_${Date.now()}`;
             const { error } = await supabase.from('workouts').insert({
+              id: workoutId,
               user_id: user.uid,
               date: dayjs().format('YYYY-MM-DD'),
               notes: parsed.activityName,
+              type: actType,
               exercises: [],
-              durationMin: parsed.durationMinutes ?? 0,
-              calories: Math.round((parsed.durationMinutes ?? 0) * 5),
+              "durationMin": duration,
+              calories: estCalories,
+              distanceKm: distance,
               created_at: new Date().toISOString(),
             });
             if (error) throw error;
-            displayText = `Logged: ${parsed.activityName}${parsed.notes ? ` (${parsed.notes})` : ''}\n\n${parsed.message}`;
+
+            // Refresh workouts cache so history updates
+            queryClient.invalidateQueries({ queryKey: ['workouts', user.uid] });
+
+            displayText = parsed.message || 'Activity logged!';
             logged = true;
+            activity = {
+              activityName: parsed.activityName,
+              type: actType,
+              durationMinutes: duration,
+              distanceKm: distance,
+              calories: estCalories,
+            };
           }
         }
       } catch {
@@ -119,7 +154,7 @@ export default function ChatScreen() {
       }
 
       historyRef.current.push({ role: 'assistant', content: raw });
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), text: displayText, isAi: true, logged }]);
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), text: displayText, isAi: true, logged, activity }]);
 
     } catch (err: any) {
       const errMsg = err?.message?.includes('not set')
@@ -132,6 +167,17 @@ export default function ChatScreen() {
     }
   };
 
+  // Pick the right bear image for the activity type
+  const getActivityImage = (type?: string) => {
+    switch (type) {
+      case 'run': case 'walk': case 'cardio': return BEAR.RUNNING;
+      case 'strength': return BEAR.LIFTING;
+      default: return BEAR.FLEXING;
+    }
+  };
+
+  const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
   const renderMessage = ({ item }: { item: Message }) => (
     <View style={[s.msgRow, item.isAi ? s.msgRowAi : s.msgRowUser]}>
       {item.isAi && (
@@ -140,7 +186,40 @@ export default function ChatScreen() {
         </View>
       )}
       <View style={[s.bubble, item.isAi ? s.bubbleAi : s.bubbleUser]}>
-        {item.logged && <Text style={s.loggedBadge} maxFontSizeMultiplier={1.2}>WORKOUT LOGGED</Text>}
+        {/* Activity Card */}
+        {item.logged && item.activity && (
+          <View style={s.activityCard}>
+            <Image
+              source={getActivityImage(item.activity.type)}
+              style={s.activityCardImage}
+              resizeMode="contain"
+            />
+            <View style={s.activityCardInfo}>
+              <Text style={s.activityCardBadge}>{capitalize(item.activity.type)} Logged ✓</Text>
+              <Text style={s.activityCardName}>{item.activity.activityName}</Text>
+              <View style={s.activityCardStats}>
+                {item.activity.durationMinutes > 0 && (
+                  <View style={s.activityStat}>
+                    <Timer size={11} color={T.colors.t3} />
+                    <Text style={s.activityStatText}>{item.activity.durationMinutes} min</Text>
+                  </View>
+                )}
+                {item.activity.distanceKm != null && item.activity.distanceKm > 0 && (
+                  <View style={s.activityStat}>
+                    <MapPin size={11} color={T.colors.forge} />
+                    <Text style={[s.activityStatText, { color: T.colors.forge, fontWeight: '700' }]}>{item.activity.distanceKm} km</Text>
+                  </View>
+                )}
+                {(item.activity.calories ?? 0) > 0 && (
+                  <View style={s.activityStat}>
+                    <Flame size={11} color={T.colors.t3} />
+                    <Text style={s.activityStatText}>~{item.activity.calories} kcal</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          </View>
+        )}
         <Text style={[s.bubbleText, item.isAi ? s.bubbleTextAi : s.bubbleTextUser]} maxFontSizeMultiplier={1.2}>
           {item.text}
         </Text>
@@ -187,17 +266,6 @@ export default function ChatScreen() {
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         showsVerticalScrollIndicator={false}
       />
-
-      {/* ── Idle Mascot State ── */}
-      {messages.length === 1 && (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Image
-            source={MascotImages.coach}
-            style={{ width: 220, height: 220, resizeMode: 'contain', alignSelf: 'center', marginBottom: 20 }}
-            accessibilityLabel="Forge the AI coach bear ready to help you"
-          />
-        </View>
-      )}
 
       {/* ── Typing indicator ── */}
       {isTyping && (
@@ -293,6 +361,34 @@ const useS = (T: any) => StyleSheet.create({
     fontSize: 9, fontWeight: '700', color: T.colors.forge,
     letterSpacing: 0.8, marginBottom: 5,
     textTransform: 'uppercase',
+  },
+
+  // Activity Card inside chat bubble
+  activityCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: T.colors.bg2, borderRadius: T.radii.lg,
+    padding: 10, marginBottom: 10,
+    borderWidth: 0.5, borderColor: T.colors.b1,
+  },
+  activityCardImage: {
+    width: 48, height: 48,
+  },
+  activityCardInfo: { flex: 1 },
+  activityCardBadge: {
+    fontSize: 9, fontWeight: '800', color: T.colors.forge,
+    textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 2,
+  },
+  activityCardName: {
+    fontSize: 14, fontWeight: '700', color: T.colors.t1, marginBottom: 4,
+  },
+  activityCardStats: {
+    flexDirection: 'row', gap: 10, flexWrap: 'wrap',
+  },
+  activityStat: {
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+  },
+  activityStatText: {
+    fontSize: 11, fontWeight: '600', color: T.colors.t3,
   },
 
   // Typing

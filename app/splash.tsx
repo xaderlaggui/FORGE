@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { MascotImages } from '../constants/mascotImages';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { useAuthStore } from '../stores/authStore';
 
 /**
  * Splash screen — shown on first app load.
@@ -36,11 +37,21 @@ export default function SplashScreen() {
     opacity: glowOpacity.value,
   }));
 
+  const { user } = useAuthStore();
   const navigated = useRef(false);
   const navigate = () => {
     if (navigated.current) return;
     navigated.current = true;
-    router.replace('/(auth)/welcome');
+    
+    if (user) {
+      if (user.isOnboarded) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/(onboarding)');
+      }
+    } else {
+      router.replace('/(auth)/welcome');
+    }
   };
 
   const fadeAnim = useRef(new RNAnimated.Value(0)).current;

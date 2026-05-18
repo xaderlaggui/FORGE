@@ -48,8 +48,12 @@ create table if not exists public.workouts (
   user_id uuid references public.profiles(id) on delete cascade not null,
   date text not null,
   notes text,
+  type text default 'strength',
   "durationMin" integer,
   calories integer,
+  "distanceKm" numeric,
+  steps integer,
+  "elevationGain" numeric,
   exercises jsonb default '[]'::jsonb,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
