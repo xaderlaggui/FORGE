@@ -8,7 +8,9 @@ import { Camera } from 'lucide-react-native';
 import { useDashboardData } from '../../features/dashboard/hooks/useDashboardData';
 import { DashboardHeader } from '../../features/dashboard/components/DashboardHeader';
 import { TodayPlanCard } from '../../features/dashboard/components/TodayPlanCard';
-import { MetricRingsRow } from '../../features/dashboard/components/MetricRingsRow';
+import { WeeklyProgressDots } from '../../features/dashboard/components/WeeklyProgressDots';
+import { QuickStatsRow } from '../../features/dashboard/components/QuickStatsRow';
+import { RecentWorkoutsList } from '../../features/dashboard/components/RecentWorkoutsList';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 
 export default function HomeScreen() {
@@ -47,15 +49,17 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* ── Composition: Quick Metrics ── */}
-      <MetricRingsRow 
-        isLoading={data.isLoading}
-        activeCals={data.activeCals}
-        calGoal={data.calGoal}
-        waterLiters={data.waterLiters}
-        waterGoal={data.waterGoal}
-        streak={data.streak}
+      {/* ── Composition: Weekly Progress Dots ── */}
+      <WeeklyProgressDots 
         weekActivity={data.weekActivity}
+        streak={data.streak}
+      />
+
+      {/* ── Composition: Quick Stats ── */}
+      <QuickStatsRow 
+        volumeLbs={data.totalVolumeLbs}
+        streak={data.streak}
+        workoutsThisWeek={data.workoutsThisWeek}
       />
 
       {/* ── Composition: AI Coach (Shared Component) ── */}
@@ -66,6 +70,9 @@ export default function HomeScreen() {
           onChatPress={() => router.push('/chat')}
         />
       </View>
+
+      {/* ── Composition: Recent Activity ── */}
+      <RecentWorkoutsList recentWorkouts={data.recentWorkouts} />
 
     </ScrollView>
   );

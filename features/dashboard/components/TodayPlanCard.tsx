@@ -2,10 +2,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { MascotImage } from '../../../components/common/MascotImage';
+import { BearMascot } from '../../../components/forge/BearMascot';
 import { ForgeButton } from '../../../components/forge/ForgeButton';
 import { SkeletonHeroCard } from '../../../components/forge/ForgeSkeleton';
 import { MuscleTagChip } from '../../../components/forge/WorkoutAtoms';
+import { useBearMood } from '../../../hooks/useBearMood';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 
 interface TodayPlanCardProps {
@@ -26,6 +27,8 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
 
   const isRestDay = !plannedWorkout || plannedWorkout.dayType === 'Rest';
   const isCompleted = !!loggedWorkout;
+
+  const bearMood = useBearMood(isCompleted ? 'workout_complete' : isRestDay ? 'rest_day' : 'home_idle');
 
   return (
     <View style={{ position: 'relative', overflow: 'visible', marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5 }}>
@@ -78,17 +81,17 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
           )}
         </View>
       </View>
-      <MascotImage
-        mascot="hero"
-        width={130}
-        height={165}
-        animation="breathe"
-        decorative={true}
-        accessibilityLabel="Forge the bear hero pose"
+      <BearMascot
+        variant={bearMood}
+        size="lg"
+        animate={!isCompleted}
         style={{
           position: 'absolute',
-          right: -8,
+          right: -10,
           bottom: -15, // Overflow bottom slightly
+        }}
+        imageStyle={{
+          height: 165
         }}
       />
     </View>

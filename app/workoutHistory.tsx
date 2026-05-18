@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import dayjs from 'dayjs';
 import { useWorkouts } from '../hooks/useWorkouts';
-import { MascotImage } from '../components/common/MascotImage';
+import { BearMascot } from '../components/forge/BearMascot';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 // Using lucide-react-native icons instead of SVG figures for simplicity
 import { Activity, Dumbbell } from 'lucide-react-native';
@@ -44,12 +44,9 @@ export default function WorkoutHistoryScreen() {
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
         {sortedWorkouts.length === 0 ? (
           <View style={{ alignItems: 'center', marginTop: 40 }}>
-            <MascotImage
-              mascot="progress"
-              width={160}
-              height={160}
-              animation="none"
-              accessibilityLabel="Forge the bear celebrating progress gains"
+            <BearMascot
+              variant="THINKING"
+              size="xl"
               style={{ alignSelf: 'center', marginBottom: 16 }}
             />
             <Text style={[s.empty, { marginTop: 0 }]}>No workouts logged yet.</Text>

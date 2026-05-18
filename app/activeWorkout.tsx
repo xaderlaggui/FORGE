@@ -11,7 +11,9 @@ import { WorkoutSetsTable } from '../features/workout/components/WorkoutSetsTabl
 // Shared Components
 import { RestTimerWidget, NumpadBottomSheet } from '../components/forge/WorkoutWidgets';
 import { ForgeButton } from '../components/forge/ForgeButton';
+import { VolumeStats } from '../features/workout/types';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { BearMascot } from '../components/forge/BearMascot';
 
 const PRESETS = [
   { label: '3×8', sets: 3, reps: 8 },
@@ -58,6 +60,9 @@ export default function ActiveWorkoutScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {!session.workoutStarted ? (
           <View style={styles.startOverlay}>
+            <View style={{ alignItems: 'center', marginBottom: 20 }}>
+              <BearMascot variant="READY" size="xl" animate />
+            </View>
             <Text style={styles.exerciseTitle} maxFontSizeMultiplier={1.2}>
               {session.workoutTitle}
             </Text>
@@ -66,6 +71,9 @@ export default function ActiveWorkoutScreen() {
         ) : (
           <>
             {/* Feature 4: Volume Tracker */}
+            <View style={{ alignItems: 'center', marginVertical: 10 }}>
+              <BearMascot variant="LIFTING" size="md" animate />
+            </View>
             <View style={styles.volumeTracker}>
               <View style={styles.volStat}>
                 <Text style={styles.volValue}>{session.volumeStats.volume.toLocaleString()}</Text>

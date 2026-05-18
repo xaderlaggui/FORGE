@@ -3,8 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import { LineChart } from 'react-native-gifted-charts';
 import { TrendingDown, TrendingUp } from 'lucide-react-native';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { Image } from 'react-native';
-import { MascotImages } from '../../../constants/mascotImages';
+import { BearMascot } from '../../../components/forge/BearMascot';
 
 const SCREEN_W = Dimensions.get('window').width;
 const TIMEFRAMES = ['7D', '1M', '3M', 'YTD'];
@@ -76,7 +75,7 @@ export function WeightChart({
           />
         </View>
       </View>
-      <Image source={MascotImages.progress} style={{ position: 'absolute', right: -10, top: -20, width: 120, height: 120, resizeMode: 'contain', zIndex: 10 }} />
+      <BearMascot variant="PROUD" size="lg" style={{ position: 'absolute', right: -10, top: -20, zIndex: 10 }} />
       </View>
     </View>
   );

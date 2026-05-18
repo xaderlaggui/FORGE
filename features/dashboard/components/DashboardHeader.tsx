@@ -3,6 +3,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import dayjs from 'dayjs';
 import { getGreeting, getInitial } from '../utils';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { Bell } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface DashboardHeaderProps {
   displayName?: string | null;
@@ -16,22 +18,30 @@ export function DashboardHeader({ displayName }: DashboardHeaderProps) {
       {/* ── Top Bar ── */}
       <View style={s.topBar}>
         <Text style={s.wordmark}>FORGE</Text>
-        <View
-          style={s.avatar}
-          accessibilityLabel={`Profile: ${displayName ?? 'Athlete'}`}
-          accessibilityRole="button"
-        >
-          <Text style={s.avatarText}>{getInitial(displayName)}</Text>
+        <View style={s.headerRight}>
+          <View style={s.bellBtn}>
+            <Bell size={24} color={T.colors.t1} />
+            <View style={s.bellBadge} />
+          </View>
+          <LinearGradient colors={[T.colors.forge, '#b33e1d']} style={s.avatarWrap}>
+            <View
+              style={s.avatarInner}
+              accessibilityLabel={`Profile: ${displayName ?? 'Athlete'}`}
+              accessibilityRole="button"
+            >
+              <Text style={s.avatarText}>{getInitial(displayName)}</Text>
+            </View>
+          </LinearGradient>
         </View>
       </View>
 
       {/* ── Greeting ── */}
       <View style={s.greetingWrap}>
         <Text style={s.greetingSub} maxFontSizeMultiplier={1.3}>
-          {getGreeting()} · {dayjs().format('dddd')}
+          {getGreeting()},
         </Text>
         <Text style={s.greetingName} maxFontSizeMultiplier={1.3}>
-          {displayName ?? 'Athlete'}
+          Ready to train, {displayName ?? 'Athlete'}?
         </Text>
       </View>
     </View>
@@ -44,16 +54,27 @@ const useS = (T: any) => StyleSheet.create({
             paddingHorizontal: T.spacing.page, paddingTop: 60, paddingBottom: T.spacing.px4,
           },
           wordmark: { fontSize: 18, fontWeight: '800', letterSpacing: 2.5, color: T.colors.forge },
-          avatar: {
-            width: 36, height: 36, borderRadius: T.radii.full,
+          headerRight: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+          bellBtn: { position: 'relative' },
+          bellBadge: {
+            position: 'absolute', top: 0, right: 0,
+            width: 10, height: 10, borderRadius: 5,
             backgroundColor: T.colors.forge,
-            alignItems: 'center', justifyContent: 'center',
-            shadowColor: T.colors.forge,
-            shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 4,
+            borderWidth: 2, borderColor: T.colors.bg0,
           },
-          avatarText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+          avatarWrap: {
+            width: 40, height: 40, borderRadius: 20,
+            padding: 2,
+          },
+          avatarInner: {
+            flex: 1, borderRadius: 20,
+            backgroundColor: T.colors.bg0,
+            borderWidth: 2, borderColor: T.colors.bg0,
+            alignItems: 'center', justifyContent: 'center',
+          },
+          avatarText: { fontSize: 14, fontWeight: '700', color: T.colors.t1 },
 
-          greetingWrap: { paddingHorizontal: T.spacing.page, marginBottom: T.spacing.px5 },
-          greetingSub: { fontSize: T.typography.sizes.label, fontWeight: '500', color: T.colors.t2, marginBottom: 2 },
-          greetingName: { fontSize: T.typography.sizes.h1, fontWeight: '700', color: T.colors.t1 },
+          greetingWrap: { paddingHorizontal: T.spacing.page, marginBottom: T.spacing.px6 },
+          greetingSub: { fontSize: T.typography.sizes.label, fontWeight: '500', color: T.colors.t3, marginBottom: 2 },
+          greetingName: { fontSize: 26, fontWeight: '900', color: T.colors.t1 },
         });

@@ -8,6 +8,7 @@ import * as Sharing from 'expo-sharing';
 import ViewShot from 'react-native-view-shot';
 import { useWorkouts } from '../hooks/useWorkouts';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { BearMascot } from '../components/forge/BearMascot';
 import { ForgeButton } from '../components/forge/ForgeButton';
 
 export default function WorkoutDetailScreen() {
@@ -212,6 +213,9 @@ export default function WorkoutDetailScreen() {
         <View style={{ width: 40 }} />
       </View>
       <ScrollView contentContainerStyle={s.content}>
+        <View style={{ alignItems: 'center', marginVertical: 16 }}>
+          <BearMascot variant="PROUD" size="md" />
+        </View>
         {isCardio ? renderCardioView() : renderStrengthView()}
       </ScrollView>
     </View>

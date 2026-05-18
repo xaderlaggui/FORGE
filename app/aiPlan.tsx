@@ -10,6 +10,7 @@ import { useForgeTheme } from '@/hooks/useForgeTheme';
 import { useAuthStore } from '../stores/authStore';
 import { db } from '../services/firebase';
 import { generateFullPlan, GeneratedPlan, GeneratedWorkoutDay } from '../services/GeneratorEngine';
+import { BearMascot } from '../components/forge/BearMascot';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const GOALS = ['Weight Loss', 'Muscle Gain', 'Endurance', 'Flexibility', 'General Fitness'];
@@ -156,6 +157,9 @@ function PlanPreview({ plan, onApply, onSaveDraft, isApplying, T }: {
   const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   return (
     <View style={{ gap: 12 }}>
+      <View style={{ alignItems: 'center', marginBottom: 16 }}>
+        <BearMascot variant="APPROVING" size="xl" animate />
+      </View>
       <Text style={{ fontSize: 18, fontWeight: '800', color: T.colors.t1, marginBottom: 4 }}>
         Weekly Preview
       </Text>
@@ -362,6 +366,12 @@ export default function AIPlanScreen() {
 
             {/* Generate Button */}
             <View style={s.section}>
+              {generating && (
+                <View style={{ alignItems: 'center', marginBottom: 24 }}>
+                  <BearMascot variant="THINKING" size="lg" animate />
+                  <Text style={{ fontSize: 14, color: T.colors.t3, marginTop: 12 }}>Analyzing your profile...</Text>
+                </View>
+              )}
               <TouchableOpacity
                 style={[s.generateBtn, generating && { opacity: 0.6 }]}
                 onPress={handleGenerate}

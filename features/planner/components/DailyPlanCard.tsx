@@ -3,10 +3,9 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Body from 'react-native-body-highlighter';
-import { MascotImage } from '../../../components/common/MascotImage';
+import { BearMascot } from '../../../components/forge/BearMascot';
 import { ForgeButton } from '../../../components/forge/ForgeButton';
 import { ForgeSkeleton } from '../../../components/forge/ForgeSkeleton';
-import { MascotImages } from '../../../constants/mascotImages';
 import { useExercises } from '../../../hooks/useExercises';
 import { mapMusclesToSlugs } from './ExerciseLibrary';
 
@@ -99,7 +98,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
             variant="secondary"
           />
         </View>
-        <Image source={MascotImages.workout} style={{ position: 'absolute', right: -8, top: -25, width: 120, height: 120, resizeMode: 'contain', zIndex: 10 }} />
+        <BearMascot variant="APPROVING" size="lg" animate style={{ position: 'absolute', right: -8, top: -25, zIndex: 10 }} />
       </View>
     );
   }
@@ -134,19 +133,16 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
             pulse
           />
         </View>
-        <Image source={MascotImages.workout} style={{ position: 'absolute', right: -8, top: -25, width: 120, height: 120, resizeMode: 'contain', zIndex: 10 }} />
+        <BearMascot variant="READY" size="lg" animate style={{ position: 'absolute', right: -8, top: -25, zIndex: 10 }} />
       </View>
     );
   }
 
   return (
     <View style={[s.todayCard, s.todayCardEmpty]}>
-      <MascotImage
-        mascot="workout"
-        width={160}
-        height={160}
-        animation="none"
-        accessibilityLabel="Forge the bear lifting weights — no workout planned yet"
+      <BearMascot
+        variant="THINKING"
+        size="lg"
         style={{ alignSelf: 'center', marginBottom: 16 }}
       />
       <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>Active Recovery</Text>

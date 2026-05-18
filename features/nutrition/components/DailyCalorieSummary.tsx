@@ -3,8 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DailyAggregates } from '../types';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { Image } from 'react-native';
-import { MascotImages } from '../../../constants/mascotImages';
+import { BearMascot } from '../../../components/forge/BearMascot';
 
 interface DailyCalorieSummaryProps {
   aggregates: DailyAggregates;
@@ -67,9 +66,10 @@ export function DailyCalorieSummary({ aggregates }: DailyCalorieSummaryProps) {
         ))}
         </View>
       </View>
-      <Image
-        source={MascotImages.nutrition}
-        style={{ position: 'absolute', right: -8, top: -25, width: 130, height: 130, resizeMode: 'contain', zIndex: 10 }}
+      <BearMascot
+        variant="APPROVING"
+        size="lg"
+        style={{ position: 'absolute', right: -8, top: -25, zIndex: 10 }}
       />
     </View>
   );

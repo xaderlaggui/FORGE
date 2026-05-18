@@ -35,9 +35,23 @@ export function useDashboardData() {
     .slice(0, 2);
 
   const startOfWeek = dayjs().startOf('week').add(1, 'day');
+  let workoutsThisWeek = 0;
   const weekActivity = Array.from({ length: 7 }).map((_, i) => {
     const d = startOfWeek.add(i, 'day').format('YYYY-MM-DD');
-    return !!(workouts ?? []).find(w => w.date === d);
+    const isDone = !!(workouts ?? []).find(w => w.date === d);
+    if (isDone) workoutsThisWeek++;
+    return isDone;
+  });
+
+  let totalVolumeLbs = 0;
+  workouts?.forEach(w => {
+    w.exercises?.forEach((ex: any) => {
+      ex.sets?.forEach((s: any) => {
+        const wt = s.weight || 0;
+        const r = s.reps || 0;
+        totalVolumeLbs += (wt * r); // Assumes mostly lbs, adjust if needed
+      });
+    });
   });
 
   return {
@@ -54,6 +68,8 @@ export function useDashboardData() {
     muscleTags: muscleTags as string[],
     recentWorkouts,
     weekActivity,
+    workoutsThisWeek,
+    totalVolumeLbs,
     streak,
   };
 }
