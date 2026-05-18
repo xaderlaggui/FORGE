@@ -8,6 +8,7 @@ import { MeasurementCard } from '../../features/progress/components/MeasurementC
 import { ProgressPhotos } from '../../features/progress/components/ProgressPhotos';
 import { StatCard } from '../../features/progress/components/StatCard';
 import { VolumeChart } from '../../features/progress/components/VolumeChart';
+import { ConsistencyHeatmap } from '../../features/progress/components/ConsistencyHeatmap';
 import { WeightChart } from '../../features/progress/components/WeightChart';
 import { useProgressData } from '../../features/progress/hooks/useProgressData';
 
@@ -21,6 +22,7 @@ export default function ProgressScreen() {
     user, timeframe, setTimeframe,
     lineData, currentWeight, startWeight, weightDiff, minVal, maxVal,
     volumeLineData, currentVolume, volumeDiff, minVol, maxVol,
+    activityDates,
     latest, prev,
     firstPhoto, lastPhoto,
     isUploading, takePhoto
@@ -77,6 +79,9 @@ export default function ProgressScreen() {
           <MeasurementCard label="Legs" value={latest?.legs} prevValue={prev?.legs} onPress={() => router.push('/measurements')} />
         </View>
       </View>
+
+      {/* ── Composition: Consistency Heatmap ── */}
+      <ConsistencyHeatmap activityDates={activityDates} />
 
       {/* ── Composition: Progressive Overload ── */}
       <VolumeChart

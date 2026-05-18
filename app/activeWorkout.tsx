@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // Feature Hooks & Components
-import { useActiveSession } from '../features/workout/hooks/useActiveSession';
 import { LiveTimerHeader } from '../features/workout/components/LiveTimerHeader';
 import { WorkoutSetsTable } from '../features/workout/components/WorkoutSetsTable';
+import { useActiveSession } from '../features/workout/hooks/useActiveSession';
 
 // Shared Components
-import { RestTimerWidget, NumpadBottomSheet } from '../components/forge/WorkoutWidgets';
-import { ForgeButton } from '../components/forge/ForgeButton';
-import { VolumeStats } from '../features/workout/types';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { BearMascot } from '../components/forge/BearMascot';
+import { ForgeButton } from '../components/forge/ForgeButton';
+import { NumpadBottomSheet, RestTimerWidget } from '../components/forge/WorkoutWidgets';
 
 const PRESETS = [
   { label: '3×8', sets: 3, reps: 8 },
@@ -24,11 +23,11 @@ const PRESETS = [
 ];
 
 export default function ActiveWorkoutScreen() {
-    const { T } = useForgeTheme();
-    const styles = useStyles(T);
+  const { T } = useForgeTheme();
+  const styles = useStyles(T);
   const router = useRouter();
   const { id, date, routineId, title } = useLocalSearchParams();
-  
+
   const session = useActiveSession(id, date, routineId, title);
   const [summary, setSummary] = useState<{ mins: number, volume: number, id: string } | null>(null);
   const [rpe, setRpe] = useState<string | null>(null);
@@ -65,7 +64,7 @@ export default function ActiveWorkoutScreen() {
         <BearMascot variant="HYPED" size="xl" animate />
         <Text style={{ fontSize: 36, fontWeight: '900', color: T.colors.t1, marginTop: 32, letterSpacing: 1 }}>WORKOUT</Text>
         <Text style={{ fontSize: 36, fontWeight: '900', color: T.colors.forge, letterSpacing: 1 }}>COMPLETE!</Text>
-        
+
         <View style={{ flexDirection: 'row', gap: 32, marginVertical: 32, backgroundColor: T.colors.bg1, padding: 24, borderRadius: 24, borderWidth: 0.5, borderColor: T.colors.b1 }}>
           <View style={{ alignItems: 'center' }}>
             <Text style={{ fontSize: 28, fontWeight: '900', color: T.colors.t1 }}>{summary.mins}</Text>
@@ -95,15 +94,15 @@ export default function ActiveWorkoutScreen() {
           ))}
         </View>
 
-        <ForgeButton 
-          label="BACK TO HOME" 
+        <ForgeButton
+          label="BACK TO HOME"
           onPress={() => {
             // Ideally we save the RPE to Firebase here
             router.back();
-          }} 
-          size="lg" 
-          style={{ width: '100%' }} 
-          pulse 
+          }}
+          size="lg"
+          style={{ width: '100%' }}
+          pulse
         />
       </View>
     );
@@ -111,7 +110,7 @@ export default function ActiveWorkoutScreen() {
 
   return (
     <View style={styles.container}>
-      <LiveTimerHeader 
+      <LiveTimerHeader
         timerLabel={session.timerLabel}
         totalExercises={session.totalExercises}
         doneExercises={session.doneExercises}
@@ -154,20 +153,20 @@ export default function ActiveWorkoutScreen() {
 
             {/* Exercise Navigator */}
             <View style={styles.navigator}>
-              <TouchableOpacity 
-                style={styles.navBtn} 
+              <TouchableOpacity
+                style={styles.navBtn}
                 disabled={session.currentExerciseIndex === 0}
                 onPress={() => session.setCurrentExerciseIndex(i => i - 1)}
               >
                 <ChevronLeft size={24} color={session.currentExerciseIndex === 0 ? T.colors.t3 : T.colors.forge} />
               </TouchableOpacity>
-              
+
               <Text style={styles.navCount}>
                 {session.currentExerciseIndex + 1} OF {session.totalExercises}
               </Text>
 
-              <TouchableOpacity 
-                style={styles.navBtn} 
+              <TouchableOpacity
+                style={styles.navBtn}
                 disabled={session.currentExerciseIndex === session.totalExercises - 1}
                 onPress={() => session.setCurrentExerciseIndex(i => i + 1)}
               >
@@ -188,8 +187,8 @@ export default function ActiveWorkoutScreen() {
                     {PRESETS.map(p => {
                       const isActive = currentExercise.sets.length === p.sets && currentExercise.sets[0]?.reps === p.reps.toString();
                       return (
-                        <TouchableOpacity 
-                          key={p.label} 
+                        <TouchableOpacity
+                          key={p.label}
                           style={[styles.presetChip, isActive && styles.presetChipActive]}
                           onPress={() => session.selectPreset(session.currentExerciseIndex, p.sets, p.reps)}
                         >
@@ -201,7 +200,7 @@ export default function ActiveWorkoutScreen() {
                 </View>
 
                 {/* Set Table for Current Exercise Only */}
-                <WorkoutSetsTable 
+                <WorkoutSetsTable
                   exercises={[currentExercise]}
                   personalRecords={session.personalRecords}
                   onToggleSet={(exIdx, setIdx) => session.toggleSet(session.currentExerciseIndex, setIdx)}
@@ -275,61 +274,61 @@ export default function ActiveWorkoutScreen() {
 }
 
 const useStyles = (T: any) => StyleSheet.create({
-          container: { flex: 1, backgroundColor: T.colors.bg0 },
-          content: { padding: T.spacing.page },
-          
-          startOverlay: { alignItems: 'center', justifyContent: 'center', marginTop: 40 },
-          exerciseTitle: { fontSize: 24, fontWeight: '800', color: T.colors.t1, marginBottom: 8, textAlign: 'center' },
-          startHint: { fontSize: 14, color: T.colors.t3, textAlign: 'center' },
+  container: { flex: 1, backgroundColor: T.colors.bg0 },
+  content: { padding: T.spacing.page },
 
-          volumeTracker: {
-            flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-            backgroundColor: T.colors.bg1, borderRadius: 16, padding: 16,
-            borderWidth: 1, borderColor: T.colors.b1,
-            marginBottom: 24,
-          },
-          volStat: { alignItems: 'center', flex: 1 },
-          volValue: { fontSize: 20, fontWeight: '800', color: T.colors.t1, marginBottom: 4 },
-          volLabel: { fontSize: 10, fontWeight: '700', color: T.colors.forge, letterSpacing: 1 },
-          volDivider: { width: 1, height: 24, backgroundColor: T.colors.b1 },
+  startOverlay: { alignItems: 'center', justifyContent: 'center', marginTop: 40 },
+  exerciseTitle: { fontSize: 24, fontWeight: '800', color: T.colors.t1, marginBottom: 8, textAlign: 'center' },
+  startHint: { fontSize: 14, color: T.colors.t3, textAlign: 'center' },
 
-          navigator: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
-          navBtn: { padding: 8 },
-          navCount: { fontSize: 12, fontWeight: '800', color: T.colors.t3, letterSpacing: 1 },
+  volumeTracker: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    backgroundColor: T.colors.bg1, borderRadius: 16, padding: 16,
+    borderWidth: 1, borderColor: T.colors.b1,
+    marginBottom: 24,
+  },
+  volStat: { alignItems: 'center', flex: 1 },
+  volValue: { fontSize: 20, fontWeight: '800', color: T.colors.t1, marginBottom: 4 },
+  volLabel: { fontSize: 10, fontWeight: '700', color: T.colors.forge, letterSpacing: 1 },
+  volDivider: { width: 1, height: 24, backgroundColor: T.colors.b1 },
 
-          exerciseName: { fontSize: 28, fontWeight: '800', color: T.colors.t1, marginBottom: 20 },
+  navigator: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
+  navBtn: { padding: 8 },
+  navCount: { fontSize: 12, fontWeight: '800', color: T.colors.t3, letterSpacing: 1 },
 
-          presetSection: { marginBottom: 24 },
-          presetLabel: { fontSize: 10, fontWeight: '800', color: T.colors.t3, letterSpacing: 0.8, marginBottom: 8 },
-          presetRow: { flexDirection: 'row', gap: 8 },
-          presetChip: { backgroundColor: T.colors.bg1, borderWidth: 0.5, borderColor: T.colors.b1, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 10 },
-          presetChipActive: { backgroundColor: T.colors.forge },
-          presetChipText: { color: T.colors.t2, fontSize: 13, fontWeight: '700' },
-          presetChipTextActive: { color: '#000' },
+  exerciseName: { fontSize: 28, fontWeight: '800', color: T.colors.t1, marginBottom: 20 },
 
-          restTimerFloat: {
-            position: 'absolute',
-            bottom: 140, left: T.spacing.px4, right: T.spacing.px4,
-            zIndex: 20,
-          },
-          manualRestBtn: {
-            backgroundColor: T.colors.bg1,
-            borderWidth: 1,
-            borderColor: T.colors.forge,
-            borderRadius: 30,
-            paddingVertical: 12,
-            alignItems: 'center',
-          },
-          manualRestText: {
-            color: T.colors.forge,
-            fontWeight: '700',
-            fontSize: 14,
-          },
-          
-          footer: {
-            position: 'absolute', bottom: 0, left: 0, right: 0,
-            padding: T.spacing.page, paddingBottom: 36,
-            backgroundColor: T.colors.bg0,
-            borderTopWidth: 0.5, borderTopColor: T.colors.b1,
-          },
-        });
+  presetSection: { marginBottom: 24 },
+  presetLabel: { fontSize: 10, fontWeight: '800', color: T.colors.t3, letterSpacing: 0.8, marginBottom: 8 },
+  presetRow: { flexDirection: 'row', gap: 8 },
+  presetChip: { backgroundColor: T.colors.bg1, borderWidth: 0.5, borderColor: T.colors.b1, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 10 },
+  presetChipActive: { backgroundColor: T.colors.forge },
+  presetChipText: { color: T.colors.t2, fontSize: 13, fontWeight: '700' },
+  presetChipTextActive: { color: '#000' },
+
+  restTimerFloat: {
+    position: 'absolute',
+    bottom: 140, left: T.spacing.px4, right: T.spacing.px4,
+    zIndex: 20,
+  },
+  manualRestBtn: {
+    backgroundColor: T.colors.bg1,
+    borderWidth: 1,
+    borderColor: T.colors.forge,
+    borderRadius: 30,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  manualRestText: {
+    color: T.colors.forge,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+
+  footer: {
+    position: 'absolute', bottom: 0, left: 0, right: 0,
+    padding: T.spacing.page, paddingBottom: 36,
+    backgroundColor: T.colors.bg0,
+    borderTopWidth: 0.5, borderTopColor: T.colors.b1,
+  },
+});

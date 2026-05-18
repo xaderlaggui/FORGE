@@ -61,6 +61,8 @@ export function useProgressData() {
   const minVol = volumeLineData.length > 0 ? Math.min(...volumeLineData.map(v => v.value)) : 0;
   const maxVol = volumeLineData.length > 0 ? Math.max(...volumeLineData.map(v => v.value)) : 0;
 
+  const activityDates = sortedWorkouts.map(w => w.date);
+
   // ── Camera ──
   const uploadPhoto = async (uri: string) => {
     setIsUploading(true);
@@ -103,6 +105,7 @@ export function useProgressData() {
     timeframe, setTimeframe,
     lineData, currentWeight, startWeight, weightDiff, minVal, maxVal,
     volumeLineData, currentVolume, volumeDiff, minVol, maxVol,
+    activityDates,
     latest, prev,
     firstPhoto, lastPhoto,
     isUploading, takePhoto

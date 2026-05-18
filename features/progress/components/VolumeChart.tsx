@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { LineChart } from 'react-native-gifted-charts';
+import { BarChart } from 'react-native-gifted-charts';
 import { TrendingDown, TrendingUp, Activity } from 'lucide-react-native';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 
@@ -44,31 +44,30 @@ export function VolumeChart({
             </Text>
           </View>
         </View>
-        <View style={{ marginLeft: -16, marginRight: -4, marginTop: 16 }}>
-          <LineChart
-            data={volumeLineData}
-            areaChart
-            hideDataPoints={false}
-            dataPointsColor={T.colors.forge}
-            dataPointsRadius={3}
-            color={T.colors.forge}
-            thickness={2.5}
-            startFillColor={T.colors.forge}
-            endFillColor={T.colors.forge}
-            startOpacity={0.25}
-            endOpacity={0}
-            xAxisColor={T.colors.b1}
-            yAxisColor="transparent"
-            yAxisTextStyle={{ color: T.colors.t3, fontSize: 10 }}
-            xAxisLabelTextStyle={{ color: T.colors.t3, fontSize: 10 }}
+        <View style={{ marginTop: 24, alignItems: 'center' }}>
+          <BarChart
+            data={volumeLineData.map((d, i) => ({
+              value: d.value,
+              label: d.label,
+              frontColor: i === volumeLineData.length - 1 ? T.colors.forge : T.colors.bg3,
+              topLabelComponent: () => (
+                <Text style={{ color: T.colors.t3, fontSize: 10, marginBottom: 4 }}>
+                  {d.value >= 1000 ? `${(d.value / 1000).toFixed(1)}k` : d.value}
+                </Text>
+              ),
+            }))}
+            barWidth={28}
+            spacing={24}
+            roundedTop
+            roundedBottom
             hideRules
-            yAxisOffset={Math.max(0, minVol - 500)}
-            maxValue={Math.max(maxVol - minVol + 1000, 1000)}
+            xAxisThickness={0}
+            yAxisThickness={0}
+            hideYAxisText
+            xAxisLabelTextStyle={{ color: T.colors.t3, fontSize: 11, fontWeight: '600' }}
             noOfSections={3}
-            stepValue={Math.ceil((maxVol - minVol + 1000) / 3)}
-            height={140}
-            width={SCREEN_W - 72}
-            curved
+            maxValue={maxVol * 1.2}
+            height={160}
           />
         </View>
       </View>

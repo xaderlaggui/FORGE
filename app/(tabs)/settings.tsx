@@ -5,6 +5,7 @@ import { signOut } from 'firebase/auth';
 import { Database, LogOut, Moon, Shield, Smartphone, Sparkles, Sun, User as UserIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ForgeButton } from '../../components/forge/ForgeButton';
 import { useForgeTheme } from '../../hooks/useForgeTheme';
 import { auth } from '../../services/firebase';
@@ -113,9 +114,13 @@ export default function SettingsScreen() {
 
       {/* ── Profile Card ── */}
       <View style={[s.profileCard, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
-        <View style={[s.avatar, { backgroundColor: T.colors.forgeDim }]}>
-          <UserIcon size={32} color={T.colors.forge} />
-        </View>
+        <LinearGradient colors={[T.colors.forge, '#b33e1d']} style={{ width: 64, height: 64, borderRadius: 32, padding: 3 }}>
+          <View style={[s.avatar, { backgroundColor: T.colors.bg0, flex: 1, width: '100%', height: '100%', borderRadius: 32 }]}>
+            <Text style={{ fontSize: 24, fontWeight: '800', color: T.colors.t1 }}>
+              {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'A'}
+            </Text>
+          </View>
+        </LinearGradient>
         <View style={s.profileInfo}>
           <Text style={[s.profileName, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>{user?.displayName || 'Athlete'}</Text>
           <Text style={[s.profileEmail, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>{user?.email || 'No email linked'}</Text>

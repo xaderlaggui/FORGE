@@ -11,6 +11,7 @@ import { useForgeTheme } from '@/hooks/useForgeTheme';
 import { useAuthStore } from '../stores/authStore';
 import { db } from '../services/firebase';
 import { ForgeButton } from '../components/forge/ForgeButton';
+import { BearMascot } from '../components/forge/BearMascot';
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Prefer not to say'];
 const GOAL_OPTIONS = ['Lose Weight', 'Build Muscle', 'Improve Endurance', 'Stay Active'];
@@ -133,6 +134,10 @@ export default function EditProfileScreen() {
       </View>
 
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        
+        <View style={{ alignItems: 'center', marginBottom: 20 }}>
+          <BearMascot variant="THINKING" size="md" animate />
+        </View>
 
         {/* Avatar */}
         <View style={s.avatarSection}>

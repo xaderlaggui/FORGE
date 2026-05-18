@@ -25,6 +25,7 @@ import {
   View,
 } from 'react-native';
 import { ForgeButton } from '../components/forge/ForgeButton';
+import { BearMascot } from '../components/forge/BearMascot';
 import { auth, db } from '../services/firebase';
 import { useAuthStore } from '../stores/authStore';
 
@@ -208,6 +209,10 @@ export default function PrivacySecurityScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
+        
+        <View style={{ alignItems: 'center', marginBottom: 20 }}>
+          <BearMascot variant="THINKING" size="md" animate />
+        </View>
 
         {/* Account Security */}
         <SectionHeader title="Account Security" T={T} />
