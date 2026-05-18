@@ -6,7 +6,7 @@ import { useWorkouts } from '../../../hooks/useWorkouts';
 import { useRoutines } from '../../../hooks/useRoutines';
 import { ExerciseState, NumpadTarget } from '../types';
 
-export function useActiveSession(id?: string | string[], date?: string | string[], routineId?: string | string[]) {
+export function useActiveSession(id?: string | string[], date?: string | string[], routineId?: string | string[], title?: string | string[]) {
   const router = useRouter();
   const { workouts, saveWorkout } = useWorkouts();
   const { routines } = useRoutines();
@@ -17,7 +17,7 @@ export function useActiveSession(id?: string | string[], date?: string | string[
   const [isPaused, setIsPaused] = useState(false);
   const [restTime, setRestTime] = useState(60);
   const [totalRestTime] = useState(60);
-  const [workoutTitle, setWorkoutTitle] = useState('Custom Workout');
+  const [workoutTitle, setWorkoutTitle] = useState(typeof title === 'string' ? title : 'Custom Workout');
   const [exercises, setExercises] = useState<ExerciseState[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -76,6 +76,9 @@ export function useActiveSession(id?: string | string[], date?: string | string[
         })));
       }
     } else {
+      if (typeof title === 'string') {
+        setWorkoutTitle(title);
+      }
       setExercises([{ 
         name: 'Bench Press (Barbell)', 
         sets: [
@@ -85,7 +88,7 @@ export function useActiveSession(id?: string | string[], date?: string | string[
       }]);
     }
     setIsLoaded(true);
-  }, [id, routineId, workouts, routines, isLoaded]);
+  }, [id, routineId, workouts, routines, isLoaded, title]);
 
   // General Timer
   useEffect(() => {

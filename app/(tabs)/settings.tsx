@@ -134,11 +134,11 @@ export default function SettingsScreen() {
       <View style={s.section}>
         <Text style={[s.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Preferences</Text>
         <View style={[s.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
-          <SettingRow T={T} icon={<UserIcon size={18} color={T.colors.t1} />} label="Edit Profile" onPress={() => { }} />
+          <SettingRow T={T} icon={<UserIcon size={18} color={T.colors.t1} />} label="Edit Profile" onPress={() => router.push('/editProfile')} />
           <View style={[s.divider, { backgroundColor: T.colors.b1 }]} />
           <SettingRow T={T} icon={<Sparkles size={18} color={T.colors.forge} />} label="Generate AI Plan" onPress={() => router.push('/aiPlan')} />
           <View style={[s.divider, { backgroundColor: T.colors.b1 }]} />
-          <SettingRow T={T} icon={<Shield size={18} color={T.colors.t1} />} label="Privacy & Security" onPress={() => { }} />
+          <SettingRow T={T} icon={<Shield size={18} color={T.colors.t1} />} label="Privacy & Security" onPress={() => router.push('/privacySecurity')} />
         </View>
       </View>
 

@@ -25,9 +25,9 @@ export default function ActiveWorkoutScreen() {
     const { T } = useForgeTheme();
     const styles = useStyles(T);
   const router = useRouter();
-  const { id, date, routineId } = useLocalSearchParams();
+  const { id, date, routineId, title } = useLocalSearchParams();
   
-  const session = useActiveSession(id, date, routineId);
+  const session = useActiveSession(id, date, routineId, title);
 
   const handleBack = () => {
     if (session.workoutStarted && !session.allSetsComplete) {

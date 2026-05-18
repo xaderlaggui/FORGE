@@ -30,9 +30,21 @@ export function useWorkouts() {
     }
   });
 
+  const updateWorkout = useMutation({
+    mutationFn: async (workout: Workout) => {
+      if (!user?.uid) return;
+      const ref = doc(db, `users/${user.uid}/workouts/${workout.id}`);
+      await setDoc(ref, workout, { merge: true });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workouts', user?.uid] });
+    }
+  });
+
   return {
     workouts: workoutsQuery.data || [],
     isLoading: workoutsQuery.isLoading,
-    saveWorkout: saveWorkout.mutateAsync
+    saveWorkout: saveWorkout.mutateAsync,
+    updateWorkout: updateWorkout.mutateAsync,
   };
 }

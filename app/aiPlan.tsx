@@ -1,103 +1,262 @@
 import React, { useState } from 'react';
 import {
-  ActivityIndicator, Alert, ScrollView,
-  StyleSheet, Text, TouchableOpacity, View,
+  View, Text, StyleSheet, ScrollView, TouchableOpacity,
+  TextInput, ActivityIndicator, Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { ChevronLeft, Sparkles, Check } from 'lucide-react-native';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
-import { Dumbbell, Flame, Sparkles, ChevronDown, ChevronUp, Check } from 'lucide-react-native';
-import dayjs from 'dayjs';
+import { useForgeTheme } from '@/hooks/useForgeTheme';
 import { useAuthStore } from '../stores/authStore';
-import { generateFullPlan, GeneratedPlan, GeneratedWorkoutDay } from '../services/GeneratorEngine';
 import { db } from '../services/firebase';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { generateFullPlan, GeneratedPlan, GeneratedWorkoutDay } from '../services/GeneratorEngine';
 
-// ─── Workout Day Card ─────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
+const GOALS = ['Weight Loss', 'Muscle Gain', 'Endurance', 'Flexibility', 'General Fitness'];
+const EXPERIENCE = ['Beginner', 'Intermediate', 'Advanced'];
+const EQUIPMENT = ['None', 'Dumbbells', 'Barbell', 'Machines', 'Resistance Bands', 'Pull-up Bar', 'Full Gym'];
 
-function WorkoutDayCard({ day }: { day: GeneratedWorkoutDay }) {
-    const { T } = useForgeTheme();
-    const s = useS(T);
-  const [expanded, setExpanded] = useState(false);
-  const hasExercises = day.exercises.length > 0;
-
+// ─── Pill Multi-Select ────────────────────────────────────────────────────────
+function PillSelect({
+  options, selected, onToggle, accent, T,
+}: { options: string[]; selected: string[]; onToggle: (v: string) => void; accent?: boolean; T: any }) {
   return (
-    <View style={s.card}>
-      <TouchableOpacity
-        style={s.cardHeader}
-        onPress={() => hasExercises && setExpanded(e => !e)}
-        activeOpacity={hasExercises ? 0.7 : 1}
-      >
-        <View style={s.dayBadge}>
-          <Text style={s.dayText}>{day.day.slice(0, 3).toUpperCase()}</Text>
-        </View>
-        <View style={s.cardHeaderText}>
-          <Text style={s.cardTitle}>{day.focus}</Text>
-          {hasExercises
-            ? <Text style={s.cardSub}>{day.exercises.length} exercises</Text>
-            : <Text style={[s.cardSub, { color: T.colors.t3 }]}>Rest Day</Text>
-          }
-        </View>
-        {hasExercises && (
-          expanded
-            ? <ChevronUp size={18} color={T.colors.t3} />
-            : <ChevronDown size={18} color={T.colors.t3} />
-        )}
-      </TouchableOpacity>
-
-      {expanded && hasExercises && (
-        <View style={s.exerciseList}>
-          {day.exercises.map((ex: GeneratedWorkoutDay['exercises'][0], i: number) => (
-            <View key={i} style={s.exerciseRow}>
-              <View style={s.exDot} />
-              <View style={{ flex: 1 }}>
-                <Text style={s.exName}>{ex.name}</Text>
-                <Text style={s.exDetail}>{ex.sets} sets × {ex.reps} reps • {ex.restSec}s rest</Text>
-              </View>
-            </View>
-          ))}
-        </View>
-      )}
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+      {options.map(opt => {
+        const active = selected.includes(opt);
+        return (
+          <TouchableOpacity
+            key={opt}
+            onPress={() => onToggle(opt)}
+            style={{
+              paddingHorizontal: 16, paddingVertical: 10, borderRadius: 100,
+              backgroundColor: active ? T.colors.forge : T.colors.bg2,
+              borderWidth: 1, borderColor: active ? T.colors.forge : T.colors.b1,
+            }}
+          >
+            <Text style={{
+              fontSize: 13, fontWeight: '700',
+              color: active ? '#FFF' : T.colors.t2,
+            }}>{opt}</Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
 
-// ─── Macro Row ────────────────────────────────────────────────────────────────
-
-function MacroRow({ label, value, unit, color }: { label: string; value: number; unit: string; color: string }) {
-    const { T } = useForgeTheme();
-    const s = useS(T);
+// ─── Segmented Control ────────────────────────────────────────────────────────
+function Segmented({
+  options, value, onChange, T,
+}: { options: string[]; value: string; onChange: (v: string) => void; T: any }) {
   return (
-    <View style={s.macroRow}>
-      <View style={[s.macroDot, { backgroundColor: color }]} />
-      <Text style={s.macroLabel}>{label}</Text>
-      <Text style={[s.macroValue, { color }]}>{value}{unit}</Text>
+    <View style={{ flexDirection: 'row', backgroundColor: T.colors.bg2, borderRadius: 12, padding: 4 }}>
+      {options.map(opt => {
+        const active = value === opt;
+        return (
+          <TouchableOpacity
+            key={opt}
+            onPress={() => onChange(opt)}
+            style={{
+              flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center',
+              backgroundColor: active ? T.colors.bg1 : 'transparent',
+              shadowColor: active ? '#000' : 'transparent',
+              shadowOpacity: active ? 0.1 : 0,
+              shadowRadius: active ? 4 : 0,
+              elevation: active ? 2 : 0,
+            }}
+          >
+            <Text style={{
+              fontSize: 13, fontWeight: '700',
+              color: active ? T.colors.forge : T.colors.t3,
+            }}>{opt}</Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+// ─── Stepper ─────────────────────────────────────────────────────────────────
+function Stepper({ value, min, max, onChange, T }: {
+  value: number; min: number; max: number; onChange: (v: number) => void; T: any;
+}) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+      <TouchableOpacity
+        onPress={() => onChange(Math.max(min, value - 1))}
+        style={{
+          width: 44, height: 44, borderRadius: 22,
+          backgroundColor: T.colors.bg2, alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        <Text style={{ fontSize: 24, color: T.colors.t1, fontWeight: '300' }}>−</Text>
+      </TouchableOpacity>
+      <Text style={{ fontSize: 28, fontWeight: '800', color: T.colors.t1, minWidth: 40, textAlign: 'center' }}>
+        {value}
+      </Text>
+      <TouchableOpacity
+        onPress={() => onChange(Math.min(max, value + 1))}
+        style={{
+          width: 44, height: 44, borderRadius: 22,
+          backgroundColor: T.colors.forge, alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        <Text style={{ fontSize: 24, color: '#FFF', fontWeight: '300' }}>+</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// ─── Slider (manual impl) ─────────────────────────────────────────────────────
+function SliderRow({ value, min, max, step, onChange, T }: {
+  value: number; min: number; max: number; step: number; onChange: (v: number) => void; T: any;
+}) {
+  const steps = Math.round((max - min) / step);
+  const stepIdx = Math.round((value - min) / step);
+
+  return (
+    <View>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+        {Array.from({ length: steps + 1 }).map((_, i) => {
+          const v = min + i * step;
+          const active = v <= value;
+          return (
+            <TouchableOpacity
+              key={i}
+              onPress={() => onChange(v)}
+              style={{
+                flex: 1, minWidth: 28, height: 36, borderRadius: 8,
+                backgroundColor: active ? T.colors.forge : T.colors.bg2,
+                alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <Text style={{ fontSize: 11, fontWeight: '700', color: active ? '#FFF' : T.colors.t3 }}>
+                {v}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      <Text style={{ fontSize: 12, color: T.colors.t3, marginTop: 6, textAlign: 'right' }}>
+        {value} min
+      </Text>
+    </View>
+  );
+}
+
+// ─── Generated Plan Preview ───────────────────────────────────────────────────
+function PlanPreview({ plan, onApply, onSaveDraft, isApplying, T }: {
+  plan: GeneratedPlan;
+  onApply: () => void;
+  onSaveDraft: () => void;
+  isApplying: boolean;
+  T: any;
+}) {
+  const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  return (
+    <View style={{ gap: 12 }}>
+      <Text style={{ fontSize: 18, fontWeight: '800', color: T.colors.t1, marginBottom: 4 }}>
+        Weekly Preview
+      </Text>
+      {plan.workoutWeek.map((day: GeneratedWorkoutDay, i: number) => (
+        <View
+          key={i}
+          style={{
+            backgroundColor: T.colors.bg1, borderRadius: 14,
+            padding: 16, borderWidth: 0.5, borderColor: T.colors.b1,
+            flexDirection: 'row', alignItems: 'center', gap: 14,
+          }}
+        >
+          <View style={{
+            width: 44, height: 44, borderRadius: 10,
+            backgroundColor: day.exercises.length > 0 ? T.colors.forgeDim : T.colors.bg2,
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Text style={{
+              fontSize: 11, fontWeight: '800', letterSpacing: 0.5,
+              color: day.exercises.length > 0 ? T.colors.forge : T.colors.t3,
+            }}>{DAY_NAMES[i]}</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 15, fontWeight: '700', color: T.colors.t1 }}>{day.focus}</Text>
+            <Text style={{ fontSize: 12, color: T.colors.t3, marginTop: 2 }}>
+              {day.exercises.length > 0 ? `${day.exercises.length} exercises` : 'Rest Day'}
+            </Text>
+          </View>
+        </View>
+      ))}
+
+      <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+        <TouchableOpacity
+          onPress={onSaveDraft}
+          style={{
+            flex: 1, paddingVertical: 16, borderRadius: 14, alignItems: 'center',
+            backgroundColor: T.colors.bg2, borderWidth: 1, borderColor: T.colors.b1,
+          }}
+        >
+          <Text style={{ fontSize: 15, fontWeight: '700', color: T.colors.t1 }}>Save as Draft</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={onApply}
+          disabled={isApplying}
+          style={{
+            flex: 1, paddingVertical: 16, borderRadius: 14, alignItems: 'center',
+            backgroundColor: T.colors.forge, opacity: isApplying ? 0.6 : 1,
+          }}
+        >
+          {isApplying
+            ? <ActivityIndicator color="#000" />
+            : <Text style={{ fontSize: 15, fontWeight: '800', color: '#000' }}>Apply to Planner</Text>
+          }
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
-
 export default function AIPlanScreen() {
-    const { T } = useForgeTheme();
-    const s = useS(T);
   const router = useRouter();
+  const { T } = useForgeTheme();
+  const s = useStyles(T);
   const { user } = useAuthStore();
-  const [plan, setPlan] = useState<GeneratedPlan | null>(null);
+
+  // Form state
+  const [selectedGoals, setSelectedGoals] = useState<string[]>(['General Fitness']);
+  const [experience, setExperience] = useState('Beginner');
+  const [daysPerWeek, setDaysPerWeek] = useState(3);
+  const [sessionMin, setSessionMin] = useState(45);
+  const [selectedEquipment, setSelectedEquipment] = useState<string[]>(['Dumbbells']);
+  const [injuries, setInjuries] = useState('');
+
+  // Generation state
   const [generating, setGenerating] = useState(false);
-  const [accepting, setAccepting] = useState(false);
+  const [plan, setPlan] = useState<GeneratedPlan | null>(null);
+  const [applying, setApplying] = useState(false);
+
+  const toggleGoal = (g: string) =>
+    setSelectedGoals(prev => prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g]);
+
+  const toggleEquipment = (e: string) =>
+    setSelectedEquipment(prev => prev.includes(e) ? prev.filter(x => x !== e) : [...prev, e]);
 
   const handleGenerate = async () => {
-    if (!user) return;
+    if (!user) { Alert.alert('Not signed in'); return; }
+    setGenerating(true);
+    setPlan(null);
     try {
-      setGenerating(true);
       const result = await generateFullPlan({
-        uid:             user.uid,
-        weightKg:        (user as any).weight   ?? 70,
-        heightCm:        (user as any).height   ?? 170,
-        ageYears:        (user as any).age      ?? 25,
-        fitnessGoal:     (user as any).fitnessGoal     ?? 'maintain',
-        dietPreference:  (user as any).dietPreference  ?? 'anything',
-        equipmentAccess: (user as any).equipmentAccess ?? 'full',
+        uid: user.uid,
+        weightKg: (user as any).weight ?? 70,
+        heightCm: (user as any).height ?? 170,
+        ageYears: (user as any).age ?? 25,
+        fitnessGoal: (user as any).fitnessGoal ?? 'maintain',
+        dietPreference: (user as any).dietPreference ?? 'anything',
+        equipmentAccess: selectedEquipment.includes('Full Gym') ? 'full'
+          : selectedEquipment.includes('Barbell') ? 'full'
+          : selectedEquipment.includes('Dumbbells') ? 'dumbbells'
+          : 'bodyweight',
       });
       setPlan(result);
     } catch (e: any) {
@@ -107,247 +266,161 @@ export default function AIPlanScreen() {
     }
   };
 
-  const handleAccept = async () => {
+  const handleApply = async () => {
     if (!plan || !user) return;
+    setApplying(true);
     try {
-      setAccepting(true);
-      // Write the accepted plan as a special "active" document so other screens can pick it up
       await setDoc(
         doc(db, `users/${user.uid}/generatedPlans/active`),
         { ...plan, activatedAt: Timestamp.now() }
       );
-      Alert.alert('Plan Activated! 🎉', 'Your personalized workout and meal plan is live.', [
-        { text: 'Let\'s go!', onPress: () => router.back() }
+      Alert.alert('Plan Activated!', 'Your personalized plan is now live in the Planner.', [
+        { text: "Let's go!", onPress: () => router.back() },
       ]);
     } catch (e: any) {
       Alert.alert('Error', e.message);
     } finally {
-      setAccepting(false);
+      setApplying(false);
     }
+  };
+
+  const handleSaveDraft = () => {
+    Alert.alert('Saved', 'Your plan has been saved as a draft.');
   };
 
   return (
     <View style={s.container}>
       {/* Header */}
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
-          <Text style={s.backText}>← Back</Text>
+        <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
+          <ChevronLeft size={24} color={T.colors.t1} />
         </TouchableOpacity>
-        <View style={s.headerTitle}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Sparkles size={18} color={T.colors.forge} />
-          <Text style={s.headerTitleText}>AI Plan Generator</Text>
+          <Text style={s.headerTitle}>Generate AI Plan</Text>
         </View>
-        <View style={{ width: 60 }} />
+        <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView style={s.scroll} contentContainerStyle={s.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
 
-        {/* Hero Card */}
-        <View style={s.heroCard}>
-          <Sparkles size={32} color={T.colors.forge} />
-          <Text style={s.heroTitle}>Your Personalized Plan</Text>
-          <Text style={s.heroSub}>
-            Powered by the Hybrid Forge Engine — mathematically calibrated macros,
-            AI-selected exercises tailored to your goal and equipment.
-          </Text>
-          {!plan && (
-            <TouchableOpacity
-              style={[s.generateBtn, generating && { opacity: 0.6 }]}
-              onPress={handleGenerate}
-              disabled={generating}
-              activeOpacity={0.8}
-            >
-              {generating
-                ? <ActivityIndicator color={T.colors.bg0} />
-                : <Text style={s.generateBtnText}>✦ Generate My Plan</Text>
-              }
-            </TouchableOpacity>
-          )}
-          {generating && (
-            <Text style={s.generatingHint}>
-              Crunching your macros and curating exercises… ~15s
-            </Text>
-          )}
-        </View>
-
-        {plan && (
+        {!plan ? (
           <>
-            {/* Meal Plan Summary */}
+            {/* Goal */}
             <View style={s.section}>
-              <View style={s.sectionRow}>
-                <Flame size={18} color={T.colors.gold} />
-                <Text style={s.sectionTitle}>Daily Nutrition Target</Text>
-              </View>
-              <View style={s.macroCard}>
-                <View style={s.calRow}>
-                  <Text style={s.calValue}>{plan.mealPlan.targetCalories}</Text>
-                  <Text style={s.calUnit}>kcal / day</Text>
-                </View>
-                <MacroRow label="Protein" value={plan.mealPlan.targetProtein} unit="g" color={T.colors.blue} />
-                <MacroRow label="Carbs"   value={plan.mealPlan.targetCarbs}   unit="g" color={T.colors.forge} />
-                <MacroRow label="Fat"     value={plan.mealPlan.targetFat}     unit="g" color={T.colors.gold} />
-              </View>
-
-              <Text style={s.subsectionTitle}>Sample Day Menu</Text>
-              {plan.mealPlan.meals.map((meal: GeneratedPlan['mealPlan']['meals'][0], i: number) => (
-                <View key={i} style={s.mealCard}>
-                  <View style={s.mealHeader}>
-                    <Text style={s.mealName}>{meal.name}</Text>
-                    <Text style={s.mealCal}>{meal.calories} kcal</Text>
-                  </View>
-                  <Text style={s.mealDesc}>{meal.description}</Text>
-                  <View style={s.mealMacros}>
-                    <Text style={s.mealMacro}>P {meal.protein}g</Text>
-                    <Text style={s.mealMacro}>C {meal.carbs}g</Text>
-                    <Text style={s.mealMacro}>F {meal.fat}g</Text>
-                  </View>
-                </View>
-              ))}
+              <Text style={s.sectionLabel}>Goal</Text>
+              <PillSelect options={GOALS} selected={selectedGoals} onToggle={toggleGoal} T={T} />
             </View>
 
-            {/* Workout Week */}
+            {/* Experience */}
             <View style={s.section}>
-              <View style={s.sectionRow}>
-                <Dumbbell size={18} color={T.colors.forge} />
-                <Text style={s.sectionTitle}>7-Day Workout Split</Text>
-              </View>
-              {plan.workoutWeek.map((day: GeneratedWorkoutDay, i: number) => (
-                <WorkoutDayCard key={i} day={day} />
-              ))}
+              <Text style={s.sectionLabel}>Experience Level</Text>
+              <Segmented options={EXPERIENCE} value={experience} onChange={setExperience} T={T} />
             </View>
 
-            {/* Accept Button */}
-            <TouchableOpacity
-              style={[s.acceptBtn, accepting && { opacity: 0.6 }]}
-              onPress={handleAccept}
-              disabled={accepting}
-              activeOpacity={0.8}
-            >
-              {accepting
-                ? <ActivityIndicator color={T.colors.bg0} />
-                : <>
-                    <Check size={18} color={T.colors.bg0} />
-                    <Text style={s.acceptBtnText}>Activate This Plan</Text>
-                  </>
-              }
-            </TouchableOpacity>
+            {/* Days per week */}
+            <View style={s.section}>
+              <Text style={s.sectionLabel}>Days per Week</Text>
+              <Stepper value={daysPerWeek} min={1} max={7} onChange={setDaysPerWeek} T={T} />
+            </View>
 
-            <TouchableOpacity style={s.regenBtn} onPress={handleGenerate} disabled={generating}>
-              <Text style={s.regenText}>↺ Regenerate</Text>
-            </TouchableOpacity>
+            {/* Session Duration */}
+            <View style={s.section}>
+              <Text style={s.sectionLabel}>Session Duration</Text>
+              <SliderRow
+                value={sessionMin}
+                min={20} max={120} step={10}
+                onChange={setSessionMin}
+                T={T}
+              />
+            </View>
 
-            <View style={{ height: 48 }} />
+            {/* Equipment */}
+            <View style={s.section}>
+              <Text style={s.sectionLabel}>Equipment Available</Text>
+              <PillSelect options={EQUIPMENT} selected={selectedEquipment} onToggle={toggleEquipment} T={T} />
+            </View>
+
+            {/* Injuries */}
+            <View style={s.section}>
+              <Text style={s.sectionLabel}>Injuries or Limitations (optional)</Text>
+              <TextInput
+                style={s.textarea}
+                value={injuries}
+                onChangeText={setInjuries}
+                placeholder="e.g. bad knees, lower back pain..."
+                placeholderTextColor={T.colors.t3}
+                multiline
+                numberOfLines={3}
+                textAlignVertical="top"
+              />
+            </View>
+
+            {/* Generate Button */}
+            <View style={s.section}>
+              <TouchableOpacity
+                style={[s.generateBtn, generating && { opacity: 0.6 }]}
+                onPress={handleGenerate}
+                disabled={generating}
+                activeOpacity={0.85}
+              >
+                {generating ? (
+                  <View style={{ alignItems: 'center', gap: 12 }}>
+                    <ActivityIndicator color="#000" />
+                    <Text style={s.generateBtnText}>Building your plan with AI...</Text>
+                  </View>
+                ) : (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <Sparkles size={20} color="#000" />
+                    <Text style={s.generateBtnText}>Generate Plan</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
           </>
+        ) : (
+          <PlanPreview
+            plan={plan}
+            onApply={handleApply}
+            onSaveDraft={handleSaveDraft}
+            isApplying={applying}
+            T={T}
+          />
         )}
+
+        <View style={{ height: 60 }} />
       </ScrollView>
     </View>
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+const useStyles = (T: any) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: T.colors.bg0 },
+  header: {
+    flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between',
+    paddingTop: 60, paddingBottom: 16, paddingHorizontal: 16,
+    backgroundColor: T.colors.bg1, borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
+  },
+  backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: T.colors.t1, paddingBottom: 8 },
+  content: { padding: 20, paddingBottom: 40 },
 
-const useS = (T: any) => StyleSheet.create({
-          container:  { flex: 1, backgroundColor: T.colors.bg0 },
-          header:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 56, paddingBottom: 12 },
-          backBtn:    { width: 60 },
-          backText:   { color: T.colors.t2, fontSize: 14 },
-          headerTitle:{ flexDirection: 'row', alignItems: 'center', gap: 6 },
-          headerTitleText: { color: T.colors.t1, fontSize: 16, fontWeight: '700' },
-
-          scroll: { flex: 1 },
-          scrollContent: { paddingHorizontal: 20, paddingTop: 8 },
-
-          heroCard: {
-            backgroundColor: T.colors.bg1,
-            borderRadius: T.radii.xl,
-            padding: 24,
-            alignItems: 'center',
-            marginBottom: 24,
-            borderWidth: 1,
-            borderColor: T.colors.b1,
-            ...T.shadows.card,
-          },
-          heroTitle: { color: T.colors.t1, fontSize: 20, fontWeight: '800', marginTop: 12, marginBottom: 8, textAlign: 'center' },
-          heroSub:   { color: T.colors.t2, fontSize: 13, textAlign: 'center', lineHeight: 20 },
-          generateBtn: {
-            marginTop: 20,
-            backgroundColor: T.colors.forge,
-            paddingVertical: 14,
-            paddingHorizontal: 28,
-            borderRadius: T.radii.full,
-            ...T.shadows.forge,
-          },
-          generateBtnText: { color: T.colors.bg0, fontWeight: '800', fontSize: 15 },
-          generatingHint: { color: T.colors.t3, fontSize: 12, marginTop: 12, textAlign: 'center' },
-
-          section: { marginBottom: 24 },
-          sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
-          sectionTitle: { color: T.colors.t1, fontSize: 18, fontWeight: '700' },
-          subsectionTitle: { color: T.colors.t2, fontSize: 13, fontWeight: '600', marginTop: 16, marginBottom: 10, letterSpacing: 1, textTransform: 'uppercase' },
-
-          macroCard: {
-            backgroundColor: T.colors.bg1,
-            borderRadius: T.radii.lg,
-            padding: 20,
-            borderWidth: 1,
-            borderColor: T.colors.b1,
-          },
-          calRow:    { flexDirection: 'row', alignItems: 'flex-end', gap: 4, marginBottom: 16 },
-          calValue:  { color: T.colors.forge, fontSize: 42, fontWeight: '800', lineHeight: 44 },
-          calUnit:   { color: T.colors.t2, fontSize: 14, paddingBottom: 6 },
-          macroRow:  { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderTopWidth: 0.5, borderTopColor: T.colors.b0 },
-          macroDot:  { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
-          macroLabel:{ flex: 1, color: T.colors.t2, fontSize: 14 },
-          macroValue:{ fontSize: 15, fontWeight: '700' },
-
-          mealCard: {
-            backgroundColor: T.colors.bg1,
-            borderRadius: T.radii.lg,
-            padding: 16,
-            marginBottom: 10,
-            borderWidth: 1,
-            borderColor: T.colors.b1,
-          },
-          mealHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
-          mealName:   { color: T.colors.t1, fontSize: 15, fontWeight: '700' },
-          mealCal:    { color: T.colors.forge, fontSize: 14, fontWeight: '600' },
-          mealDesc:   { color: T.colors.t2, fontSize: 13, marginBottom: 8 },
-          mealMacros: { flexDirection: 'row', gap: 12 },
-          mealMacro:  { color: T.colors.t3, fontSize: 12, fontWeight: '500' },
-
-          card: {
-            backgroundColor: T.colors.bg1,
-            borderRadius: T.radii.lg,
-            marginBottom: 10,
-            borderWidth: 1,
-            borderColor: T.colors.b1,
-            overflow: 'hidden',
-          },
-          cardHeader: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 },
-          dayBadge: { width: 44, height: 44, borderRadius: T.radii.sm, backgroundColor: T.colors.bg2, alignItems: 'center', justifyContent: 'center' },
-          dayText:   { color: T.colors.forge, fontSize: 11, fontWeight: '800', letterSpacing: 1 },
-          cardHeaderText: { flex: 1 },
-          cardTitle: { color: T.colors.t1, fontSize: 14, fontWeight: '600' },
-          cardSub:   { color: T.colors.t2, fontSize: 12, marginTop: 2 },
-          exerciseList: { paddingHorizontal: 16, paddingBottom: 16, gap: 10 },
-          exerciseRow:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-          exDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: T.colors.forge, marginTop: 5 },
-          exName:   { color: T.colors.t1, fontSize: 14, fontWeight: '500' },
-          exDetail: { color: T.colors.t3, fontSize: 12, marginTop: 2 },
-
-          acceptBtn: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            backgroundColor: T.colors.forge,
-            borderRadius: T.radii.md,
-            paddingVertical: 16,
-            marginTop: 8,
-            ...T.shadows.forge,
-          },
-          acceptBtnText: { color: T.colors.bg0, fontSize: 16, fontWeight: '800' },
-
-          regenBtn: { alignItems: 'center', paddingVertical: 14, marginTop: 8 },
-          regenText: { color: T.colors.t3, fontSize: 14 },
-        });
+  section: { marginBottom: 28 },
+  sectionLabel: {
+    fontSize: 12, fontWeight: '700', color: T.colors.t3, letterSpacing: 0.8,
+    textTransform: 'uppercase', marginBottom: 12,
+  },
+  textarea: {
+    backgroundColor: T.colors.bg1, borderRadius: 14,
+    borderWidth: 0.5, borderColor: T.colors.b1,
+    padding: 14, fontSize: 15, color: T.colors.t1,
+    minHeight: 90,
+  },
+  generateBtn: {
+    backgroundColor: T.colors.forge, paddingVertical: 18,
+    borderRadius: 16, alignItems: 'center',
+    shadowColor: T.colors.forge, shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4, shadowRadius: 16, elevation: 8,
+  },
+  generateBtnText: { fontSize: 17, fontWeight: '800', color: '#000' },
+});

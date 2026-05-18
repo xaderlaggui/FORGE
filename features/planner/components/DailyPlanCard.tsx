@@ -45,7 +45,25 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
   const isCompleted = !!loggedWorkout;
 
   // Helper to get heatmap data for either logged or planned workout
-  const getHeatmapData = (exercisesList: any[]) => {
+  const getHeatmapData = (workoutObj: any) => {
+    if (!workoutObj) return [];
+    
+    // Feature 3: Highlight based on session type if title exists
+    const title = workoutObj.title?.toLowerCase() || '';
+    if (title.includes('push')) {
+      return mapMusclesToSlugs(['chest', 'shoulders', 'triceps']).map(slug => ({ ...slug, intensity: 2 }));
+    }
+    if (title.includes('pull')) {
+      return mapMusclesToSlugs(['back', 'biceps', 'rear delts']).map(slug => ({ ...slug, intensity: 2 }));
+    }
+    if (title.includes('leg')) {
+      return mapMusclesToSlugs(['quadriceps', 'hamstrings', 'glutes', 'calves']).map(slug => ({ ...slug, intensity: 2 }));
+    }
+    if (title.includes('full body') || title.includes('full-body')) {
+      return mapMusclesToSlugs(['chest', 'shoulders', 'triceps', 'back', 'biceps', 'quadriceps', 'hamstrings', 'glutes', 'calves']).map(slug => ({ ...slug, intensity: 2 }));
+    }
+
+    const exercisesList = workoutObj.exercises;
     if (!exercisesList || exercisesList.length === 0) return [];
     let allMuscles = new Set<string>();
     exercisesList.forEach((ex: any) => {
@@ -54,11 +72,11 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
         libraryEx.muscleGroups.forEach((m: any) => allMuscles.add(m));
       }
     });
-    return mapMusclesToSlugs(Array.from(allMuscles)).map((slug: any) => ({ slug, intensity: 2 }));
+    return mapMusclesToSlugs(Array.from(allMuscles)).map((slug: any) => ({ slug: slug.slug, intensity: 2 }));
   };
 
   if (isCompleted) {
-    const data = getHeatmapData(loggedWorkout.exercises);
+    const data = getHeatmapData(loggedWorkout);
     return (
       <View style={{ position: 'relative', overflow: 'visible' }}>
         <View style={[s.todayCard, { overflow: 'hidden' }]}>
@@ -87,7 +105,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
   }
 
   if (!isRestDay) {
-    const data = getHeatmapData(plannedWorkout.exercises);
+    const data = getHeatmapData(plannedWorkout);
     return (
       <View style={{ position: 'relative', overflow: 'visible' }}>
         <View style={[s.todayCard, { overflow: 'hidden' }]}>
@@ -106,7 +124,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
           )}
           <ForgeButton
             label="▶ Start Routine"
-            onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr } })}
+            onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr, title: plannedWorkout.title } })}
             pulse
           />
         </View>
