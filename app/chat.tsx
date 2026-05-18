@@ -109,7 +109,7 @@ export default function ChatScreen() {
               calories: Math.round((parsed.durationMinutes ?? 0) * 5),
               createdAt: new Date().toISOString(),
             });
-            displayText = `✅ Logged: ${parsed.activityName}${parsed.notes ? ` (${parsed.notes})` : ''}\n\n${parsed.message}`;
+            displayText = `Logged: ${parsed.activityName}${parsed.notes ? ` (${parsed.notes})` : ''}\n\n${parsed.message}`;
             logged = true;
           }
         }

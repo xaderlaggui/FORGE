@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
-import { Check, Trash2 } from 'lucide-react-native';
+import { Check, Trash2, Trophy } from 'lucide-react-native';
 import { ExerciseState } from '../types';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 
@@ -40,7 +40,9 @@ export function WorkoutSetsTable({ exercises, personalRecords, onToggleSet, onAd
             <Text style={[styles.colHead, { flex: 1.4 }]} maxFontSizeMultiplier={1.2}>PREVIOUS</Text>
             <Text style={[styles.colHead, { flex: 1 }]} maxFontSizeMultiplier={1.2}>LBS</Text>
             <Text style={[styles.colHead, { flex: 1 }]} maxFontSizeMultiplier={1.2}>REPS</Text>
-            <Text style={[styles.colHead, { flex: 0.6, textAlign: 'center' }]} maxFontSizeMultiplier={1.2}>✓</Text>
+            <View style={{ flex: 0.6, alignItems: 'center' }}>
+              <Check size={11} color={T.colors.t3} strokeWidth={3} />
+            </View>
           </View>
 
           {/* Set rows */}
@@ -63,7 +65,12 @@ export function WorkoutSetsTable({ exercises, personalRecords, onToggleSet, onAd
                 <Text style={[styles.cell, { color: T.colors.t2 }]} maxFontSizeMultiplier={1.2}>{setIdx + 1}</Text>
               </View>
               <View style={{ flex: 1.4 }}>
-                {isPR && <Text style={styles.prBadge} maxFontSizeMultiplier={1.2}>NEW PR 🏆</Text>}
+                {isPR && (
+                  <View style={styles.prBadge}>
+                    <Trophy size={10} color={T.colors.gold ?? '#FFD700'} />
+                    <Text style={styles.prBadgeText} maxFontSizeMultiplier={1.2}>NEW PR</Text>
+                  </View>
+                )}
                 <Text style={[styles.cell, { color: T.colors.t3, fontSize: T.typography.sizes.bodyS }]} numberOfLines={1} maxFontSizeMultiplier={1.2}>
                   {set.prev}
                 </Text>
@@ -127,8 +134,11 @@ const useStyles = (T: any) => StyleSheet.create({
 
           cell: { fontSize: T.typography.sizes.bodyS, fontWeight: '500', color: T.colors.t1 },
           prBadge: {
-            fontSize: 8, fontWeight: '800', color: T.colors.forge, letterSpacing: 0.5,
-            marginBottom: 2,
+            flexDirection: 'row', alignItems: 'center', gap: 4,
+            marginBottom: 3,
+          },
+          prBadgeText: {
+            fontSize: 8, fontWeight: '800', color: T.colors.gold ?? '#FFD700', letterSpacing: 0.5,
           },
 
           inputCell: {

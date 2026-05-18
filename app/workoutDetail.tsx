@@ -1,15 +1,14 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ChevronLeft, Camera, Share as ShareIcon, MapPin } from 'lucide-react-native';
+import { useForgeTheme } from "@/hooks/useForgeTheme";
 import dayjs from 'dayjs';
 import * as ImagePicker from 'expo-image-picker';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
+import { Camera, ChevronLeft, MapPin, Share as ShareIcon } from 'lucide-react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ViewShot from 'react-native-view-shot';
-import { useWorkouts } from '../hooks/useWorkouts';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { BearMascot } from '../components/forge/BearMascot';
 import { ForgeButton } from '../components/forge/ForgeButton';
+import { useWorkouts } from '../hooks/useWorkouts';
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -17,7 +16,7 @@ export default function WorkoutDetailScreen() {
   const { T } = useForgeTheme();
   const s = useStyles(T);
   const { workouts, updateWorkout } = useWorkouts();
-  
+
   const workout = workouts.find((w) => w.id === id);
   const viewShotRef = useRef<ViewShot>(null);
   const [photoUri, setPhotoUri] = useState<string | null>(workout?.photoUrl || null);
@@ -85,12 +84,12 @@ export default function WorkoutDetailScreen() {
           <View style={s.shareCard}>
             <Image source={{ uri: photoUri }} style={StyleSheet.absoluteFillObject} />
             <View style={s.darkGradient} />
-            
+
             {/* Pseudo Route Line */}
             <View style={s.routeLineOverlay}>
-               <MapPin size={32} color="#FFF" style={{ position: 'absolute', top: 60, left: 60 }} />
-               {/* Just a placeholder line */}
-               <View style={{ width: 150, height: 4, backgroundColor: '#FFF', position: 'absolute', top: 76, left: 76, transform: [{ rotate: '45deg' }] }} />
+              <MapPin size={32} color="#FFF" style={{ position: 'absolute', top: 60, left: 60 }} />
+              {/* Just a placeholder line */}
+              <View style={{ width: 150, height: 4, backgroundColor: '#FFF', position: 'absolute', top: 76, left: 76, transform: [{ rotate: '45deg' }] }} />
             </View>
 
             <View style={s.shareStatsRow}>
@@ -119,7 +118,7 @@ export default function WorkoutDetailScreen() {
       <View style={s.cardioDetails}>
         <Text style={s.cTitle}>{workout.notes || 'Morning Activity'}</Text>
         <Text style={s.cDate}>{dayjs(workout.date).format('MMM D, YYYY [at] h:mm A')} • City, Country</Text>
-        
+
         <View style={s.cGrid}>
           <View style={s.cGridItem}>
             <Text style={s.cLabel}>Distance</Text>
@@ -229,9 +228,6 @@ export default function WorkoutDetailScreen() {
         <View style={{ width: 40 }} />
       </View>
       <ScrollView contentContainerStyle={s.content}>
-        <View style={{ alignItems: 'center', marginVertical: 16 }}>
-          <BearMascot variant="PROUD" size="md" />
-        </View>
         {isCardio ? renderCardioView() : renderStrengthView()}
       </ScrollView>
     </View>
@@ -251,7 +247,7 @@ const useStyles = (T: any) => StyleSheet.create({
   content: { paddingBottom: 40 },
 
   // Cardio
-  cardioContainer: { },
+  cardioContainer: {},
   shareCard: { width: '100%', aspectRatio: 0.75, position: 'relative', overflow: 'hidden' },
   darkGradient: {
     position: 'absolute',

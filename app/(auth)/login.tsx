@@ -5,10 +5,11 @@ import { Lock, Mail } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, ScrollView,
+  Image,
+  KeyboardAvoidingView, Platform,
   StyleSheet,
   Text, TextInput, TouchableOpacity,
-  View, Image
+  View
 } from 'react-native';
 import Animated, {
   Easing,

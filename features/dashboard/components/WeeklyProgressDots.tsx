@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { Check } from 'lucide-react-native';
+import { Check, Flame } from 'lucide-react-native';
 
 interface WeeklyProgressDotsProps {
   weekActivity: boolean[]; // Array of 7 booleans (Mon-Sun), true if worked out
@@ -25,7 +25,10 @@ export function WeeklyProgressDots({ weekActivity, streak }: WeeklyProgressDotsP
     <View style={s.container}>
       <View style={s.header}>
         <Text style={s.title}>THIS WEEK</Text>
-        <Text style={s.streak}>{streak} Day Streak 🔥</Text>
+        <View style={s.streakRow}>
+          <Text style={s.streak}>{streak} Day Streak</Text>
+          <Flame size={14} color={T.colors.forge} />
+        </View>
       </View>
       <View style={s.card}>
         {DAYS.map((dayLabel, idx) => {
@@ -80,6 +83,7 @@ const useStyles = (T: any) => StyleSheet.create({
     color: T.colors.t3,
     letterSpacing: 0.8,
   },
+  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   streak: {
     fontSize: 12,
     fontWeight: '700',

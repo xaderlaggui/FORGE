@@ -1,17 +1,21 @@
+import { useForgeTheme } from '@/hooks/useForgeTheme';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import { doc, setDoc } from 'firebase/firestore';
+import { Camera, ChevronLeft } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, Alert, Image,
+  Alert, Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { ChevronLeft, Camera } from 'lucide-react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { doc, setDoc } from 'firebase/firestore';
-import { useForgeTheme } from '@/hooks/useForgeTheme';
-import { useAuthStore } from '../stores/authStore';
-import { db } from '../services/firebase';
 import { ForgeButton } from '../components/forge/ForgeButton';
-import { BearMascot } from '../components/forge/BearMascot';
+import { db } from '../services/firebase';
+import { useAuthStore } from '../stores/authStore';
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Prefer not to say'];
 const GOAL_OPTIONS = ['Lose Weight', 'Build Muscle', 'Improve Endurance', 'Stay Active'];
@@ -134,10 +138,7 @@ export default function EditProfileScreen() {
       </View>
 
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
-        
-        <View style={{ alignItems: 'center', marginBottom: 20 }}>
-          <BearMascot variant="THINKING" size="md" animate />
-        </View>
+
 
         {/* Avatar */}
         <View style={s.avatarSection}>
@@ -350,7 +351,7 @@ const useStyles = (T: any) => StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 12,
     paddingVertical: 14, borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
   },
-  goalRowActive: { },
+  goalRowActive: {},
   radioOuter: {
     width: 20, height: 20, borderRadius: 10,
     borderWidth: 2, borderColor: T.colors.t3,

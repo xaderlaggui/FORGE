@@ -1,12 +1,13 @@
-import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { CalendarDays, CheckCircle2 } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { BearMascot } from '../../../components/forge/BearMascot';
 import { ForgeButton } from '../../../components/forge/ForgeButton';
 import { SkeletonHeroCard } from '../../../components/forge/ForgeSkeleton';
 import { MuscleTagChip } from '../../../components/forge/WorkoutAtoms';
+import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { useBearMood } from '../../../hooks/useBearMood';
 
 interface TodayPlanCardProps {
@@ -42,9 +43,15 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
         <View style={s.blobDecor} />
 
         <View style={s.todayCardContent}>
-          <Text style={s.todayTag} maxFontSizeMultiplier={1.2}>
-            {isCompleted ? '✅ COMPLETED TODAY' : '📅 Today\'s Plan'}
-          </Text>
+          <View style={s.todayTagRow}>
+            {isCompleted
+              ? <CheckCircle2 size={13} color={T.colors.forge} />
+              : <CalendarDays size={13} color={T.colors.forge} />
+            }
+            <Text style={s.todayTag} maxFontSizeMultiplier={1.2}>
+              {isCompleted ? 'COMPLETED TODAY' : "Today's Plan"}
+            </Text>
+          </View>
           <Text style={s.todayWorkoutName} maxFontSizeMultiplier={1.2}>
             {isRestDay ? 'Active Recovery' : plannedWorkout.title}
           </Text>
@@ -110,7 +117,10 @@ const useS = (T: any) => StyleSheet.create({
   todayCardContent: { padding: T.spacing.px5, zIndex: 1 },
   todayTag: {
     fontSize: T.typography.sizes.caption, fontWeight: '600', color: T.colors.forge,
-    letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 8,
+    letterSpacing: 0.8, textTransform: 'uppercase',
+  },
+  todayTagRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 8,
   },
   todayWorkoutName: { fontSize: T.typography.sizes.h2, fontWeight: '700', color: T.colors.t1, marginBottom: 4 },
   todayMeta: {

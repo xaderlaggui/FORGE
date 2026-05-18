@@ -102,7 +102,7 @@ export function useActiveSession(id?: string | string[], date?: string | string[
     if (!isResting || isPaused) return;
     if (restTime <= 0) {
       setIsResting(false);
-      Alert.alert('Rest Complete', 'Back to work! 💪');
+      Alert.alert('Rest Complete', 'Back to work!');
       setRestTime(60);
       return;
     }

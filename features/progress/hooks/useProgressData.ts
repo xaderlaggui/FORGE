@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -9,17 +8,31 @@ import { useWorkouts } from '../../../hooks/useWorkouts';
 import { WeightEntry, MeasurementEntry } from '../types';
 import dayjs from 'dayjs';
 
+// Aggregate volume PER DAY (sum all exercises/sets on the same date)
+function aggregateVolumeByDay(workouts: any[]): Record<string, number> {
+  const map: Record<string, number> = {};
+  for (const w of workouts) {
+    const day = dayjs(w.date).format('YYYY-MM-DD');
+    let vol = 0;
+    w.exercises?.forEach((ex: any) => {
+      ex.sets?.forEach((set: any) => { vol += (set.weight || 0) * (set.reps || 0); });
+    });
+    map[day] = (map[day] || 0) + vol;
+  }
+  return map;
+}
+
 export function useProgressData() {
   const { user } = useAuthStore();
   const { workouts } = useWorkouts();
-  const [timeframe, setTimeframe] = useState('1M');
+  const [timeframe, setTimeframe] = useState<'1W' | '1M'>('1W');
   const [isUploading, setIsUploading] = useState(false);
 
   // ── Weight data ──
   const rawHistory: WeightEntry[] = (user as any)?.weightHistory || [];
-    
-  const lineData = rawHistory.length > 0 
-    ? rawHistory.map(item => ({ value: item.value, label: item.date.slice(0, 5) })) 
+
+  const lineData = rawHistory.length > 0
+    ? rawHistory.map(item => ({ value: item.value, label: item.date.slice(0, 5) }))
     : [{ value: 0, label: 'No Data' }];
 
   const currentWeight = rawHistory.length > 0 ? rawHistory[rawHistory.length - 1].value : 0;
@@ -31,63 +44,84 @@ export function useProgressData() {
 
   // ── Measurements ──
   const measurements: MeasurementEntry[] = (user as any)?.measurements || [];
-  
   const latest = measurements.length > 0 ? measurements[measurements.length - 1] : {};
   const prev   = measurements.length > 1 ? measurements[measurements.length - 2] : undefined;
 
   // ── Photos ──
   const photos = (user as any)?.progressPhotos || [];
-  
   const firstPhoto = photos.length > 0 ? photos[0] : null;
   const lastPhoto  = photos.length > 0 ? photos[photos.length - 1] : null;
 
-  // ── Progressive Overload (Volume) ──
-  const sortedWorkouts = [...(workouts || [])].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  
-  const volumeLineData = sortedWorkouts.length > 0 
-    ? sortedWorkouts.map(w => {
-        let totalVol = 0;
-        w.exercises.forEach(ex => {
-          ex.sets.forEach(set => totalVol += (set.weight || 0) * (set.reps || 0));
-        });
-        return { value: totalVol, label: dayjs(w.date).format('MM/DD') };
-      })
-    : [{ value: 0, label: 'No Data' }];
+  // ── Volume: aggregate per day ──
+  const today = dayjs();
+  const volumeByDay = aggregateVolumeByDay(workouts || []);
+  const activityDates = Object.keys(volumeByDay).sort();
 
-  const currentVolume = volumeLineData.length > 0 ? volumeLineData[volumeLineData.length - 1].value : 0;
-  const prevVolume    = volumeLineData.length > 1 ? volumeLineData[volumeLineData.length - 2].value : 0;
+  // Weekly volume data: Sun–Sat of the CURRENT week
+  const startOfWeek = today.startOf('week'); // dayjs: week starts Sunday
+  const weeklyVolumeData = Array.from({ length: 7 }, (_, i) => {
+    const day = startOfWeek.add(i, 'day');
+    const key = day.format('YYYY-MM-DD');
+    const isFuture = day.isAfter(today, 'day');
+    return {
+      value: isFuture ? 0 : (volumeByDay[key] || 0),
+      label: day.format('ddd').charAt(0), // S M T W T F S
+      date: key,
+      isToday: day.isSame(today, 'day'),
+      isFuture,
+    };
+  });
+
+  // Monthly volume data: all days of current month
+  const startOfMonth = today.startOf('month');
+  const daysInMonth  = today.daysInMonth();
+  const monthlyVolumeData = Array.from({ length: daysInMonth }, (_, i) => {
+    const day = startOfMonth.add(i, 'day');
+    const key = day.format('YYYY-MM-DD');
+    return {
+      value: volumeByDay[key] || 0,
+      label: day.format('D'),        // Day number: 1, 2, 3…
+      dayName: day.format('ddd'),
+      date: key,
+      active: !!volumeByDay[key],
+      isToday: day.isSame(today, 'day'),
+      startOfWeek: day.day() === 0,  // Sunday
+    };
+  });
+
+  const volumeLineData = timeframe === '1W' ? weeklyVolumeData : monthlyVolumeData;
+
+  const todayKey     = today.format('YYYY-MM-DD');
+  const currentVolume = volumeByDay[todayKey] || 0;
+  const prevVolume    = weeklyVolumeData.find(d => d.isToday === false && !d.isFuture)?.value || 0;
   const volumeDiff    = currentVolume - prevVolume;
-  
-  const minVol = volumeLineData.length > 0 ? Math.min(...volumeLineData.map(v => v.value)) : 0;
-  const maxVol = volumeLineData.length > 0 ? Math.max(...volumeLineData.map(v => v.value)) : 0;
 
-  const activityDates = sortedWorkouts.map(w => w.date);
+  const allVols = weeklyVolumeData.map(v => v.value);
+  const minVol  = Math.min(...allVols);
+  const maxVol  = Math.max(...allVols);
 
   // ── Camera ──
   const uploadPhoto = async (uri: string) => {
     setIsUploading(true);
     try {
-      const base64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: 'base64',
-      });
-
-      const binaryStr = atob(base64);
-      const bytes = new Uint8Array(binaryStr.length);
-      for (let i = 0; i < binaryStr.length; i++) {
-        bytes[i] = binaryStr.charCodeAt(i);
-      }
+      // Use fetch to convert the local file URI to a Blob (works reliably on Hermes)
+      const response = await fetch(uri);
+      const blob = await response.blob();
 
       const photoRef = ref(storage, `users/${user?.uid}/progress/${Date.now()}.jpg`);
-      await uploadBytes(photoRef, bytes, { contentType: 'image/jpeg' });
+      await uploadBytes(photoRef, blob, { contentType: 'image/jpeg' });
       const url = await getDownloadURL(photoRef);
 
       await updateDoc(doc(db, 'users', user?.uid as string), {
         progressPhotos: arrayUnion({ url, date: new Date().toISOString() }),
       });
-      alert('Progress photo saved! 🎉');
-    } catch (err) {
+      alert('Progress photo saved!');
+    } catch (err: any) {
       console.error('Upload error:', err);
-      alert('Failed to save photo. Check your Firebase Storage rules.');
+      const msg = err?.code === 'storage/unauthorized'
+        ? 'Storage permission denied. Check Firebase Storage rules.'
+        : err?.message || 'Upload failed. Please try again.';
+      alert(msg);
     } finally {
       setIsUploading(false);
     }
@@ -104,10 +138,11 @@ export function useProgressData() {
     user,
     timeframe, setTimeframe,
     lineData, currentWeight, startWeight, weightDiff, minVal, maxVal,
-    volumeLineData, currentVolume, volumeDiff, minVol, maxVol,
+    volumeLineData, weeklyVolumeData, monthlyVolumeData,
+    currentVolume, volumeDiff, minVol, maxVol,
     activityDates,
     latest, prev,
     firstPhoto, lastPhoto,
-    isUploading, takePhoto
+    isUploading, takePhoto,
   };
 }

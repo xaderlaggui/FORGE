@@ -81,7 +81,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
         <View style={[s.todayCard, { overflow: 'hidden' }]}>
           <View style={{ position: 'absolute', top: -20, right: -20, width: 110, height: 110, borderRadius: 55, backgroundColor: T.colors.forgeDim }} />
 
-          <Text style={s.todayTitle} maxFontSizeMultiplier={1.2}>✅ Completed</Text>
+          <Text style={s.todayTitle} maxFontSizeMultiplier={1.2}>Completed</Text>
           <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{loggedWorkout.notes || 'Workout Logged'}</Text>
           <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
             {loggedWorkout.exercises?.length ?? 0} Exercises Completed

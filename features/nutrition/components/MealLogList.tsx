@@ -1,15 +1,22 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Sparkles } from 'lucide-react-native';
+import { Sparkles, Sunrise, Sun, Moon, Apple } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { MealDef } from '../types';
 
 const MEAL_DEFS: MealDef[] = [
-  { key: 'Breakfast', label: 'Breakfast', emoji: '🌅' },
-  { key: 'Lunch',     label: 'Lunch',     emoji: '☀️' },
-  { key: 'Dinner',    label: 'Dinner',    emoji: '🌙' },
-  { key: 'Snacks',    label: 'Snacks',    emoji: '🍏' },
+  { key: 'Breakfast', label: 'Breakfast', emoji: 'Breakfast' },
+  { key: 'Lunch',     label: 'Lunch',     emoji: 'Lunch'     },
+  { key: 'Dinner',    label: 'Dinner',    emoji: 'Dinner'    },
+  { key: 'Snacks',    label: 'Snacks',    emoji: 'Snacks'    },
 ];
+
+const MEAL_ICONS: Record<string, { icon: React.ReactNode; color: string }> = {
+  Breakfast: { icon: <Sunrise size={16} color="#FF9500" />, color: '#FF9500' },
+  Lunch:     { icon: <Sun     size={16} color="#FFCC00" />, color: '#FFCC00' },
+  Dinner:    { icon: <Moon    size={16} color="#7B68EE" />, color: '#7B68EE' },
+  Snacks:    { icon: <Apple   size={16} color="#30D158" />, color: '#30D158' },
+};
 
 import type { GeneratedPlan } from '../../../services/GeneratorEngine';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
@@ -29,7 +36,7 @@ export function MealLogList({ meals, activePlan, updateNutrition }: MealLogListP
 
   return (
     <View style={s.section}>
-      {MEAL_DEFS.map(({ key, label }, index) => {
+      {MEAL_DEFS.map(({ key, label, emoji }, index) => {
         const meal = meals.find(m => m.name === key)
           ?? { name: key, calories: 0, protein: 0, carbs: 0, fat: 0 };
         const isEmpty = meal.calories === 0;
@@ -37,7 +44,12 @@ export function MealLogList({ meals, activePlan, updateNutrition }: MealLogListP
         return (
           <View key={key}>
             <View style={[s.sectionHeader, { marginTop: index === 0 ? 6 : 14 }]}>
-              <Text style={s.sectionTitle}>{label}</Text>
+              <View style={s.sectionTitleRow}>
+                <View style={[s.mealIconWrap, { backgroundColor: MEAL_ICONS[emoji].color + '20', borderColor: MEAL_ICONS[emoji].color + '60' }]}>
+                  {MEAL_ICONS[emoji].icon}
+                </View>
+                <Text style={s.sectionTitle}>{label}</Text>
+              </View>
               <Text style={[s.sectionCals, isEmpty && { color: T.colors.red }]}>
                 {isEmpty ? 'not logged' : `${meal.calories} kcal`}
               </Text>
@@ -127,6 +139,14 @@ export function MealLogList({ meals, activePlan, updateNutrition }: MealLogListP
 const useS = (T: any) => StyleSheet.create({
           section: { marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5 },
           sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+          sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+          mealIconWrap: {
+            width: 32, height: 32, borderRadius: 10,
+            backgroundColor: T.colors.forgeDim,
+            alignItems: 'center', justifyContent: 'center',
+            borderWidth: 0.5, borderColor: T.colors.b1,
+            overflow: 'hidden',
+          },
           sectionTitle: { color: T.colors.t1, fontSize: 15, fontWeight: '700' },
           sectionCals: { color: T.colors.t3, fontSize: 12 },
           

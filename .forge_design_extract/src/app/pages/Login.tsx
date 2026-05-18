@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router";
+import { Apple, Chrome, Mail } from "lucide-react";
 import { motion } from "motion/react";
-import { Mail, Apple, Chrome } from "lucide-react";
+import { useNavigate } from "react-router";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function Login() {
               required
             />
           </div>
-          
+
           <div className="pt-2">
             <button
               type="submit"
@@ -64,7 +64,7 @@ export default function Login() {
             <Chrome className="w-5 h-5 text-t1" />
           </button>
         </div>
-        
+
         <p className="mt-auto text-[12px] text-t3 pt-12">
           Don't have an account? <button className="text-forge font-medium">Sign up</button>
         </p>

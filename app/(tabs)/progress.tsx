@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Camera, History } from 'lucide-react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // Feature Modules
 import { useForgeTheme } from "@/hooks/useForgeTheme";
@@ -8,7 +8,6 @@ import { MeasurementCard } from '../../features/progress/components/MeasurementC
 import { ProgressPhotos } from '../../features/progress/components/ProgressPhotos';
 import { StatCard } from '../../features/progress/components/StatCard';
 import { VolumeChart } from '../../features/progress/components/VolumeChart';
-import { ConsistencyHeatmap } from '../../features/progress/components/ConsistencyHeatmap';
 import { WeightChart } from '../../features/progress/components/WeightChart';
 import { useProgressData } from '../../features/progress/hooks/useProgressData';
 
@@ -19,14 +18,18 @@ export default function ProgressScreen() {
 
   // Clean Architecture: Hook handles all formatting, storage logic, and firestore logic
   const {
-    user, timeframe, setTimeframe,
+    user,
+    timeframe: volumeTimeframe, setTimeframe: setVolumeTimeframe,
     lineData, currentWeight, startWeight, weightDiff, minVal, maxVal,
-    volumeLineData, currentVolume, volumeDiff, minVol, maxVol,
+    volumeLineData, weeklyVolumeData, monthlyVolumeData,
+    currentVolume, volumeDiff, minVol, maxVol,
     activityDates,
     latest, prev,
     firstPhoto, lastPhoto,
     isUploading, takePhoto
   } = useProgressData();
+
+  const [weightTimeframe, setWeightTimeframe] = useState('7D');
 
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
@@ -61,8 +64,8 @@ export default function ProgressScreen() {
 
       {/* ── Composition: Weight Chart ── */}
       <WeightChart
-        timeframe={timeframe}
-        setTimeframe={setTimeframe}
+        timeframe={weightTimeframe}
+        setTimeframe={setWeightTimeframe}
         weightDiff={weightDiff}
         lineData={lineData}
         minVal={minVal}
@@ -80,16 +83,17 @@ export default function ProgressScreen() {
         </View>
       </View>
 
-      {/* ── Composition: Consistency Heatmap ── */}
-      <ConsistencyHeatmap activityDates={activityDates} />
-
       {/* ── Composition: Progressive Overload ── */}
       <VolumeChart
         volumeLineData={volumeLineData}
+        weeklyVolumeData={weeklyVolumeData}
+        monthlyVolumeData={monthlyVolumeData}
         currentVolume={currentVolume}
         volumeDiff={volumeDiff}
         minVol={minVol}
         maxVol={maxVol}
+        timeframe={volumeTimeframe}
+        setTimeframe={setVolumeTimeframe}
       />
 
       {/* ── Composition: Transformation ── */}

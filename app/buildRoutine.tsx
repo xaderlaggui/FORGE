@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Modal, SafeAreaView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ArrowUpCircle, ArrowDownCircle, PersonStanding, AlertTriangle, Plus, X, Zap, Dumbbell, Timer, Shuffle, Sparkles } from 'lucide-react-native';
+import { ArrowUpCircle, ArrowDownCircle, PersonStanding, AlertTriangle, Plus, X, Zap, Dumbbell, Timer, Shuffle, Sparkles, Check } from 'lucide-react-native';
 import { useRoutines } from '../hooks/useRoutines';
 import { useExercises } from '../hooks/useExercises';
 import { useAuthStore } from '../stores/authStore';
@@ -330,7 +330,7 @@ No markdown, no explanation. Raw JSON array only.`;
                     {/* Active check */}
                     {active && (
                       <View style={[s.activeCheck, { backgroundColor: p.color }]}>
-                        <Text style={{ color: '#000', fontSize: 9, fontWeight: '900' }}>✓</Text>
+                      <Check size={11} color="#000" strokeWidth={3} />
                       </View>
                     )}
                   </TouchableOpacity>
