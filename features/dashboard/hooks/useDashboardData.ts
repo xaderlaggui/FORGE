@@ -4,6 +4,9 @@ import { useNutrition } from '../../../hooks/useNutrition';
 import { useStreak } from '../../../hooks/useStreak';
 import { useWorkouts } from '../../../hooks/useWorkouts';
 import { useAuthStore } from '../../../stores/authStore';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '../../../services/supabase';
+import type { GeneratedPlan } from '../../../services/GeneratorEngine';
 
 export function useDashboardData() {
   const { user } = useAuthStore();
@@ -12,7 +15,24 @@ export function useDashboardData() {
   const { data: aiTip, isLoading: isAiLoading } = useAiCoach();
   const streak = useStreak();
 
-  const isLoading = isNutritionLoading || isWorkoutsLoading;
+  const { data: activePlan, isLoading: isLoadingActivePlan } = useQuery({
+    queryKey: ['activePlan', user?.uid],
+    queryFn: async () => {
+      if (!user?.uid) return null;
+      const { data } = await supabase
+        .from('generated_plans')
+        .select('plan')
+        .eq('user_id', user.uid)
+        .order('date', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!data) return null;
+      return data.plan as GeneratedPlan;
+    },
+    enabled: !!user?.uid,
+  });
+
+  const isLoading = isNutritionLoading || isWorkoutsLoading || isLoadingActivePlan;
 
   // ── Derived data ──
   const waterLiters = (nutrition?.waterMl ?? 0) / 1000;
@@ -24,7 +44,28 @@ export function useDashboardData() {
   const loggedWorkout = workouts?.find(w => w.date === todayDate);
 
   const todayIdx = dayjs().day() === 0 ? 6 : dayjs().day() - 1; // 0=Mon, 6=Sun
-  const plannedWorkout = (user as any)?.plan?.weeklySchedule?.[todayIdx];
+  
+  let plannedWorkout: any = null;
+  if (activePlan?.workoutWeek) {
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const currentDayName = dayNames[todayIdx];
+    const dayPlan = activePlan.workoutWeek.find(d => d.day === currentDayName);
+    
+    if (dayPlan) {
+      if (dayPlan.exercises.length === 0) {
+        plannedWorkout = { dayType: 'Rest' };
+      } else {
+        plannedWorkout = {
+          title: dayPlan.focus,
+          exercises: dayPlan.exercises.map(ex => ({ name: ex.name })),
+          dayType: 'Workout'
+        };
+      }
+    }
+  }
+  if (!plannedWorkout) {
+    plannedWorkout = (user as any)?.plan?.weeklySchedule?.[todayIdx];
+  }
 
   const muscleTags: string[] = plannedWorkout && plannedWorkout.dayType !== 'Rest'
     ? [...new Set<string>(plannedWorkout.exercises.flatMap((ex: any) => ex.muscleGroups ?? []))].filter(Boolean)

@@ -1,17 +1,17 @@
-import dayjs from 'dayjs';
-import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../../../services/supabase';
+import dayjs from 'dayjs';
+import { useMemo, useState } from 'react';
 import { useWorkouts } from '../../../hooks/useWorkouts';
-import type { Exercise } from '../../../types';
 import type { GeneratedPlan } from '../../../services/GeneratorEngine';
+import { supabase } from '../../../services/supabase';
+import type { Exercise } from '../../../types';
 
 import { useAuthStore } from '../../../stores/authStore';
 
 export function usePlannerData() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState('Planner');
-  
+
   // Dynamic weekly dates starting from Monday
   const today = dayjs();
   const startOfWeek = today.startOf('week').add(1, 'day'); // Monday
@@ -19,7 +19,7 @@ export function usePlannerData() {
     const d = startOfWeek.add(i, 'day');
     return { label: d.format('dd').charAt(0), date: d.date(), fullDate: d.format('YYYY-MM-DD') };
   });
-  
+
   const [activeDayIdx, setActiveDayIdx] = useState(today.day() === 0 ? 6 : today.day() - 1);
   const activeDateStr = days[activeDayIdx].fullDate;
 
@@ -35,9 +35,9 @@ export function usePlannerData() {
 
   // Dynamic Workouts Fetch
   const { workouts, isLoading: isLoadingWorkouts } = useWorkouts();
-  
+
   // AI Generated Active Plan Fetch
-  const { data: activePlan } = useQuery({
+  const { data: activePlan, isLoading: isLoadingActivePlan } = useQuery({
     queryKey: ['activePlan', user?.uid],
     queryFn: async () => {
       if (!user?.uid) return null;
@@ -66,7 +66,7 @@ export function usePlannerData() {
       // activeDayIdx goes from 0 (Monday) to 6 (Sunday)
       const currentDayName = dayNames[activeDayIdx];
       const dayPlan = activePlan.workoutWeek.find(d => d.day === currentDayName);
-      
+
       if (dayPlan) {
         if (dayPlan.exercises.length === 0) {
           return { dayType: 'Rest' };
@@ -86,6 +86,6 @@ export function usePlannerData() {
     activeTab, setActiveTab,
     days, activeDayIdx, setActiveDayIdx, activeDateStr,
     exercises, isLoadingExercises,
-    loggedWorkout, plannedWorkout, isLoadingWorkouts
+    loggedWorkout, plannedWorkout, isLoadingWorkouts: isLoadingWorkouts || isLoadingActivePlan
   };
 }
