@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import dayjs from 'dayjs';
 import { useWorkouts } from '../hooks/useWorkouts';
 import { BearMascot } from '../components/forge/BearMascot';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-// Using lucide-react-native icons instead of SVG figures for simplicity
 import { Activity, Dumbbell } from 'lucide-react-native';
 
 export default function WorkoutHistoryScreen() {
@@ -19,56 +18,87 @@ export default function WorkoutHistoryScreen() {
     return [...workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [workouts]);
 
-  const getIconForType = (type?: string, color: string = '#FFF') => {
-    if (type === 'run' || type === 'walk' || type === 'cardio') return <Activity size={24} color={color} />;
-    return <Dumbbell size={24} color={color} />;
+  const getVolume = (workout: any) => {
+    let vol = 0;
+    workout.exercises?.forEach((ex: any) => {
+      ex.sets?.forEach((s: any) => { vol += (s.weight || 0) * (s.reps || 0); });
+    });
+    return vol;
   };
 
-  const getMetricsText = (workout: any) => {
-    if (workout.type === 'run' || workout.type === 'walk' || workout.distanceKm) {
-      return `${workout.distanceKm || 0} km • ${workout.durationMin} min`;
-    }
-    return `${workout.exercises?.length || 0} exercises • ${workout.durationMin} min`;
-  };
+  const isCardio = (w: any) => w.type === 'run' || w.type === 'walk' || w.type === 'cardio';
 
   return (
     <View style={s.container}>
+      {/* Header */}
       <View style={s.header}>
         <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
-          <ChevronLeft size={24} color={T.colors.t1} />
+          <ChevronLeft size={22} color={T.colors.t1} />
         </TouchableOpacity>
-        <Text style={s.title}>Workout History</Text>
+        <View>
+          <Text style={s.headerSub}>Activity</Text>
+          <Text style={s.headerTitle}>Workout History</Text>
+        </View>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
         {sortedWorkouts.length === 0 ? (
-          <View style={{ alignItems: 'center', marginTop: 40 }}>
-            <BearMascot
-              variant="THINKING"
-              size="xl"
-              style={{ alignSelf: 'center', marginBottom: 16 }}
-            />
-            <Text style={[s.empty, { marginTop: 0 }]}>No workouts logged yet.</Text>
+          <View style={s.emptyState}>
+            <BearMascot variant="THINKING" size="xl" animate style={{ marginBottom: 20 }} />
+            <Text style={s.emptyTitle}>No workouts yet</Text>
+            <Text style={s.emptySub}>Complete a workout to see it here.</Text>
           </View>
         ) : (
-          sortedWorkouts.map((session, idx) => (
-            <TouchableOpacity 
-              key={session.id || idx} 
-              style={s.card}
-              activeOpacity={0.7}
-              onPress={() => router.push({ pathname: '/workoutDetail', params: { id: session.id } })}
-            >
-              <View style={s.iconWrap}>
-                {getIconForType(session.type, T.colors.forge)}
-              </View>
-              <View style={s.cardBody}>
-                <Text style={s.cardTitle}>{session.notes || 'Workout'}</Text>
-                <Text style={s.cardDate}>{dayjs(session.date).format('MMM D, YYYY')}</Text>
-                <Text style={s.metrics}>{getMetricsText(session)}</Text>
-              </View>
-            </TouchableOpacity>
-          ))
+          sortedWorkouts.map((session, idx) => {
+            const vol = getVolume(session);
+            const cardio = isCardio(session);
+            return (
+              <TouchableOpacity
+                key={session.id || idx}
+                style={s.card}
+                activeOpacity={0.75}
+                onPress={() => router.push({ pathname: '/workoutDetail', params: { id: session.id } })}
+              >
+                {/* Left icon */}
+                <View style={s.iconWrap}>
+                  {cardio
+                    ? <Activity size={20} color={T.colors.forge} />
+                    : <Dumbbell size={20} color={T.colors.forge} />
+                  }
+                </View>
+
+                {/* Content */}
+                <View style={s.cardBody}>
+                  <Text style={s.cardTitle} numberOfLines={1}>
+                    {session.notes || (cardio ? 'Cardio Session' : 'Strength Workout')}
+                  </Text>
+                  <Text style={s.cardDate}>
+                    {dayjs(session.date).format('ddd, MMM D YYYY')}
+                  </Text>
+                  <View style={s.pillRow}>
+                    <View style={s.pill}>
+                      <Text style={s.pillText}>{session.durationMin ?? 0} min</Text>
+                    </View>
+                    {cardio
+                      ? <View style={s.pill}><Text style={s.pillText}>{session.distanceKm || 0} km</Text></View>
+                      : vol > 0
+                        ? <View style={s.pill}><Text style={s.pillText}>{vol.toLocaleString()} lbs</Text></View>
+                        : null
+                    }
+                    {(session.exercises?.length ?? 0) > 0 && !cardio && (
+                      <View style={s.pill}>
+                        <Text style={s.pillText}>{session.exercises!.length} exercises</Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+
+                {/* Chevron */}
+                <ChevronRight size={18} color={T.colors.t3} />
+              </TouchableOpacity>
+            );
+          })
         )}
       </ScrollView>
     </View>
@@ -77,32 +107,46 @@ export default function WorkoutHistoryScreen() {
 
 const useS = (T: any) => StyleSheet.create({
   container: { flex: 1, backgroundColor: T.colors.bg0 },
+
   header: {
     flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between',
-    paddingTop: 60, paddingBottom: 16, paddingHorizontal: 16,
-    backgroundColor: T.colors.bg1, borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
+    paddingTop: 60, paddingBottom: 16, paddingHorizontal: T.spacing.page,
+    backgroundColor: T.colors.bg0, borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
   },
-  backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 18, fontWeight: '700', color: T.colors.t1, paddingBottom: 8 },
-  content: { padding: 16, paddingBottom: 40 },
-  empty: { color: T.colors.t3, textAlign: 'center', marginTop: 40 },
-  
+  backBtn: {
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: T.colors.bg2, alignItems: 'center', justifyContent: 'center',
+  },
+  headerSub: { fontSize: 12, fontWeight: '500', color: T.colors.t3, marginBottom: 2 },
+  headerTitle: { fontSize: 24, fontWeight: '800', color: T.colors.t1 },
+
+  content: { padding: T.spacing.page, paddingBottom: 60 },
+
+  emptyState: { alignItems: 'center', marginTop: 60, paddingHorizontal: 24 },
+  emptyTitle: { fontSize: 20, fontWeight: '800', color: T.colors.t1, marginBottom: 8 },
+  emptySub: { fontSize: 14, color: T.colors.t3, textAlign: 'center' },
+
   card: {
-    flexDirection: 'row',
-    backgroundColor: T.colors.bg1, borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: T.colors.b1, marginBottom: 12,
-    alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: T.colors.bg1, borderRadius: T.radii.xl,
+    borderWidth: 0.5, borderColor: T.colors.b1,
+    padding: 16, marginBottom: 12,
+    gap: 14,
   },
   iconWrap: {
-    width: 48, height: 48, borderRadius: 24,
-    backgroundColor: T.colors.forgeDim || 'rgba(255, 69, 0, 0.1)',
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: T.colors.forgeDim,
     alignItems: 'center', justifyContent: 'center',
-    marginRight: 16,
+    flexShrink: 0,
   },
-  cardBody: {
-    flex: 1,
+  cardBody: { flex: 1 },
+  cardTitle: { fontSize: 15, fontWeight: '700', color: T.colors.t1, marginBottom: 3 },
+  cardDate: { fontSize: 12, fontWeight: '500', color: T.colors.t3, marginBottom: 8 },
+  pillRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
+  pill: {
+    backgroundColor: T.colors.bg2, borderRadius: T.radii.full,
+    paddingHorizontal: 8, paddingVertical: 3,
+    borderWidth: 0.5, borderColor: T.colors.b1,
   },
-  cardTitle: { fontSize: 16, fontWeight: '700', color: T.colors.t1, marginBottom: 2 },
-  cardDate: { fontSize: 12, fontWeight: '500', color: T.colors.t3, marginBottom: 6 },
-  metrics: { fontSize: 13, fontWeight: '600', color: T.colors.t2 },
+  pillText: { fontSize: 11, fontWeight: '600', color: T.colors.t2 },
 });

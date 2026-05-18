@@ -1,3 +1,4 @@
+import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -7,7 +8,6 @@ import { ForgeButton } from '../../../components/forge/ForgeButton';
 import { SkeletonHeroCard } from '../../../components/forge/ForgeSkeleton';
 import { MuscleTagChip } from '../../../components/forge/WorkoutAtoms';
 import { useBearMood } from '../../../hooks/useBearMood';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
 
 interface TodayPlanCardProps {
   isLoading: boolean;
@@ -17,8 +17,8 @@ interface TodayPlanCardProps {
 }
 
 export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscleTags }: TodayPlanCardProps) {
-    const { T } = useForgeTheme();
-    const s = useS(T);
+  const { T } = useForgeTheme();
+  const s = useS(T);
   const router = useRouter();
 
   if (isLoading) {
@@ -88,10 +88,10 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
         style={{
           position: 'absolute',
           right: -10,
-          bottom: -15, // Overflow bottom slightly
+          bottom: 30, // Overflow bottom slightly
         }}
         imageStyle={{
-          height: 165
+          height: 200
         }}
       />
     </View>
@@ -99,23 +99,23 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
 }
 
 const useS = (T: any) => StyleSheet.create({
-          todayCard: {
-            marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5,
-            borderRadius: T.radii.xl, borderWidth: 0.5, borderColor: T.colors.b1, overflow: 'hidden',
-          },
-          blobDecor: {
-            position: 'absolute', top: -24, right: -20,
-            width: 110, height: 110, borderRadius: 55, backgroundColor: T.colors.forgeDim,
-          },
-          todayCardContent: { padding: T.spacing.px5, zIndex: 1 },
-          todayTag: {
-            fontSize: T.typography.sizes.caption, fontWeight: '600', color: T.colors.forge,
-            letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 8,
-          },
-          todayWorkoutName: { fontSize: T.typography.sizes.h2, fontWeight: '700', color: T.colors.t1, marginBottom: 4 },
-          todayMeta: {
-            fontSize: T.typography.sizes.bodyS, color: T.colors.t2, marginBottom: T.spacing.px4,
-            lineHeight: T.typography.sizes.bodyS * 1.5,
-          },
-          chipRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: T.spacing.px4 },
-        });
+  todayCard: {
+    marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5,
+    borderRadius: T.radii.xl, borderWidth: 0.5, borderColor: T.colors.b1, overflow: 'hidden',
+  },
+  blobDecor: {
+    position: 'absolute', top: -24, right: -20,
+    width: 110, height: 110, borderRadius: 55, backgroundColor: T.colors.forgeDim,
+  },
+  todayCardContent: { padding: T.spacing.px5, zIndex: 1 },
+  todayTag: {
+    fontSize: T.typography.sizes.caption, fontWeight: '600', color: T.colors.forge,
+    letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 8,
+  },
+  todayWorkoutName: { fontSize: T.typography.sizes.h2, fontWeight: '700', color: T.colors.t1, marginBottom: 4 },
+  todayMeta: {
+    fontSize: T.typography.sizes.bodyS, color: T.colors.t2, marginBottom: T.spacing.px4,
+    lineHeight: T.typography.sizes.bodyS * 1.5,
+  },
+  chipRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: T.spacing.px4 },
+});

@@ -162,39 +162,55 @@ export default function WorkoutDetailScreen() {
   const renderStrengthView = () => (
     <View style={s.strengthContainer}>
       <Text style={s.sTitle}>{workout.notes || 'Strength Workout'}</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 }}>
         <Text style={s.sDate}>{dayjs(workout.date).format('dddd, MMM D, YYYY')}</Text>
         <View style={s.tagPill}>
-          <Text style={s.tagText}>Full Body</Text>
+          <Text style={s.tagText}>{workout.exercises?.length ?? 0} Exercises</Text>
         </View>
       </View>
 
-      <View style={s.sStats}>
-        <View style={s.sStatItem}>
-          <Text style={s.sStatVal}>{workout.durationMin}m</Text>
-          <Text style={s.sStatLbl}>TIME</Text>
+      {/* Stats Grid */}
+      <View style={s.sStatsGrid}>
+        <View style={s.sStatCard}>
+          <Text style={s.sStatVal}>{workout.durationMin ?? 0}</Text>
+          <Text style={s.sStatLbl}>MIN</Text>
         </View>
-        <View style={s.sStatItem}>
+        <View style={s.sStatCard}>
           <Text style={s.sStatVal}>{totalVolume.toLocaleString()}</Text>
           <Text style={s.sStatLbl}>VOL ({useLbs ? 'LBS' : 'KG'})</Text>
         </View>
-        <View style={s.sStatItem}>
-          <TouchableOpacity onPress={() => setUseLbs(!useLbs)} style={s.unitToggle}>
-            <Text style={s.unitToggleText}>{useLbs ? 'Switch to KG' : 'Switch to LBS'}</Text>
-          </TouchableOpacity>
+        <View style={s.sStatCard}>
+          <Text style={s.sStatVal}>{workout.exercises?.reduce((acc, ex) => acc + ex.sets.length, 0) ?? 0}</Text>
+          <Text style={s.sStatLbl}>SETS</Text>
         </View>
+        <TouchableOpacity style={[s.sStatCard, { borderColor: T.colors.forge + '40' }]} onPress={() => setUseLbs(!useLbs)}>
+          <Text style={[s.sStatVal, { fontSize: 14 }]}>{useLbs ? 'LBS' : 'KG'}</Text>
+          <Text style={s.sStatLbl}>UNIT</Text>
+        </TouchableOpacity>
       </View>
 
       <Text style={s.listHeader}>Exercises</Text>
       {workout.exercises?.map((ex, idx) => (
         <View key={idx} style={s.exRow}>
-          <Text style={s.exName}>{ex.name}</Text>
+          <View style={s.exHeader}>
+            <View style={s.exNumBadge}>
+              <Text style={s.exNumText}>{idx + 1}</Text>
+            </View>
+            <Text style={s.exName}>{ex.name}</Text>
+          </View>
+          {/* Column headers */}
+          <View style={s.setHeaderRow}>
+            <Text style={s.setHeaderText}>SET</Text>
+            <Text style={s.setHeaderText}>WEIGHT</Text>
+            <Text style={s.setHeaderText}>REPS</Text>
+          </View>
           {ex.sets.map((set, sIdx) => {
             const weight = useLbs ? Math.round((set.weight || 0) * 2.20462) : (set.weight || 0);
             return (
               <View key={sIdx} style={s.setRow}>
-                <Text style={s.setNum}>Set {sIdx + 1}</Text>
-                <Text style={s.setDetails}>{weight} {useLbs ? 'lbs' : 'kg'} × {set.reps}</Text>
+                <Text style={s.setNum}>{sIdx + 1}</Text>
+                <Text style={s.setWeight}>{weight} {useLbs ? 'lbs' : 'kg'}</Text>
+                <Text style={s.setReps}>{set.reps} reps</Text>
               </View>
             );
           })}
@@ -266,23 +282,37 @@ const useStyles = (T: any) => StyleSheet.create({
   actions: { flexDirection: 'row', marginTop: 10 },
 
   // Strength
-  strengthContainer: { padding: 20 },
-  sTitle: { fontSize: 24, fontWeight: '800', color: T.colors.t1, marginBottom: 4 },
-  sDate: { fontSize: 14, color: T.colors.t3, marginRight: 12 },
-  tagPill: { backgroundColor: T.colors.forgeDim, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  tagText: { color: T.colors.forge, fontSize: 10, fontWeight: '700' },
-  
-  sStats: { flexDirection: 'row', paddingVertical: 20, borderBottomWidth: 1, borderBottomColor: T.colors.b1, marginBottom: 20 },
-  sStatItem: { flex: 1 },
-  sStatVal: { fontSize: 24, fontWeight: '800', color: T.colors.t1, marginBottom: 4 },
-  sStatLbl: { fontSize: 10, fontWeight: '700', color: T.colors.t3 },
-  unitToggle: { backgroundColor: T.colors.bg2, padding: 8, borderRadius: 8, alignSelf: 'flex-start' },
-  unitToggleText: { fontSize: 12, color: T.colors.t1, fontWeight: '600' },
+  strengthContainer: { padding: 20, paddingBottom: 40 },
+  sTitle: { fontSize: 26, fontWeight: '900', color: T.colors.t1, marginBottom: 4 },
+  sDate: { fontSize: 13, color: T.colors.t3 },
+  tagPill: { backgroundColor: T.colors.forgeDim, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
+  tagText: { color: T.colors.forge, fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
 
-  listHeader: { fontSize: 18, fontWeight: '700', color: T.colors.t1, marginBottom: 16 },
-  exRow: { marginBottom: 20, backgroundColor: T.colors.bg1, padding: 16, borderRadius: 12 },
-  exName: { fontSize: 16, fontWeight: '700', color: T.colors.forge, marginBottom: 12 },
-  setRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderTopWidth: 0.5, borderTopColor: T.colors.b1 },
-  setNum: { fontSize: 14, color: T.colors.t3, fontWeight: '500' },
-  setDetails: { fontSize: 14, color: T.colors.t1, fontWeight: '700' },
+  sStatsGrid: {
+    flexDirection: 'row', flexWrap: 'wrap', gap: 10,
+    marginBottom: 28,
+  },
+  sStatCard: {
+    flex: 1, minWidth: '40%',
+    backgroundColor: T.colors.bg1, borderRadius: T.radii.lg,
+    borderWidth: 0.5, borderColor: T.colors.b1,
+    paddingVertical: 16, paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  sStatVal: { fontSize: 22, fontWeight: '900', color: T.colors.t1, marginBottom: 4 },
+  sStatLbl: { fontSize: 9, fontWeight: '800', color: T.colors.t3, letterSpacing: 1, textTransform: 'uppercase' },
+
+  listHeader: { fontSize: 13, fontWeight: '700', color: T.colors.t3, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 14 },
+  exRow: { marginBottom: 14, backgroundColor: T.colors.bg1, borderRadius: T.radii.xl, borderWidth: 0.5, borderColor: T.colors.b1, overflow: 'hidden' },
+  exHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, paddingBottom: 10 },
+  exNumBadge: { width: 24, height: 24, borderRadius: 12, backgroundColor: T.colors.forgeDim, alignItems: 'center', justifyContent: 'center' },
+  exNumText: { fontSize: 11, fontWeight: '800', color: T.colors.forge },
+  exName: { fontSize: 15, fontWeight: '700', color: T.colors.t1, flex: 1 },
+
+  setHeaderRow: { flexDirection: 'row', paddingHorizontal: 14, paddingVertical: 6, backgroundColor: T.colors.bg2, borderTopWidth: 0.5, borderTopColor: T.colors.b1 },
+  setHeaderText: { flex: 1, fontSize: 9, fontWeight: '800', color: T.colors.t3, letterSpacing: 0.8, textTransform: 'uppercase', textAlign: 'center' },
+  setRow: { flexDirection: 'row', paddingHorizontal: 14, paddingVertical: 12, borderTopWidth: 0.5, borderTopColor: T.colors.b1 },
+  setNum: { flex: 1, fontSize: 13, color: T.colors.t3, fontWeight: '600', textAlign: 'center' },
+  setWeight: { flex: 1, fontSize: 14, color: T.colors.t1, fontWeight: '700', textAlign: 'center' },
+  setReps: { flex: 1, fontSize: 14, color: T.colors.forge, fontWeight: '700', textAlign: 'center' },
 });
