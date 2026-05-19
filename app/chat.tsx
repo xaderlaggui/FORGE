@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import { Flame, MapPin, Send, Timer, User as UserIcon, X } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { TypewriterText } from '../components/forge/TypewriterText';
 import {
   FlatList,
   Image,
@@ -20,6 +19,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { TypewriterText } from '../components/forge/TypewriterText';
 import { useNutrition } from '../hooks/useNutrition';
 import { useWorkouts } from '../hooks/useWorkouts';
 import { groqComplete, GroqMessage } from '../services/groq';
@@ -415,7 +415,7 @@ const useS = (T: any) => StyleSheet.create({
   // Input bar
   inputBar: {
     flexDirection: 'row', alignItems: 'flex-end', gap: 10,
-    padding: 14, paddingBottom: Platform.OS === 'ios' ? 28 : 14,
+    padding: 14, paddingBottom: Platform.OS === 'ios' ? 55 : 14,
     borderTopWidth: 0.5, borderTopColor: T.colors.b1,
     backgroundColor: T.colors.bg1,
   },
