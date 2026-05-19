@@ -61,6 +61,7 @@ export default function HomeScreen() {
       <WeeklyProgressDots 
         weekActivity={data.weekActivity}
         streak={data.streak}
+        restDayIndices={data.restDayIndices}
       />
 
       {/* ── Composition: Quick Stats ── */}

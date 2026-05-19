@@ -13,7 +13,6 @@ export function useDashboardData() {
   const { data: nutrition, isLoading: isNutritionLoading } = useNutrition();
   const { workouts, isLoading: isWorkoutsLoading } = useWorkouts();
   const { data: aiTip, isLoading: isAiLoading } = useAiCoach();
-  const streak = useStreak();
 
   const { data: activePlan, isLoading: isLoadingActivePlan } = useQuery({
     queryKey: ['activePlan', user?.uid],
@@ -45,11 +44,25 @@ export function useDashboardData() {
 
   const todayIdx = dayjs().day() === 0 ? 6 : dayjs().day() - 1; // 0=Mon, 6=Sun
   
+  // Derive which Mon-based day indices (0=Mon, 6=Sun) are rest days from the plan
+  const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const restDayIndices: number[] = [];
+  if (activePlan?.workoutWeek) {
+    activePlan.workoutWeek.forEach((d: any) => {
+      if (!d.exercises || d.exercises.length === 0) {
+        const idx = DAY_NAMES.indexOf(d.day);
+        if (idx >= 0) restDayIndices.push(idx);
+      }
+    });
+  }
+  // Must be called after restDayIndices is populated (hooks rules: value is passed, not the ref)
+  const streak = useStreak(restDayIndices);
+
   let plannedWorkout: any = null;
   if (activePlan?.workoutWeek) {
     const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const currentDayName = dayNames[todayIdx];
-    const dayPlan = activePlan.workoutWeek.find(d => d.day === currentDayName);
+    const dayPlan = activePlan.workoutWeek.find((d: any) => d.day === currentDayName);
     
     if (dayPlan) {
       if (dayPlan.exercises.length === 0) {
@@ -57,7 +70,7 @@ export function useDashboardData() {
       } else {
         plannedWorkout = {
           title: dayPlan.focus,
-          exercises: dayPlan.exercises.map(ex => ({ name: ex.name })),
+          exercises: dayPlan.exercises.map((ex: any) => ({ name: ex.name })),
           dayType: 'Workout'
         };
       }
@@ -112,5 +125,6 @@ export function useDashboardData() {
     workoutsThisWeek,
     totalVolumeLbs,
     streak,
+    restDayIndices,
   };
 }
