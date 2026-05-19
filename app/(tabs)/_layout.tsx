@@ -4,7 +4,7 @@ import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import { Tabs, useRouter } from 'expo-router';
 import { Dumbbell, Home, PieChart, Settings, Sparkles, TrendingUp } from 'lucide-react-native';
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -41,24 +41,46 @@ function ForgeFAB() {
 
 const TabIcon = ({ Icon, color, focused, T }: { Icon: any, color: string, focused: boolean, T: any }) => (
   <View style={{ alignItems: 'center', justifyContent: 'center', width: 48 }}>
-    {focused && (
-      <View style={{
-        position: 'absolute',
-        top: -20,
-        width: 80,
-        height: 3,
-        backgroundColor: T.colors.forge,
-      }} />
-    )}
     <Icon size={22} color={color} strokeWidth={2.5} />
   </View>
 );
+
+function AnimatedTabBar({ props, animatedStyle, T, tabWidth }: any) {
+  const indicatorPosition = useDerivedValue(() => {
+    // calculate center of active tab and subtract half of indicator width
+    const targetX = (props.state.index * tabWidth) + (tabWidth / 2) - 24;
+    return withTiming(targetX, { duration: 300, easing: Easing.out(Easing.cubic) });
+  }, [props.state.index, tabWidth]);
+
+  const indicatorStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: indicatorPosition.value }]
+  }));
+
+  return (
+    <Animated.View style={[{ position: 'absolute', bottom: 0, left: 0, right: 0 }, animatedStyle]}>
+      <BottomTabBar {...props} />
+      <Animated.View style={[{
+        position: 'absolute',
+        top: -79.2,
+        left: -10,
+        width: 70,
+        height: 3,
+        backgroundColor: T.colors.forge,
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8,
+        zIndex: 100,
+      }, indicatorStyle]} />
+    </Animated.View>
+  );
+}
 
 export default function TabLayout() {
   const { T } = useForgeTheme();
   const styles = useStyles(T);
   const isTabBarVisible = useUIStore(s => s.isTabBarVisible);
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const tabWidth = width / 5; // 5 tabs
 
   const translateY = useDerivedValue(() => {
     return withTiming(isTabBarVisible ? 0 : 150, { duration: 300, easing: Easing.out(Easing.exp) });
@@ -70,11 +92,7 @@ export default function TabLayout() {
   return (
     <View style={{ flex: 1, backgroundColor: T.colors.bg0 }}>
       <Tabs
-        tabBar={(props) => (
-          <Animated.View style={[{ position: 'absolute', bottom: 0, left: 0, right: 0 }, animatedStyle]}>
-            <BottomTabBar {...props} />
-          </Animated.View>
-        )}
+        tabBar={(props) => <AnimatedTabBar props={props} animatedStyle={animatedStyle} T={T} tabWidth={tabWidth} />}
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: T.colors.forge,
@@ -83,7 +101,7 @@ export default function TabLayout() {
             backgroundColor: T.colors.bg0, // bg0 with slight transparency for blur effect
             borderTopWidth: 0.5,
             borderTopColor: T.colors.b1,
-            height: 85,
+            height: 80,
             paddingBottom: 24,
             paddingTop: 12,
             position: 'absolute', // Allows content to flow underneath if needed
