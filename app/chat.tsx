@@ -20,12 +20,12 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { TypewriterText } from '../components/forge/TypewriterText';
+import { COACH_SYSTEM_PROMPT } from '../constants/prompts';
 import { useNutrition } from '../hooks/useNutrition';
 import { useWorkouts } from '../hooks/useWorkouts';
 import { groqComplete, GroqMessage } from '../services/groq';
 import { supabase } from '../services/supabase';
 import { useAuthStore } from '../stores/authStore';
-import { COACH_SYSTEM_PROMPT } from '../constants/prompts';
 
 
 
@@ -40,7 +40,7 @@ interface LoggedActivity {
 type Message = { id: string; text: string; isAi: boolean; logged?: boolean; activity?: LoggedActivity };
 
 export default function ChatScreen() {
-  const { T } = useForgeTheme();
+  const { T, isDark } = useForgeTheme();
   const s = useS(T);
   const router = useRouter();
   const { user } = useAuthStore();
@@ -178,7 +178,7 @@ export default function ChatScreen() {
     <View style={[s.msgRow, item.isAi ? s.msgRowAi : s.msgRowUser]}>
       {item.isAi && (
         <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
-          <Image source={MascotImages.coach} style={{ width: 70, height: 70, resizeMode: 'contain', position: 'absolute', bottom: -12, left: -22 }} />
+          <Image source={isDark ? MascotImages.coach_dark : MascotImages.coach_light} style={{ width: 43, height: 43, resizeMode: 'contain', position: 'absolute', bottom: -3, left: - 13 }} />
         </View>
       )}
       <View style={[s.bubble, item.isAi ? s.bubbleAi : s.bubbleUser]}>
@@ -249,9 +249,6 @@ export default function ChatScreen() {
       {/* ── Header ── */}
       <View style={s.header}>
         <View style={s.headerLeft}>
-          <View style={[s.headerAvatar, { backgroundColor: 'transparent', borderWidth: 0 }]}>
-            <Image source={MascotImages.coach} style={{ width: 56, height: 56, resizeMode: 'contain', position: 'absolute', bottom: -5, left: -8 }} />
-          </View>
           <View>
             <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>FORGE Coach</Text>
             <View style={s.onlineDot}>
@@ -280,7 +277,7 @@ export default function ChatScreen() {
       {isTyping && (
         <View style={s.typingWrap}>
           <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
-            <Image source={MascotImages.coach} style={{ width: 44, height: 44, resizeMode: 'contain', position: 'absolute', bottom: 0, left: -8 }} />
+            <Image source={isDark ? MascotImages.coach_dark : MascotImages.coach_light} style={{ width: 44, height: 44, resizeMode: 'contain', position: 'absolute', bottom: -10, left: -8 }} />
           </View>
           <View style={s.bubbleAi}>
             <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
