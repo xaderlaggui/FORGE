@@ -37,6 +37,8 @@ yarn-error.*
 google-services.json
 GoogleService-Info.plist
 firebase-service-account.json
+# AI prompts (keep system prompts private)
+constants/prompts.ts
 
 # typescript
 *.tsbuildinfo

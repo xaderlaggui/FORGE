@@ -25,17 +25,9 @@ import { useWorkouts } from '../hooks/useWorkouts';
 import { groqComplete, GroqMessage } from '../services/groq';
 import { supabase } from '../services/supabase';
 import { useAuthStore } from '../stores/authStore';
+import { COACH_SYSTEM_PROMPT } from '../constants/prompts';
 
-const BASE_SYSTEM_PROMPT = `You are FORGE Coach — an energetic, supportive AI fitness coach inside a workout tracking app.
 
-BEHAVIOR RULES:
-1. Keep replies SHORT (1–3 sentences). Be punchy and motivating.
-2. If the user describes any physical activity (walking, running, gym, cycling, etc.), you MUST respond with valid JSON in this exact format — nothing else, no extra text:
-   {"action":"log_activity","activityName":"<name>","type":"<strength|run|walk|cardio>","durationMinutes":<number>,"distanceKm":<number or null>,"notes":"<optional notes>","message":"<your motivating reply>"}
-   - "type" MUST be one of: "strength", "run", "walk", or "cardio".
-   - "distanceKm" should be a number if the user mentions distance (in km). Convert miles to km if needed. Use null if no distance is mentioned.
-3. For all other messages, reply as plain conversational text (no JSON).
-4. Never use markdown. Never use asterisks.`;
 
 interface LoggedActivity {
   activityName: string;
@@ -95,7 +87,7 @@ export default function ChatScreen() {
 
     const recentWorkout = workouts?.[0];
     const caloriesEaten = nutrition?.totalCalories ?? 0;
-    const dynamicPrompt = `${BASE_SYSTEM_PROMPT}\n\nCURRENT ATHLETE CONTEXT:\nAthlete: ${user?.displayName || 'Athlete'}\nStreak: ${(user as any)?.streak ?? 0} days\nCalories logged today: ${caloriesEaten} kcal\nLast workout: ${recentWorkout ? (recentWorkout.notes || `${recentWorkout.exercises.length} exercises on ${recentWorkout.date}`) : 'None recently'}\nUse this context to personalize your advice when relevant!`;
+    const dynamicPrompt = `${COACH_SYSTEM_PROMPT}\n\nCURRENT ATHLETE CONTEXT:\nAthlete: ${user?.displayName || 'Athlete'}\nStreak: ${(user as any)?.streak ?? 0} days\nCalories logged today: ${caloriesEaten} kcal\nLast workout: ${recentWorkout ? (recentWorkout.notes || `${recentWorkout.exercises.length} exercises on ${recentWorkout.date}`) : 'None recently'}\nUse this context to personalize your advice when relevant!`;
 
     try {
       const raw = await groqComplete(
