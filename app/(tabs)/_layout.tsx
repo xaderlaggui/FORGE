@@ -1,19 +1,19 @@
+import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { useUIStore } from '@/stores/uiStore';
+import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import { Tabs, useRouter } from 'expo-router';
-import { Dumbbell, Home, PieChart, Sparkles, Settings, TrendingUp } from 'lucide-react-native';
+import { Dumbbell, Home, PieChart, Settings, Sparkles, TrendingUp } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
-import Animated, { useAnimatedStyle, useDerivedValue, withTiming, Easing } from 'react-native-reanimated';
-import { BottomTabBar } from '@react-navigation/bottom-tabs';
-import { useUIStore } from '@/stores/uiStore';
 
 function ForgeFAB() {
-    const { T } = useForgeTheme();
-    const styles = useStyles(T);
+  const { T } = useForgeTheme();
+  const styles = useStyles(T);
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  
+
   const aiColor = '#BF5AF2'; // Distinct purple for AI Coach
 
   const isTabBarVisible = useUIStore(s => s.isTabBarVisible);
@@ -28,29 +28,29 @@ function ForgeFAB() {
     <Animated.View style={[styles.fabWrapper, animatedStyle, { bottom: 104 }]}>
       <TouchableOpacity
         style={[styles.fab, { backgroundColor: aiColor, shadowColor: aiColor }]}
-      onPress={() => router.push('/chat')}
-      activeOpacity={0.85}
-      accessibilityLabel="AI Coach"
-      accessibilityRole="button"
-    >
-      <Sparkles size={24} color="#fff" strokeWidth={2.5} />
-    </TouchableOpacity>
+        onPress={() => router.push('/chat')}
+        activeOpacity={0.85}
+        accessibilityLabel="AI Coach"
+        accessibilityRole="button"
+      >
+        <Sparkles size={24} color="#fff" strokeWidth={2.5} />
+      </TouchableOpacity>
     </Animated.View>
   );
 }
 
 export default function TabLayout() {
-    const { T } = useForgeTheme();
-    const styles = useStyles(T);
-    const isTabBarVisible = useUIStore(s => s.isTabBarVisible);
-    const insets = useSafeAreaInsets();
-    
-    const translateY = useDerivedValue(() => {
-      return withTiming(isTabBarVisible ? 0 : 150, { duration: 300, easing: Easing.out(Easing.exp) });
-    }, [isTabBarVisible]);
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ translateY: translateY.value }]
-    }));
+  const { T } = useForgeTheme();
+  const styles = useStyles(T);
+  const isTabBarVisible = useUIStore(s => s.isTabBarVisible);
+  const insets = useSafeAreaInsets();
+
+  const translateY = useDerivedValue(() => {
+    return withTiming(isTabBarVisible ? 0 : 150, { duration: 300, easing: Easing.out(Easing.exp) });
+  }, [isTabBarVisible]);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }]
+  }));
 
   return (
     <View style={{ flex: 1, backgroundColor: T.colors.bg0 }}>
@@ -124,7 +124,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      
+
       {/* Floating Action Button (Global) */}
       <ForgeFAB />
     </View>
@@ -132,23 +132,23 @@ export default function TabLayout() {
 }
 
 const useStyles = (T: any) => StyleSheet.create({
-          fabWrapper: {
-            position: 'absolute',
-            right: T.spacing.page,
-            zIndex: 100,
-          },
-          fab: {
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-            backgroundColor: T.colors.forge,
-            alignItems: 'center',
-            justifyContent: 'center',
-            shadowColor: T.colors.forge,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.35,
-            shadowRadius: 12,
-            elevation: 8,
-            zIndex: 100,
-          },
-        });
+  fabWrapper: {
+    position: 'absolute',
+    right: T.spacing.page,
+    zIndex: 100,
+  },
+  fab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: T.colors.forge,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: T.colors.forge,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+    zIndex: 100,
+  },
+});
