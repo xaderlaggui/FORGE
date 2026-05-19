@@ -1,17 +1,22 @@
+import { useForgeTheme } from '@/hooks/useForgeTheme';
+import { useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import { useRouter } from 'expo-router';
+import { ChevronLeft, Sparkles } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, ActivityIndicator, Alert,
+  ActivityIndicator, Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { ChevronLeft, Sparkles, Check } from 'lucide-react-native';
-import { useForgeTheme } from '@/hooks/useForgeTheme';
-import { useAuthStore } from '../stores/authStore';
-import { supabase } from '../services/supabase';
-import { generateFullPlan, GeneratedPlan, GeneratedWorkoutDay } from '../services/GeneratorEngine';
-import dayjs from 'dayjs';
 import { BearMascot } from '../components/forge/BearMascot';
-import { useQueryClient } from '@tanstack/react-query';
+import { GeneratedPlan, GeneratedWorkoutDay, generateFullPlan } from '../services/GeneratorEngine';
+import { supabase } from '../services/supabase';
+import { useAuthStore } from '../stores/authStore';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const GOALS = ['Weight Loss', 'Muscle Gain', 'Endurance', 'Flexibility', 'General Fitness'];
@@ -150,23 +155,23 @@ function SliderRow({ value, min, max, step, onChange, T }: {
 // ─── AI Rationale Card ────────────────────────────────────────────────────────
 function CoachMessageCard({ message, T }: { message: string, T: any }) {
   return (
-    <View style={{ 
-      flexDirection: 'row', 
-      backgroundColor: T.colors.bg1, 
-      borderRadius: 16, 
-      overflow: 'hidden', 
-      borderWidth: 1, 
-      borderColor: T.colors.b1, 
+    <View style={{
+      flexDirection: 'row',
+      backgroundColor: T.colors.bg1,
+      borderRadius: 16,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: T.colors.b1,
       marginBottom: 24,
       shadowColor: T.colors.forge,
       shadowOpacity: 0.06,
       shadowRadius: 12,
       elevation: 3,
     }}>
-      <View style={{ 
-        width: 90, 
-        backgroundColor: T.colors.forgeDim, 
-        justifyContent: 'flex-end', 
+      <View style={{
+        width: 90,
+        backgroundColor: T.colors.forgeDim,
+        justifyContent: 'flex-end',
         alignItems: 'center',
         paddingTop: 16
       }}>
@@ -294,8 +299,8 @@ export default function AIPlanScreen() {
         dietPreference: (user as any).dietPreference ?? 'anything',
         equipmentAccess: selectedEquipment.includes('Full Gym') ? 'full'
           : selectedEquipment.includes('Barbell') ? 'full'
-          : selectedEquipment.includes('Dumbbells') ? 'dumbbells'
-          : 'bodyweight',
+            : selectedEquipment.includes('Dumbbells') ? 'dumbbells'
+              : 'bodyweight',
         experienceLevel: experience,
         daysPerWeek,
         sessionMin,
@@ -320,10 +325,10 @@ export default function AIPlanScreen() {
         saved_at: new Date().toISOString(),
       }, { onConflict: 'user_id,date' });
       if (error) throw error;
-      
+
       // Invalidate the activePlan query so the Dashboard and Planner instantly update
       await queryClient.invalidateQueries({ queryKey: ['activePlan', user.uid] });
-      
+
       Alert.alert('Plan Activated!', 'Your personalized plan is now live in the Planner.', [
         { text: "Let's go!", onPress: () => router.back() },
       ]);
