@@ -53,16 +53,25 @@ export function useStreak(restDayIndices: number[] = []) {
     }
 
     let count = 0;
+    let pendingRestDays = 0; // rest days we've passed but not yet confirmed
+
     for (let i = 0; i < 365; i++) {
       const dateStr = formatDate(cursor);
       const isWorkoutDay = activeDays.has(dateStr);
       const isRestDay = restSet.has(toMonIdx(cursor));
 
-      if (isWorkoutDay || isRestDay) {
-        count++;
+      if (isWorkoutDay) {
+        // Confirm any pending rest days that were bridging toward this workout
+        count += 1 + pendingRestDays;
+        pendingRestDays = 0;
+        cursor.setDate(cursor.getDate() - 1);
+      } else if (isRestDay) {
+        // Tentatively hold this rest day — only confirm it if a workout follows
+        pendingRestDays++;
         cursor.setDate(cursor.getDate() - 1);
       } else {
         break; // Missed a non-rest workout day → streak ends
+        // Note: pendingRestDays are intentionally discarded here (trailing rest days don't count)
       }
     }
 
