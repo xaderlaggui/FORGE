@@ -178,7 +178,7 @@ export default function ChatScreen() {
     <View style={[s.msgRow, item.isAi ? s.msgRowAi : s.msgRowUser]}>
       {item.isAi && (
         <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
-          <Image source={isDark ? MascotImages.coach_dark : MascotImages.coach_light} style={{ width: 43, height: 43, resizeMode: 'contain', position: 'absolute', bottom: -3, left: - 13 }} />
+          <Image source={isDark ? MascotImages.coach_dark : MascotImages.coach_light} style={{ width: 43, height: 38, resizeMode: 'contain', position: 'absolute', bottom: -1, left: - 13 }} />
         </View>
       )}
       <View style={[s.bubble, item.isAi ? s.bubbleAi : s.bubbleUser]}>
