@@ -1,5 +1,5 @@
 export const MascotImages = {
-  coach_light: require('../assets/images/chatbot-light.png'),
+  coach: require('../assets/images/chatbot-light.png'),
   coach_dark: require('../assets/images/chatbot-dark.png'),
   hero: require('../assets/images/welcome.png'),
   nutrition: require('../assets/images/nutrition-removebg.png'),

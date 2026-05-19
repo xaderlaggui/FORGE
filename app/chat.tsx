@@ -178,7 +178,7 @@ export default function ChatScreen() {
     <View style={[s.msgRow, item.isAi ? s.msgRowAi : s.msgRowUser]}>
       {item.isAi && (
         <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
-          <Image source={MascotImages.coach_light} style={{ width: 70, height: 70, resizeMode: 'contain', position: 'absolute', bottom: -12, left: -22 }} />
+          <Image source={MascotImages.coach} style={{ width: 43, height: 38, resizeMode: 'contain', position: 'absolute', bottom: -1, left: - 13 }} />
         </View>
       )}
       <View style={[s.bubble, item.isAi ? s.bubbleAi : s.bubbleUser]}>
@@ -277,7 +277,7 @@ export default function ChatScreen() {
       {isTyping && (
         <View style={s.typingWrap}>
           <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
-            <Image source={MascotImages.coach_light} style={{ width: 44, height: 44, resizeMode: 'contain', position: 'absolute', bottom: -10, left: -8 }} />
+            <Image source={MascotImages.coach} style={{ width: 44, height: 44, resizeMode: 'contain', position: 'absolute', bottom: -10, left: -8 }} />
           </View>
           <View style={s.bubbleAi}>
             <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
