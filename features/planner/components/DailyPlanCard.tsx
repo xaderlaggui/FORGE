@@ -1,7 +1,7 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Body from 'react-native-body-highlighter';
 import { BearMascot } from '../../../components/forge/BearMascot';
 import { ForgeButton } from '../../../components/forge/ForgeButton';
@@ -46,7 +46,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
   // Helper to get heatmap data for either logged or planned workout
   const getHeatmapData = (workoutObj: any) => {
     if (!workoutObj) return [];
-    
+
     // Feature 3: Highlight based on session type if title exists
     const title = workoutObj.title?.toLowerCase() || '';
     if (title.includes('push')) {
@@ -98,7 +98,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
             variant="secondary"
           />
         </View>
-        <BearMascot variant="APPROVING" size="lg" animate style={{ position: 'absolute', right: -8, top: -25, zIndex: 10 }} />
+        <BearMascot variant="APPROVING" size="lg" style={{ position: 'absolute', right: -8, top: -1, zIndex: 10 }} />
       </View>
     );
   }
@@ -133,7 +133,6 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
             pulse
           />
         </View>
-        <BearMascot variant="READY" size="lg" animate style={{ position: 'absolute', right: -8, top: -25, zIndex: 10 }} />
       </View>
     );
   }

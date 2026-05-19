@@ -61,7 +61,7 @@ export default function ActiveWorkoutScreen() {
   if (summary) {
     return (
       <View style={[styles.container, { padding: 24, justifyContent: 'center', alignItems: 'center' }]}>
-        <BearMascot variant="HYPED" size="xl" animate />
+        <BearMascot variant="HYPED" size="xl" />
         <Text style={{ fontSize: 36, fontWeight: '900', color: T.colors.t1, marginTop: 32, letterSpacing: 1 }}>WORKOUT</Text>
         <Text style={{ fontSize: 36, fontWeight: '900', color: T.colors.forge, letterSpacing: 1 }}>COMPLETE!</Text>
 
@@ -121,7 +121,7 @@ export default function ActiveWorkoutScreen() {
         {!session.workoutStarted ? (
           <View style={styles.startOverlay}>
             <View style={{ alignItems: 'center', marginBottom: 20 }}>
-              <BearMascot variant="READY" size="xl" animate />
+              <BearMascot variant="READY" size="xl" />
             </View>
             <Text style={styles.exerciseTitle} maxFontSizeMultiplier={1.2}>
               {session.workoutTitle}
@@ -132,7 +132,7 @@ export default function ActiveWorkoutScreen() {
           <>
             {/* Feature 4: Volume Tracker */}
             <View style={{ alignItems: 'center', marginVertical: 10 }}>
-              <BearMascot variant="LIFTING" size="md" animate />
+              <BearMascot variant="LIFTING" size="md" />
             </View>
             <View style={styles.volumeTracker}>
               <View style={styles.volStat}>

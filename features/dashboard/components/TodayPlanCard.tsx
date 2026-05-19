@@ -91,14 +91,13 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
       <BearMascot
         variant={bearMood}
         size="lg"
-        animate={!isCompleted}
         style={{
           position: 'absolute',
           right: -10,
-          bottom: 30, // Overflow bottom slightly
+          bottom: 22, // Overflow bottom slightly
         }}
         imageStyle={{
-          height: 200
+          height: 178
         }}
       />
     </View>
