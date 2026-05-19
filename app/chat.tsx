@@ -178,7 +178,7 @@ export default function ChatScreen() {
     <View style={[s.msgRow, item.isAi ? s.msgRowAi : s.msgRowUser]}>
       {item.isAi && (
         <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
-          <Image source={MascotImages.coach} style={{ width: 43, height: 38, resizeMode: 'contain', position: 'absolute', bottom: -1, left: - 13 }} />
+          <Image source={MascotImages.coach} style={{ width: 45, height: 36, resizeMode: 'contain', position: 'absolute', bottom: 1, left: - 13 }} />
         </View>
       )}
       <View style={[s.bubble, item.isAi ? s.bubbleAi : s.bubbleUser]}>
@@ -277,9 +277,9 @@ export default function ChatScreen() {
       {isTyping && (
         <View style={s.typingWrap}>
           <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
-            <Image source={MascotImages.coach} style={{ width: 44, height: 44, resizeMode: 'contain', position: 'absolute', bottom: -10, left: -8 }} />
+            <Image source={MascotImages.coach} style={{ width: 40, height: 35, resizeMode: 'contain', position: 'absolute', bottom: -5, left: -8 }} />
           </View>
-          <View style={s.bubbleAi}>
+          <View style={[s.bubble, s.bubbleAi, { minHeight: 38, justifyContent: 'center', paddingVertical: 0 }]}>
             <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
               <Animated.View style={[s.typingDot, dot1Style]} />
               <Animated.View style={[s.typingDot, dot2Style]} />
