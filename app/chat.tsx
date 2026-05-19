@@ -40,7 +40,7 @@ interface LoggedActivity {
 type Message = { id: string; text: string; isAi: boolean; logged?: boolean; activity?: LoggedActivity };
 
 export default function ChatScreen() {
-  const { T, isDark } = useForgeTheme();
+  const { T } = useForgeTheme();
   const s = useS(T);
   const router = useRouter();
   const { user } = useAuthStore();
@@ -178,7 +178,7 @@ export default function ChatScreen() {
     <View style={[s.msgRow, item.isAi ? s.msgRowAi : s.msgRowUser]}>
       {item.isAi && (
         <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
-          <Image source={isDark ? MascotImages.coach_dark : MascotImages.coach_light} style={{ width: 43, height: 38, resizeMode: 'contain', position: 'absolute', bottom: -1, left: - 13 }} />
+          <Image source={MascotImages.coach_light} style={{ width: 70, height: 70, resizeMode: 'contain', position: 'absolute', bottom: -12, left: -22 }} />
         </View>
       )}
       <View style={[s.bubble, item.isAi ? s.bubbleAi : s.bubbleUser]}>
@@ -253,7 +253,7 @@ export default function ChatScreen() {
             <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>FORGE Coach</Text>
             <View style={s.onlineDot}>
               <View style={s.onlineDotCircle} />
-              <Text style={s.onlineText} maxFontSizeMultiplier={1.2}>Online · AI Powered Coach</Text>
+              <Text style={s.onlineText} maxFontSizeMultiplier={1.2}>Online · Groq AI (Llama 3.3)</Text>
             </View>
           </View>
         </View>
@@ -277,7 +277,7 @@ export default function ChatScreen() {
       {isTyping && (
         <View style={s.typingWrap}>
           <View style={[s.avatarWrap, { backgroundColor: 'transparent' }]}>
-            <Image source={isDark ? MascotImages.coach_dark : MascotImages.coach_light} style={{ width: 44, height: 44, resizeMode: 'contain', position: 'absolute', bottom: -10, left: -8 }} />
+            <Image source={MascotImages.coach_light} style={{ width: 44, height: 44, resizeMode: 'contain', position: 'absolute', bottom: -10, left: -8 }} />
           </View>
           <View style={s.bubbleAi}>
             <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
