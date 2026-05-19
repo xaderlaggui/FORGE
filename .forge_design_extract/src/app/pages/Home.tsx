@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
-import { Sun, Moon, MessageSquare, Play, Flame, ChevronRight } from "lucide-react";
-import { motion } from "motion/react";
+import { ChevronRight, Flame, MessageSquare, Moon, Play, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 export default function Home() {
@@ -40,11 +39,11 @@ export default function Home() {
       <div className="relative bg-gradient-to-br from-[#1C1C20] to-[#0A0A0B] rounded-2xl border border-b1 p-[18px] overflow-hidden">
         {/* Decorative Blob */}
         <div className="absolute -top-[30px] -right-[20px] w-[100px] h-[100px] bg-forge/10 rounded-full blur-2xl"></div>
-        
+
         <div className="text-[10px] font-semibold text-forge tracking-[0.08em] uppercase mb-1">📅 Today's Plan</div>
         <div className="font-grotesk text-[18px] font-semibold text-white mb-0.5">Upper Body Power</div>
         <div className="text-[12px] text-gray-400 mb-3.5">6 exercises · 45 min · Chest / Triceps / Shoulders</div>
-        
+
         <div className="flex gap-[6px] mb-4">
           {["Chest", "Triceps", "Shoulders"].map(tag => (
             <span key={tag} className="inline-block px-[10px] py-[3px] rounded-full bg-[#2A2A2E] text-white text-[11px] font-medium">
@@ -52,8 +51,8 @@ export default function Home() {
             </span>
           ))}
         </div>
-        
-        <button 
+
+        <button
           onClick={() => navigate('/workout')}
           className="w-full bg-forge text-white border-none rounded-xl text-[15px] font-semibold p-[14px] flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
         >
