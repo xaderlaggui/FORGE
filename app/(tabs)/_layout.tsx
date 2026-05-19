@@ -4,6 +4,9 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import Animated, { useAnimatedStyle, useDerivedValue, withTiming, Easing } from 'react-native-reanimated';
+import { BottomTabBar } from '@react-navigation/bottom-tabs';
+import { useUIStore } from '@/stores/uiStore';
 
 function ForgeFAB() {
     const { T } = useForgeTheme();
@@ -13,9 +16,18 @@ function ForgeFAB() {
   
   const aiColor = '#BF5AF2'; // Distinct purple for AI Coach
 
+  const isTabBarVisible = useUIStore(s => s.isTabBarVisible);
+  const translateY = useDerivedValue(() => {
+    return withTiming(isTabBarVisible ? 0 : 150, { duration: 300, easing: Easing.out(Easing.exp) });
+  }, [isTabBarVisible]);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }]
+  }));
+
   return (
-    <TouchableOpacity
-      style={[styles.fab, { bottom: 85 + insets.bottom, backgroundColor: aiColor, shadowColor: aiColor }]}
+    <Animated.View style={[styles.fabWrapper, animatedStyle, { bottom: 85 + insets.bottom }]}>
+      <TouchableOpacity
+        style={[styles.fab, { backgroundColor: aiColor, shadowColor: aiColor }]}
       onPress={() => router.push('/chat')}
       activeOpacity={0.85}
       accessibilityLabel="AI Coach"
@@ -23,15 +35,30 @@ function ForgeFAB() {
     >
       <Sparkles size={24} color="#fff" strokeWidth={2.5} />
     </TouchableOpacity>
+    </Animated.View>
   );
 }
 
 export default function TabLayout() {
     const { T } = useForgeTheme();
     const styles = useStyles(T);
+    const isTabBarVisible = useUIStore(s => s.isTabBarVisible);
+    
+    const translateY = useDerivedValue(() => {
+      return withTiming(isTabBarVisible ? 0 : 150, { duration: 300, easing: Easing.out(Easing.exp) });
+    }, [isTabBarVisible]);
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [{ translateY: translateY.value }]
+    }));
+
   return (
     <View style={{ flex: 1, backgroundColor: T.colors.bg0 }}>
       <Tabs
+        tabBar={(props) => (
+          <Animated.View style={[{ position: 'absolute', bottom: 0, left: 0, right: 0 }, animatedStyle]}>
+            <BottomTabBar {...props} />
+          </Animated.View>
+        )}
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: T.colors.forge,
@@ -99,9 +126,12 @@ export default function TabLayout() {
 }
 
 const useStyles = (T: any) => StyleSheet.create({
-          fab: {
+          fabWrapper: {
             position: 'absolute',
             right: T.spacing.page,
+            zIndex: 100,
+          },
+          fab: {
             width: 56,
             height: 56,
             borderRadius: 28,

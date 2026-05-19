@@ -13,10 +13,13 @@ import { QuickStatsRow } from '../../features/dashboard/components/QuickStatsRow
 import { RecentWorkoutsList } from '../../features/dashboard/components/RecentWorkoutsList';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 
+import { useScrollToHideNav } from '../../hooks/useScrollToHideNav';
+
 export default function HomeScreen() {
   const { T } = useForgeTheme();
   const styles = useStyles(T);
   const router = useRouter();
+  const { onScroll } = useScrollToHideNav();
   
   // Clean Architecture: Fetch all state/aggregates via a unified hook
   const data = useDashboardData();
@@ -26,6 +29,8 @@ export default function HomeScreen() {
       style={styles.container}
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
+      onScroll={onScroll}
+      scrollEventThrottle={16}
     >
       {/* ── Composition: Header & Greeting ── */}
       <DashboardHeader 

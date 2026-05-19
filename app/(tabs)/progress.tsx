@@ -11,10 +11,13 @@ import { VolumeChart } from '../../features/progress/components/VolumeChart';
 import { WeightChart } from '../../features/progress/components/WeightChart';
 import { useProgressData } from '../../features/progress/hooks/useProgressData';
 
+import { useScrollToHideNav } from '../../hooks/useScrollToHideNav';
+
 export default function ProgressScreen() {
   const { T } = useForgeTheme();
   const s = useS(T);
   const router = useRouter();
+  const { onScroll } = useScrollToHideNav();
 
   // Clean Architecture: Hook handles all formatting, storage logic, and firestore logic
   const {
@@ -32,7 +35,7 @@ export default function ProgressScreen() {
   const [weightTimeframe, setWeightTimeframe] = useState('7D');
 
   return (
-    <ScrollView style={s.container} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+    <ScrollView style={s.container} contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16}>
 
       {/* ── Composition: Header ── */}
       <View style={s.header}>

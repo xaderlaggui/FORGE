@@ -12,10 +12,13 @@ import { MealLogList } from '../../features/nutrition/components/MealLogList';
 import { NutritionSkeleton } from '../../features/nutrition/components/NutritionSkeleton';
 import { useDailyNutrition } from '../../features/nutrition/hooks/useDailyNutrition';
 
+import { useScrollToHideNav } from '../../hooks/useScrollToHideNav';
+
 export default function NutritionScreen() {
   const { T } = useForgeTheme();
   const s = useS(T);
   const router = useRouter();
+  const { onScroll } = useScrollToHideNav();
 
   // Clean Architecture: Logic and data fetching are handled by the hook
   const { isLoading, nutrition, aggregates, expandedMeal, setExpandedMeal, activePlan, updateNutrition } = useDailyNutrition();
@@ -33,6 +36,8 @@ export default function NutritionScreen() {
       style={s.container}
       contentContainerStyle={s.content}
       showsVerticalScrollIndicator={false}
+      onScroll={onScroll}
+      scrollEventThrottle={16}
     >
       {/* ── Composition: Header ── */}
       <View style={s.header}>

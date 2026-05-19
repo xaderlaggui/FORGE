@@ -11,9 +11,12 @@ import { WeeklyCalendar } from '../../features/planner/components/WeeklyCalendar
 import { usePlannerData } from '../../features/planner/hooks/usePlannerData';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 
+import { useScrollToHideNav } from '../../hooks/useScrollToHideNav';
+
 export default function WorkoutScreen() {
     const { T } = useForgeTheme();
     const s = useS(T);
+    const { onScroll } = useScrollToHideNav();
   // Clean Architecture: Hook handles all state, formatting, and fetching
   const {
     activeTab, setActiveTab,
@@ -45,7 +48,7 @@ export default function WorkoutScreen() {
       ) : activeTab === 'Routines' ? (
         <RoutineList />
       ) : (
-        <ScrollView contentContainerStyle={s.plannerContainer} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={s.plannerContainer} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16}>
           <WeeklyCalendar
             days={days}
             activeDayIdx={activeDayIdx}

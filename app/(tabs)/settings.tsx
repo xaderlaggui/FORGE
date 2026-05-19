@@ -66,6 +66,8 @@ function SettingRow({ T, icon, label, onPress, isDanger = false }: { T: any; ico
   );
 }
 
+import { useScrollToHideNav } from '../../hooks/useScrollToHideNav';
+
 // ─── Main Screen ─────────────────────────────────────────
 export default function SettingsScreen() {
   const router = useRouter();
@@ -74,6 +76,7 @@ export default function SettingsScreen() {
   const { T } = useForgeTheme();
   const s = useS(T);
   const [seeding, setSeeding] = useState(false);
+  const { onScroll } = useScrollToHideNav();
 
   const handleLogout = async () => {
     Alert.alert('Log Out', 'Are you sure you want to sign out?', [
@@ -104,7 +107,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView style={[s.container, { backgroundColor: T.colors.bg0 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+    <ScrollView style={[s.container, { backgroundColor: T.colors.bg0 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16}>
       {/* ── Header ── */}
       <View style={[s.header, { borderBottomColor: T.colors.b1, backgroundColor: T.colors.bg0 }]}>
         <Text style={[s.headerTitle, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>Settings</Text>

@@ -175,7 +175,7 @@ function CoachMessageCard({ message, T }: { message: string, T: any }) {
         alignItems: 'center',
         paddingTop: 16
       }}>
-        <BearMascot variant="SMUG" size="md" style={{ marginBottom: -8, marginLeft: 8 }} />
+        <BearMascot variant="SMUG" size="xl" style={{ position: 'absolute', bottom: -30, left: -70 }} />
       </View>
       <View style={{ flex: 1, padding: 16 }}>
         <Text style={{ fontSize: 14, fontWeight: '800', color: T.colors.forge, marginBottom: 6 }}>Coach AI</Text>
