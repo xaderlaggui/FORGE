@@ -25,7 +25,7 @@ function ForgeFAB() {
   }));
 
   return (
-    <Animated.View style={[styles.fabWrapper, animatedStyle, { bottom: 85 + insets.bottom }]}>
+    <Animated.View style={[styles.fabWrapper, animatedStyle, { bottom: 104 }]}>
       <TouchableOpacity
         style={[styles.fab, { backgroundColor: aiColor, shadowColor: aiColor }]}
       onPress={() => router.push('/chat')}
@@ -43,6 +43,7 @@ export default function TabLayout() {
     const { T } = useForgeTheme();
     const styles = useStyles(T);
     const isTabBarVisible = useUIStore(s => s.isTabBarVisible);
+    const insets = useSafeAreaInsets();
     
     const translateY = useDerivedValue(() => {
       return withTiming(isTabBarVisible ? 0 : 150, { duration: 300, easing: Easing.out(Easing.exp) });
@@ -55,7 +56,7 @@ export default function TabLayout() {
     <View style={{ flex: 1, backgroundColor: T.colors.bg0 }}>
       <Tabs
         tabBar={(props) => (
-          <Animated.View style={[{ position: 'absolute', bottom: 0, left: 0, right: 0 }, animatedStyle]}>
+          <Animated.View style={[{ position: 'absolute', bottom: 24, left: 24, right: 24, zIndex: 50 }, animatedStyle]}>
             <BottomTabBar {...props} />
           </Animated.View>
         )}
@@ -64,21 +65,26 @@ export default function TabLayout() {
           tabBarActiveTintColor: T.colors.forge,
           tabBarInactiveTintColor: T.colors.t3,
           tabBarStyle: {
-            backgroundColor: T.colors.bg0, // bg0 with slight transparency for blur effect
-            borderTopWidth: 0.5,
-            borderTopColor: T.colors.b1,
-            height: 85,
-            paddingBottom: 24,
-            paddingTop: 12,
-            position: 'absolute', // Allows content to flow underneath if needed
-            bottom: 0,
-            left: 0,
-            right: 0,
+            backgroundColor: T.colors.bg1,
+            borderWidth: 1,
+            borderColor: T.colors.b1,
+            height: 64,
+            paddingBottom: 0,
+            paddingTop: 0,
+            borderRadius: 32,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.3,
+            shadowRadius: 12,
+            elevation: 10,
           },
           tabBarLabelStyle: {
             fontSize: 10,
             fontWeight: '600',
-            marginTop: 4,
+            paddingBottom: 8,
+          },
+          tabBarItemStyle: {
+            paddingTop: 8,
           },
         }}
       >
