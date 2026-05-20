@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../../../services/supabase';
+import { useState } from 'react';
 import { useNutrition } from '../../../hooks/useNutrition';
+import type { GeneratedPlan } from '../../../services/GeneratorEngine';
+import { supabase } from '../../../services/supabase';
 import { useAuthStore } from '../../../stores/authStore';
 import { DailyAggregates } from '../types';
-import type { GeneratedPlan } from '../../../services/GeneratorEngine';
 
 export function useDailyNutrition() {
   const { user } = useAuthStore();
@@ -30,25 +30,25 @@ export function useDailyNutrition() {
   });
 
   if (isLoadingNutrition || !nutrition) {
-    return { isLoading: true, nutrition: null, aggregates: null, expandedMeal, setExpandedMeal, activePlan: null, updateNutrition: async () => {} };
+    return { isLoading: true, nutrition: null, aggregates: null, expandedMeal, setExpandedMeal, activePlan: null, updateNutrition: async () => { } };
   }
 
   const totalProtein = nutrition.meals.reduce((sum, m) => sum + (m.protein ?? 0), 0);
-  const totalCarbs   = nutrition.meals.reduce((sum, m) => sum + (m.carbs   ?? 0), 0);
-  const totalFat     = nutrition.meals.reduce((sum, m) => sum + (m.fat     ?? 0), 0);
-  const totalFiber   = nutrition.meals.reduce((sum, m) => sum + (m.fiber   ?? 0), 0);
-  const totalSugar   = nutrition.meals.reduce((sum, m) => sum + (m.sugar   ?? 0), 0);
-  const totalCal     = nutrition.meals.reduce((sum, m) => sum + (m.calories ?? 0), 0);
-  const waterMl      = nutrition.waterMl ?? 0;
-  const waterLiters  = waterMl / 1000;
+  const totalCarbs = nutrition.meals.reduce((sum, m) => sum + (m.carbs ?? 0), 0);
+  const totalFat = nutrition.meals.reduce((sum, m) => sum + (m.fat ?? 0), 0);
+  const totalFiber = nutrition.meals.reduce((sum, m) => sum + (m.fiber ?? 0), 0);
+  const totalSugar = nutrition.meals.reduce((sum, m) => sum + (m.sugar ?? 0), 0);
+  const totalCal = nutrition.meals.reduce((sum, m) => sum + (m.calories ?? 0), 0);
+  const waterMl = nutrition.waterMl ?? 0;
+  const waterLiters = waterMl / 1000;
 
   // Goals from AI Plan or User Profile Fallback
   const targets = (user as any)?.targets_nutrition || (user as any)?.targets?.nutrition;
-  const goalCal     = activePlan?.mealPlan?.targetCalories ?? targets?.calories ?? 2500;
-  const goalProtein = activePlan?.mealPlan?.targetProtein  ?? targets?.protein  ?? 180;
-  const goalCarbs   = activePlan?.mealPlan?.targetCarbs    ?? targets?.carbs    ?? 250;
-  const goalFat     = activePlan?.mealPlan?.targetFat      ?? targets?.fat      ?? 70;
-  const goalWater   = 2.4;
+  const goalCal = activePlan?.mealPlan?.targetCalories ?? targets?.calories ?? 2500;
+  const goalProtein = activePlan?.mealPlan?.targetProtein ?? targets?.protein ?? 180;
+  const goalCarbs = activePlan?.mealPlan?.targetCarbs ?? targets?.carbs ?? 250;
+  const goalFat = activePlan?.mealPlan?.targetFat ?? targets?.fat ?? 70;
+  const goalWater = 2.4;
 
   const calPct = Math.min((totalCal / goalCal) * 100, 100);
   const remaining = Math.max(goalCal - totalCal, 0);
