@@ -1,6 +1,6 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Save, Sparkles, X, Droplets, Wheat, Leaf, Candy, Flame, Dumbbell, Star, AlertCircle } from 'lucide-react-native';
+import { AlertCircle, Candy, Droplets, Dumbbell, Flame, Leaf, Save, Sparkles, Star, Wheat, X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MEAL_ANALYSIS_SYSTEM_PROMPT } from '../constants/prompts';
@@ -258,8 +258,8 @@ export default function AddMealScreen() {
             )}
 
             <View style={s.headerWrap}>
-              <TextInput style={s.foodNameInput} value={foodName} onChangeText={setFoodName} placeholder="FOOD NAME" placeholderTextColor={T.colors.t3} textAlign="center" />
-              <TextInput style={s.portionInput} value={portion} onChangeText={setPortion} placeholder="portion" placeholderTextColor={T.colors.t3} textAlign="center" />
+              <TextInput style={s.foodNameInput} multiline={true} value={foodName} onChangeText={setFoodName} placeholder="FOOD NAME" placeholderTextColor={T.colors.t3} textAlign="center" />
+              <TextInput style={s.portionInput} multiline={true} value={portion} onChangeText={setPortion} placeholder="portion" placeholderTextColor={T.colors.t3} textAlign="center" />
             </View>
 
             <View style={s.caloriesRing}>
@@ -278,7 +278,7 @@ export default function AddMealScreen() {
                   <Text style={s.cardUnit}>g</Text>
                 </View>
               </View>
-              
+
               <View style={s.card}>
                 <View style={s.cardHeader}>
                   <Dumbbell size={16} color="#A29E9A" />
@@ -354,10 +354,10 @@ export default function AddMealScreen() {
 }
 
 const useS = (T: any) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: T.colors.bg0 },
+  container: { backgroundColor: T.colors.bg0 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingTop: 50, paddingBottom: 12,
+    paddingHorizontal: 16, paddingTop: 16, paddingBottom: 7,
   },
   iconBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 14, fontWeight: '700', color: T.colors.t3, letterSpacing: 1 },
@@ -377,8 +377,8 @@ const useS = (T: any) => StyleSheet.create({
   },
   aiBtnText: { color: '#000', fontSize: 16, fontWeight: '800', letterSpacing: 1 },
 
-  formWrap: { flex: 1, alignItems: 'center' },
-  
+  formWrap: { alignItems: 'center' },
+
   badgePill: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingVertical: 6, paddingHorizontal: 12, borderRadius: 999,
@@ -386,14 +386,14 @@ const useS = (T: any) => StyleSheet.create({
     shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 4
   },
   badgeText: { fontSize: 10, fontWeight: '800', letterSpacing: 1 },
-  
+
   headerWrap: { alignItems: 'center', marginBottom: 16, width: '100%' },
   foodNameInput: { fontSize: 24, fontWeight: '900', color: T.colors.t1, textTransform: 'uppercase', textAlign: 'center', width: '100%' },
   portionInput: { fontSize: 14, fontWeight: '600', color: T.colors.t3, textAlign: 'center', width: '100%', marginTop: 2 },
 
   caloriesRing: {
     alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 16, paddingHorizontal: 32,
+    paddingVertical: 20, paddingHorizontal: 32,
     borderRadius: 999,
     borderWidth: 1, borderColor: T.colors.forge + '4D',
     marginBottom: 20,
