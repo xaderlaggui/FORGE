@@ -22,7 +22,7 @@ function aggregateVolumeByDay(workouts: any[]): Record<string, number> {
   return map;
 }
 
-export function useProgressData() {
+export function useProgressData(weightTimeframe: string = '7D') {
   const { user, setUser } = useAuthStore();
   const { workouts } = useWorkouts();
   const [timeframe, setTimeframe] = useState<'1W' | '1M'>('1W');
@@ -47,15 +47,67 @@ export function useProgressData() {
   const startWeight   = rawHistory.length > 0 ? rawHistory[0].value : userWeightLbs;
   const weightDiff    = startWeight > 0 ? +(currentWeight - startWeight).toFixed(1) : 0;
 
-  const lineData = rawHistory.length > 0
-    ? rawHistory.map(item => ({ value: item.value, label: item.date.includes('T') || item.date.includes('-') ? dayjs(item.date).format('MM/DD') : item.date.slice(0, 5) }))
-    : [
-        { value: userWeightLbs, label: 'Start' },
-        { value: userWeightLbs, label: 'Today' }
-      ];
+  // Chronologically sort weight history
+  const sortedHistory = [...rawHistory].sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
 
-  const minVal = rawHistory.length > 0 ? Math.min(...rawHistory.map(r => r.value)) : userWeightLbs;
-  const maxVal = rawHistory.length > 0 ? Math.max(...rawHistory.map(r => r.value)) : userWeightLbs;
+  const todayDate = dayjs().startOf('day');
+  let startDate = todayDate.subtract(6, 'day');
+
+  if (weightTimeframe === '1M') {
+    startDate = todayDate.subtract(29, 'day');
+  } else if (weightTimeframe === '3M') {
+    startDate = todayDate.subtract(89, 'day');
+  } else if (weightTimeframe === 'YTD') {
+    startDate = dayjs().startOf('year');
+    if (todayDate.diff(startDate, 'day') < 6) {
+      startDate = todayDate.subtract(6, 'day');
+    }
+  }
+
+  const numDays = todayDate.diff(startDate, 'day') + 1;
+  const lineData: { value: number; label: string }[] = [];
+
+  for (let i = 0; i < numDays; i++) {
+    const currentDate = startDate.add(i, 'day');
+    
+    // Find last recorded weight on or before this day
+    const entriesBeforeOrOn = sortedHistory.filter(h => 
+      dayjs(h.date).startOf('day').isBefore(currentDate) || 
+      dayjs(h.date).startOf('day').isSame(currentDate, 'day')
+    );
+
+    let dailyWeight = userWeightLbs;
+    if (entriesBeforeOrOn.length > 0) {
+      dailyWeight = entriesBeforeOrOn[entriesBeforeOrOn.length - 1].value;
+    } else if (sortedHistory.length > 0) {
+      dailyWeight = sortedHistory[0].value;
+    }
+
+    let label = '';
+    if (weightTimeframe === '7D') {
+      label = currentDate.format('ddd').substring(0, 3);
+    } else if (weightTimeframe === '1M') {
+      if (i === 0 || i === Math.floor(numDays / 2) || i === numDays - 1) {
+        label = currentDate.format('D MMM');
+      }
+    } else if (weightTimeframe === '3M') {
+      if (i === 0 || i === Math.floor(numDays / 3) || i === Math.floor(2 * numDays / 3) || i === numDays - 1) {
+        label = currentDate.format('MMM D');
+      }
+    } else if (weightTimeframe === 'YTD') {
+      if (currentDate.date() === 1 || i === 0 || i === numDays - 1) {
+        label = currentDate.format('MMM');
+      }
+    }
+
+    lineData.push({
+      value: dailyWeight,
+      label
+    });
+  }
+
+  const minVal = lineData.length > 0 ? Math.min(...lineData.map(r => r.value)) : userWeightLbs;
+  const maxVal = lineData.length > 0 ? Math.max(...lineData.map(r => r.value)) : userWeightLbs;
 
   const bmiCalcText = user?.height && user?.weight
     ? `${Math.round(user.height)} x ${Math.round(user.weight)}`
@@ -156,7 +208,7 @@ export function useProgressData() {
       const existing = profile?.progress_photos || [];
       const updatedPhotos = [...existing];
       
-      if (targetIndex !== undefined && targetIndex >= 0 && targetIndex < updatedPhotos.length) {
+      if (typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex < updatedPhotos.length) {
         updatedPhotos[targetIndex] = { url: publicUrl, date: new Date().toISOString() };
       } else {
         updatedPhotos.push({ url: publicUrl, date: new Date().toISOString() });

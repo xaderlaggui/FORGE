@@ -71,6 +71,8 @@ export function WeightChart({
               stepValue={Math.max(1, Math.ceil((maxVal - minVal) / 4))}
               height={140}
               width={SCREEN_W - 72}
+              spacing={Math.max(2, (SCREEN_W - 105) / (lineData.length - 1 || 1))}
+              disableScroll
             />
           </View>
         </View>

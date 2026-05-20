@@ -51,11 +51,32 @@ export function VolumeChart({
   const s = useS(T);
   const isUp = volumeDiff >= 0;
 
+  const hasTrainingData = weeklyVolumeData.some(d => d.value > 0) || monthlyVolumeData.some(d => d.value > 0);
+
+  const displayWeeklyData = hasTrainingData ? weeklyVolumeData : [
+    { value: 4200, label: 'S', date: '', isToday: false, isFuture: false },
+    { value: 5800, label: 'M', date: '', isToday: false, isFuture: false },
+    { value: 0, label: 'T', date: '', isToday: false, isFuture: false },
+    { value: 6400, label: 'W', date: '', isToday: false, isFuture: false },
+    { value: 4900, label: 'T', date: '', isToday: false, isFuture: false },
+    { value: 7200, label: 'F', date: '', isToday: false, isFuture: false },
+    { value: 0, label: 'S', date: '', isToday: false, isFuture: false },
+  ];
+
+  const displayMonthlyData = hasTrainingData ? monthlyVolumeData : monthlyVolumeData.map((d, idx) => {
+    if (idx % 5 === 2) {
+      return { ...d, value: 5000 };
+    }
+    return d;
+  });
+
+  const displayMaxVol = hasTrainingData ? maxVol : 8000;
+
   // ── Weekly: 7-bar chart, fits container exactly ──────────────────────────
   const renderWeekly = () => (
     <View style={{ marginTop: 17, left: -6 }}>
       <BarChart
-        data={weeklyVolumeData.map(d => ({
+        data={displayWeeklyData.map(d => ({
           value: d.value,
           label: d.label,
           frontColor: (d as any).isFuture
@@ -84,7 +105,7 @@ export function VolumeChart({
         hideYAxisText
         xAxisLabelTextStyle={{ color: T.colors.t3, fontSize: 11, fontWeight: '700' }}
         noOfSections={3}
-        maxValue={maxVol > 0 ? maxVol * 1.3 : 100}
+        maxValue={displayMaxVol > 0 ? displayMaxVol * 1.3 : 100}
         height={130}
         width={CHART_W}
       />
@@ -101,13 +122,13 @@ export function VolumeChart({
 
   // ── Monthly: calendar grid, no scroll, fixed cell size ───────────────────
   const renderMonthly = () => {
-    const firstDOW = monthlyVolumeData.length > 0
-      ? new Date(monthlyVolumeData[0].date).getDay()
+    const firstDOW = displayMonthlyData.length > 0
+      ? new Date(displayMonthlyData[0].date).getDay()
       : 0;
 
     const padded: (DayData | null)[] = [
       ...Array(firstDOW).fill(null),
-      ...monthlyVolumeData,
+      ...displayMonthlyData,
     ];
     while (padded.length % 7 !== 0) padded.push(null);
 
@@ -172,7 +193,7 @@ export function VolumeChart({
       <View style={s.chartCard}>
 
         {/* Header */}
-        <View style={s.chartHeader}>
+        <View style={[s.chartHeader, !hasTrainingData && { opacity: 0.15 }]}>
           <View style={{ flex: 1 }}>
             <Text style={s.chartTitle} maxFontSizeMultiplier={1.2}>Total Volume</Text>
             <Text style={s.chartSub} maxFontSizeMultiplier={1.2}>
@@ -192,12 +213,13 @@ export function VolumeChart({
         </View>
 
         {/* Timeframe toggle */}
-        <View style={s.toggle}>
+        <View style={[s.toggle, !hasTrainingData && { opacity: 0.15 }]}>
           {(['1W', '1M'] as const).map(t => (
             <TouchableOpacity
               key={t}
               style={[s.toggleBtn, timeframe === t && s.toggleBtnActive]}
               onPress={() => setTimeframe(t)}
+              disabled={!hasTrainingData}
             >
               <Text style={[s.toggleText, timeframe === t && s.toggleTextActive]}>
                 {t === '1W' ? 'Week' : 'Month'}
@@ -206,7 +228,21 @@ export function VolumeChart({
           ))}
         </View>
 
-        {timeframe === '1W' ? renderWeekly() : renderMonthly()}
+        <View style={{ position: 'relative' }}>
+          <View style={!hasTrainingData && { opacity: 0.15 }}>
+            {timeframe === '1W' ? renderWeekly() : renderMonthly()}
+          </View>
+
+          {!hasTrainingData && (
+            <View style={s.overlayContainer}>
+              <TrendingUp size={28} color={T.colors.forge} style={{ marginBottom: 8 }} />
+              <Text style={s.overlayTitle} maxFontSizeMultiplier={1.2}>No Training Data</Text>
+              <Text style={s.overlaySub} maxFontSizeMultiplier={1.2}>
+                Log a workout in the chat box to automatically track your volume and progressive overload stats.
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -270,4 +306,25 @@ const useS = (T: any) => StyleSheet.create({
   },
   calDOW: { fontSize: 10, fontWeight: '700', color: T.colors.t3 },
   calNum: { fontSize: 11, fontWeight: '500', color: T.colors.t2 },
+
+  // Placeholder styles
+  overlayContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    zIndex: 10,
+  },
+  overlayTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  overlaySub: {
+    fontSize: 12,
+    color: T.colors.t3,
+    textAlign: 'center',
+    lineHeight: 16,
+  },
 });

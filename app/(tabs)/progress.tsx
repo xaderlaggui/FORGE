@@ -19,6 +19,8 @@ export default function ProgressScreen() {
   const router = useRouter();
   const { onScroll } = useScrollToHideNav();
 
+  const [weightTimeframe, setWeightTimeframe] = useState('7D');
+
   // Clean Architecture: Hook handles all formatting, storage logic, and firestore logic
   const {
     user,
@@ -31,9 +33,7 @@ export default function ProgressScreen() {
     firstPhoto, lastPhoto,
     isUploading, takePhoto,
     bmiCalcText
-  } = useProgressData();
-
-  const [weightTimeframe, setWeightTimeframe] = useState('7D');
+  } = useProgressData(weightTimeframe);
 
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16}>
@@ -52,7 +52,7 @@ export default function ProgressScreen() {
           >
             <History size={18} color={T.colors.t1} />
           </TouchableOpacity>
-          <TouchableOpacity style={s.cameraBtn} onPress={takePhoto} disabled={isUploading}>
+          <TouchableOpacity style={s.cameraBtn} onPress={() => takePhoto()} disabled={isUploading}>
             {isUploading
               ? <ActivityIndicator size="small" color={T.colors.forge} />
               : <Camera size={18} color={T.colors.forge} />}
