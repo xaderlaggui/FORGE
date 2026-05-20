@@ -37,14 +37,25 @@ export default function SplashScreen() {
     opacity: glowOpacity.value,
   }));
 
-  const { user } = useAuthStore();
+  const { user, isLoading } = useAuthStore();
   const navigated = useRef(false);
+  // Track whether the animation timer has fired
+  const animDone = useRef(false);
+
+  // Keep refs to always-current values so runOnJS(navigate) never reads stale closures
+  const userRef = useRef(user);
+  const isLoadingRef = useRef(isLoading);
+  useEffect(() => { userRef.current = user; }, [user]);
+  useEffect(() => { isLoadingRef.current = isLoading; }, [isLoading]);
+
   const navigate = () => {
     if (navigated.current) return;
+    // If auth is still loading, wait — the isLoading useEffect below will retry
+    if (isLoadingRef.current) return;
     navigated.current = true;
-    
-    if (user) {
-      if (user.isOnboarded) {
+
+    if (userRef.current) {
+      if (userRef.current.isOnboarded) {
         router.replace('/(tabs)');
       } else {
         router.replace('/(onboarding)');
@@ -70,6 +81,7 @@ export default function SplashScreen() {
 
     // Navigate out after 2.2s
     const timer = setTimeout(() => {
+      animDone.current = true;
       opacity.value = withTiming(0, { duration: 500 }, (finished) => {
         if (finished) runOnJS(navigate)();
       });
@@ -77,6 +89,13 @@ export default function SplashScreen() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // If auth resolved AFTER the animation already finished, navigate now
+  useEffect(() => {
+    if (!isLoading && animDone.current) {
+      navigate();
+    }
+  }, [isLoading]);
 
   return (
     <View style={s.container}>

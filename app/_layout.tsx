@@ -79,13 +79,15 @@ function RootLayoutNav() {
   const router = useRouter();
 
   useEffect(() => {
+    // Wait for both fonts and auth state to resolve
     if (isLoading) return;
 
     const inAuthGroup       = segments[0] === '(auth)';
     const inOnboardingGroup = segments[0] === '(onboarding)';
     const inSplash          = segments[0] === 'splash';
 
-    // Don't redirect while splash is animating or segments haven't resolved yet
+    // Never redirect while on splash or while segments haven't resolved yet.
+    // The splash screen is the sole gatekeeper for initial navigation.
     if (inSplash || !segments[0]) return;
 
     if (!user && !inAuthGroup) {
