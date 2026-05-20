@@ -53,7 +53,15 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
             </Text>
           </View>
           <Text style={s.todayWorkoutName} maxFontSizeMultiplier={1.2}>
-            {isRestDay ? 'Active Recovery' : plannedWorkout.title}
+            {(() => {
+              if (isRestDay) return 'Recovery Day';
+              switch (plannedWorkout?.dayType) {
+                case 'Push': return 'Push Day';
+                case 'Pull': return 'Pull Day';
+                case 'Legs': return 'Leg Day';
+                default: return 'Push Day';
+              }
+            })()}
           </Text>
           <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
             {isRestDay
@@ -78,7 +86,16 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
               label="▶  Start Workout"
               onPress={() => router.push({
                 pathname: '/activeWorkout',
-                params: { title: plannedWorkout?.title || 'Today\'s Workout' },
+                params: {
+                  title: (() => {
+                    switch (plannedWorkout?.dayType) {
+                      case 'Push': return 'Push Day';
+                      case 'Pull': return 'Pull Day';
+                      case 'Legs': return 'Leg Day';
+                      default: return 'Push Day';
+                    }
+                  })()
+                },
               })}
               variant="primary"
               size="md"
