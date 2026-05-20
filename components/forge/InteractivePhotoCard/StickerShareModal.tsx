@@ -345,10 +345,10 @@ const localStyles = StyleSheet.create({
   },
   phoneSideShadow: {
     position: 'absolute',
-    left: 8,
-    right: 8,
+    left: 0,
+    right: 0,
     top: 36,
-    bottom: 36,
+    bottom: 0,
     borderRadius: 36,
     backgroundColor: '#000',
     shadowColor: '#000',
