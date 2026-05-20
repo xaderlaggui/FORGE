@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
-import { Camera, History } from 'lucide-react-native';
+import { AlertCircle, AlertTriangle, Check, History, Info } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // Feature Modules
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { MeasurementCard } from '../../features/progress/components/MeasurementCard';
@@ -35,6 +35,23 @@ export default function ProgressScreen() {
     bmiCalcText
   } = useProgressData(weightTimeframe);
 
+  const bmi = user?.bmi ?? null;
+  const bmiCategory = bmi === null ? '—'
+    : bmi < 18.5 ? 'Low'
+      : bmi < 25 ? 'Normal'
+        : bmi < 30 ? 'High'
+          : 'Obese';
+  const bmiColor = bmi === null ? undefined
+    : bmi < 18.5 ? '#42A5F5'  // blue — underweight
+      : bmi < 25 ? '#4CAF50'  // green — normal
+        : bmi < 30 ? '#FF9800'  // orange — overweight
+          : '#F44336';              // red — obese
+  const bmiIcon = bmi === null ? undefined
+    : bmi < 18.5 ? Info
+      : bmi < 25 ? Check
+        : bmi < 30 ? AlertCircle
+          : AlertTriangle;
+
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16}>
 
@@ -52,18 +69,13 @@ export default function ProgressScreen() {
           >
             <History size={18} color={T.colors.t1} />
           </TouchableOpacity>
-          <TouchableOpacity style={s.cameraBtn} onPress={() => takePhoto()} disabled={isUploading}>
-            {isUploading
-              ? <ActivityIndicator size="small" color={T.colors.forge} />
-              : <Camera size={18} color={T.colors.forge} />}
-          </TouchableOpacity>
         </View>
       </View>
       {/* ── Composition: Key Stats ── */}
       <View style={s.statsRow}>
         <StatCard label="Current" value={currentWeight} unit="lbs" delta={weightDiff} />
         <StatCard label="Started" value={startWeight} unit="lbs" />
-        <StatCard label="BMI" value={user?.bmi?.toFixed(1) ?? '—'} subText={bmiCalcText} />
+        <StatCard label="BMI" value={user?.bmi?.toFixed(1) ?? '—'} subText={bmiCategory} valueColor={bmiColor} Icon={bmiIcon} />
       </View>
 
       {/* ── Composition: Weight Chart ── */}

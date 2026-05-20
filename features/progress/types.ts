@@ -16,6 +16,8 @@ export interface StatCardProps {
   unit?: string;
   delta?: number;
   subText?: string;
+  valueColor?: string;
+  Icon?: React.ElementType;
   onPress?: () => void;
 }
 
