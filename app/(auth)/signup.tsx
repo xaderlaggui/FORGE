@@ -1,5 +1,6 @@
+import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { useRouter } from 'expo-router';
-import { Lock, Mail, User } from 'lucide-react-native';
+import { Mail, User } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   ActivityIndicator, Alert,
@@ -17,16 +18,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { MascotImage } from '../../components/common/MascotImage';
 import { supabase } from '../../services/supabase';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
 
 function InputField({
   icon, placeholder, value, onChangeText,
   fieldKey, secureTextEntry = false,
   keyboardType = 'default', returnKeyType = 'next',
-  focusedField, setFocusedField
+  focusedField, setFocusedField, onSubmitEditing
 }: any) {
-    const { T } = useForgeTheme();
-    const s = useS(T);
+  const { T } = useForgeTheme();
+  const s = useS(T);
   return (
     <View style={[s.inputWrap, focusedField === fieldKey && s.inputWrapFocused]}>
       {React.cloneElement(icon, {
@@ -45,19 +45,18 @@ function InputField({
         returnKeyType={returnKeyType}
         onFocus={() => setFocusedField(fieldKey)}
         onBlur={() => setFocusedField(null)}
+        onSubmitEditing={onSubmitEditing}
       />
     </View>
   );
 }
 
 export default function SignupScreen() {
-    const { T } = useForgeTheme();
-    const s = useS(T);
+  const { T } = useForgeTheme();
+  const s = useS(T);
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
@@ -74,50 +73,35 @@ export default function SignupScreen() {
   }));
 
   const handleSignup = async () => {
-    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
-      Alert.alert('Missing fields', 'Please fill in all fields.');
+    if (!name.trim() || !email.trim()) {
+      Alert.alert('Missing fields', 'Please provide your name and email.');
       return;
     }
-    if (password !== confirmPassword) {
-      Alert.alert('Password mismatch', 'Passwords do not match.');
-      return;
-    }
-    if (password.length < 6) {
-      Alert.alert('Weak password', 'Password must be at least 6 characters.');
-      return;
-    }
+
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        password,
-        options: { data: { display_name: name.trim() } },
+        options: {
+          data: {
+            display_name: name.trim(),
+          },
+        },
       });
       if (error) throw error;
-      if (data.user) {
-        // Create profile row (trigger may also do this — belt-and-suspenders)
-        await supabase.from('profiles').upsert({
-          id: data.user.id,
-          email: data.user.email,
-          display_name: name.trim(),
-          streak: 0,
-          bmi: 0,
-          height: 0,
-          weight: 0,
-          age: 0,
-          is_onboarded: false,
-          created_at: new Date().toISOString(),
-        }, { onConflict: 'id' });
-      }
-      // onAuthStateChange in _layout.tsx handles redirect to onboarding
+
+      // Navigate to OTP screen
+      router.push({
+        pathname: './otp',
+        params: { email: email.trim(), name: name.trim() }
+      });
+
     } catch (error: any) {
       Alert.alert('Sign Up Failed', error.message);
     } finally {
       setLoading(false);
     }
   };
-
-
 
   return (
     <KeyboardAvoidingView
@@ -163,29 +147,10 @@ export default function SignupScreen() {
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
-            focusedField={focusedField}
-            setFocusedField={setFocusedField}
-          />
-          <InputField
-            fieldKey="password"
-            icon={<Lock />}
-            placeholder="Password (min. 6 characters)"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            focusedField={focusedField}
-            setFocusedField={setFocusedField}
-          />
-          <InputField
-            fieldKey="confirm"
-            icon={<Lock />}
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
             returnKeyType="done"
             focusedField={focusedField}
             setFocusedField={setFocusedField}
+            onSubmitEditing={handleSignup}
           />
 
           {/* CTA */}
@@ -197,7 +162,7 @@ export default function SignupScreen() {
           >
             {loading
               ? <ActivityIndicator color="#fff" />
-              : <Text style={s.btnText}>Create Account</Text>
+              : <Text style={s.btnText}>Continue</Text>
             }
           </TouchableOpacity>
 
@@ -224,58 +189,58 @@ export default function SignupScreen() {
 }
 
 const useS = (T: any) => StyleSheet.create({
-          container: { flex: 1, backgroundColor: T.colors.bg0 },
-          innerWrapper: { flex: 1 },
-          inner: {
-            flex: 1, paddingHorizontal: 24,
-            paddingTop: 54, paddingBottom: 24,
-            alignItems: 'center', justifyContent: 'center'
-          },
+  container: { flex: 1, backgroundColor: T.colors.bg0 },
+  innerWrapper: { flex: 1 },
+  inner: {
+    flex: 1, paddingHorizontal: 24,
+    paddingTop: 54, paddingBottom: 24,
+    alignItems: 'center', justifyContent: 'center'
+  },
 
-          backRow: { alignSelf: 'flex-start', marginBottom: 28 },
-          backText: { fontSize: 13, color: T.colors.t3, fontWeight: '500' },
+  backRow: { alignSelf: 'flex-start', marginBottom: 28 },
+  backText: { fontSize: 13, color: T.colors.t3, fontWeight: '500' },
 
-          wordmark: {
-            fontSize: 28, fontWeight: '800', letterSpacing: 4,
-            color: T.colors.forge, marginBottom: 16,
-            textShadowColor: 'rgba(255,92,46,0.35)',
-            textShadowOffset: { width: 0, height: 0 },
-            textShadowRadius: 14,
-          },
-          title: { fontSize: 22, fontWeight: '700', color: T.colors.t1, marginBottom: 6, textAlign: 'center' },
-          subtitle: { fontSize: 13, color: T.colors.t2, textAlign: 'center', marginBottom: 32 },
+  wordmark: {
+    fontSize: 28, fontWeight: '800', letterSpacing: 4,
+    color: T.colors.forge, marginBottom: 16,
+    textShadowColor: 'rgba(255,92,46,0.35)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 14,
+  },
+  title: { fontSize: 22, fontWeight: '700', color: T.colors.t1, marginBottom: 6, textAlign: 'center' },
+  subtitle: { fontSize: 13, color: T.colors.t2, textAlign: 'center', marginBottom: 32 },
 
-          // Inputs
-          inputWrap: {
-            flexDirection: 'row', alignItems: 'center', gap: 12,
-            width: '100%', height: 56,
-            backgroundColor: T.colors.bg2,
-            borderRadius: 16, paddingHorizontal: 16,
-            marginBottom: 12,
-            borderWidth: 1, borderColor: 'transparent',
-          },
-          inputWrapFocused: {
-            borderColor: T.colors.forge,
-            backgroundColor: T.colors.bg1,
-          },
-          input: { flex: 1, fontSize: 15, color: T.colors.t1 },
+  // Inputs
+  inputWrap: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    width: '100%', height: 56,
+    backgroundColor: T.colors.bg2,
+    borderRadius: 16, paddingHorizontal: 16,
+    marginBottom: 12,
+    borderWidth: 1, borderColor: 'transparent',
+  },
+  inputWrapFocused: {
+    borderColor: T.colors.forge,
+    backgroundColor: T.colors.bg1,
+  },
+  input: { flex: 1, fontSize: 15, color: T.colors.t1 },
 
-          // Button
-          btn: {
-            width: '100%', height: 56,
-            backgroundColor: T.colors.forge,
-            borderRadius: 16, alignItems: 'center', justifyContent: 'center',
-            marginTop: 8,
-            shadowColor: T.colors.forge,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.3, shadowRadius: 16, elevation: 8,
-          },
-          btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  // Button
+  btn: {
+    width: '100%', height: 56,
+    backgroundColor: T.colors.forge,
+    borderRadius: 16, alignItems: 'center', justifyContent: 'center',
+    marginTop: 8,
+    shadowColor: T.colors.forge,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3, shadowRadius: 16, elevation: 8,
+  },
+  btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 
-          terms: { fontSize: 11, color: T.colors.t3, textAlign: 'center', marginTop: 16, lineHeight: 18 },
+  terms: { fontSize: 11, color: T.colors.t3, textAlign: 'center', marginTop: 16, lineHeight: 18 },
 
-          // Footer
-          footer: { flexDirection: 'row', alignItems: 'center', marginTop: 28 },
-          footerText: { fontSize: 13, color: T.colors.t3 },
-          footerLink: { fontSize: 13, color: T.colors.forge, fontWeight: '600' },
-        });
+  // Footer
+  footer: { flexDirection: 'row', alignItems: 'center', marginTop: 28 },
+  footerText: { fontSize: 13, color: T.colors.t3 },
+  footerLink: { fontSize: 13, color: T.colors.forge, fontWeight: '600' },
+});

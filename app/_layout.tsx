@@ -91,7 +91,10 @@ function RootLayoutNav() {
     if (!user && !inAuthGroup) {
       router.replace('/(auth)/welcome');
     } else if (user) {
-      if (!user.isOnboarded && !inOnboardingGroup) {
+      const currentRoute = segments.join('/');
+      const isSignupFlow = currentRoute.includes('password') || currentRoute.includes('hooray') || currentRoute.includes('otp');
+
+      if (!user.isOnboarded && !inOnboardingGroup && !isSignupFlow) {
         router.replace('/(onboarding)');
       } else if (user.isOnboarded && (inAuthGroup || inOnboardingGroup)) {
         router.replace('/(tabs)');
