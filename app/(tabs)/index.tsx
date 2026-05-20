@@ -1,17 +1,17 @@
-import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AiCoachCard } from '../../components/forge/AiCoachCard';
 import { Camera } from 'lucide-react-native';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { AiCoachCard } from '../../components/forge/AiCoachCard';
 
 // Dashboard Feature Modules
-import { useDashboardData } from '../../features/dashboard/hooks/useDashboardData';
+import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { DashboardHeader } from '../../features/dashboard/components/DashboardHeader';
-import { TodayPlanCard } from '../../features/dashboard/components/TodayPlanCard';
-import { WeeklyProgressDots } from '../../features/dashboard/components/WeeklyProgressDots';
 import { QuickStatsRow } from '../../features/dashboard/components/QuickStatsRow';
 import { RecentWorkoutsList } from '../../features/dashboard/components/RecentWorkoutsList';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { TodayPlanCard } from '../../features/dashboard/components/TodayPlanCard';
+import { WeeklyProgressDots } from '../../features/dashboard/components/WeeklyProgressDots';
+import { useDashboardData } from '../../features/dashboard/hooks/useDashboardData';
 
 import { useScrollToHideNav } from '../../hooks/useScrollToHideNav';
 
@@ -20,7 +20,7 @@ export default function HomeScreen() {
   const styles = useStyles(T);
   const router = useRouter();
   const { onScroll } = useScrollToHideNav();
-  
+
   // Clean Architecture: Fetch all state/aggregates via a unified hook
   const data = useDashboardData();
 
@@ -33,17 +33,17 @@ export default function HomeScreen() {
       scrollEventThrottle={16}
     >
       {/* ── Composition: Header & Greeting ── */}
-      <DashboardHeader 
-        displayName={data.user?.displayName} 
-        photoUrl={data.user?.photoURL || (data.user as any)?.photo_url} 
+      <DashboardHeader
+        displayName={data.user?.displayName}
+        photoUrl={data.user?.photoURL || (data.user as any)?.photo_url}
       />
 
       {/* ── Composition: Hero Card ── */}
-      <TodayPlanCard 
-        isLoading={data.isLoading} 
-        plannedWorkout={data.plannedWorkout} 
+      <TodayPlanCard
+        isLoading={data.isLoading}
+        plannedWorkout={data.plannedWorkout}
         loggedWorkout={data.loggedWorkout}
-        muscleTags={data.muscleTags} 
+        muscleTags={data.muscleTags}
       />
 
       {/* ── Composition: Transformation Teaser ── */}
@@ -58,14 +58,14 @@ export default function HomeScreen() {
       </View>
 
       {/* ── Composition: Weekly Progress Dots ── */}
-      <WeeklyProgressDots 
+      <WeeklyProgressDots
         weekActivity={data.weekActivity}
         streak={data.streak}
         restDayIndices={data.restDayIndices}
       />
 
       {/* ── Composition: Quick Stats ── */}
-      <QuickStatsRow 
+      <QuickStatsRow
         volumeLbs={data.totalVolumeLbs}
         volumeChangePct={data.volumeChangePct}
         streak={data.streak}

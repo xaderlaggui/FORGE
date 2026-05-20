@@ -1,10 +1,9 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import dayjs from 'dayjs';
-import { getGreeting, getInitial } from '../utils';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { Bell } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Bell } from 'lucide-react-native';
+import React from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { getGreeting, getInitial } from '../utils';
 
 interface DashboardHeaderProps {
   displayName?: string | null;
@@ -12,8 +11,8 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ displayName, photoUrl }: DashboardHeaderProps) {
-    const { T } = useForgeTheme();
-    const s = useS(T);
+  const { T } = useForgeTheme();
+  const s = useS(T);
   return (
     <View>
       {/* ── Top Bar ── */}
@@ -54,32 +53,32 @@ export function DashboardHeader({ displayName, photoUrl }: DashboardHeaderProps)
 }
 
 const useS = (T: any) => StyleSheet.create({
-          topBar: {
-            flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-            paddingHorizontal: T.spacing.page, paddingTop: 60, paddingBottom: T.spacing.px4,
-          },
-          wordmark: { fontSize: 18, fontWeight: '800', letterSpacing: 2.5, color: T.colors.forge },
-          headerRight: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-          bellBtn: { position: 'relative' },
-          bellBadge: {
-            position: 'absolute', top: 0, right: 0,
-            width: 10, height: 10, borderRadius: 5,
-            backgroundColor: T.colors.forge,
-            borderWidth: 2, borderColor: T.colors.bg0,
-          },
-          avatarWrap: {
-            width: 40, height: 40, borderRadius: 20,
-            padding: 2,
-          },
-          avatarInner: {
-            flex: 1, borderRadius: 20,
-            backgroundColor: T.colors.bg0,
-            borderWidth: 2, borderColor: T.colors.bg0,
-            alignItems: 'center', justifyContent: 'center',
-          },
-          avatarText: { fontSize: 14, fontWeight: '700', color: T.colors.t1 },
+  topBar: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: T.spacing.page, paddingTop: 60, paddingBottom: T.spacing.px4,
+  },
+  wordmark: { fontSize: 18, fontWeight: '800', letterSpacing: 2.5, color: T.colors.forge },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  bellBtn: { position: 'relative' },
+  bellBadge: {
+    position: 'absolute', top: 0, right: 0,
+    width: 10, height: 10, borderRadius: 5,
+    backgroundColor: T.colors.forge,
+    borderWidth: 2, borderColor: T.colors.bg0,
+  },
+  avatarWrap: {
+    width: 40, height: 40, borderRadius: 20,
+    padding: 2,
+  },
+  avatarInner: {
+    flex: 1, borderRadius: 20,
+    backgroundColor: T.colors.bg0,
+    borderWidth: 2, borderColor: T.colors.bg0,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  avatarText: { fontSize: 14, fontWeight: '700', color: T.colors.t1 },
 
-          greetingWrap: { paddingHorizontal: T.spacing.page, marginBottom: T.spacing.px6 },
-          greetingSub: { fontSize: T.typography.sizes.label, fontWeight: '500', color: T.colors.t3, marginBottom: 2 },
-          greetingName: { fontSize: 26, fontWeight: '900', color: T.colors.t1 },
-        });
+  greetingWrap: { paddingHorizontal: T.spacing.page, marginBottom: T.spacing.px6 },
+  greetingSub: { fontSize: T.typography.sizes.label, fontWeight: '500', color: T.colors.t3, marginBottom: 2 },
+  greetingName: { fontSize: 26, fontWeight: '900', color: T.colors.t1 },
+});

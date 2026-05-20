@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { MessageSquare, ChevronRight } from 'lucide-react-native';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { ChevronRight, MessageSquare } from 'lucide-react-native';
+import React from 'react';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TypewriterText } from './TypewriterText';
 
 interface AiCoachCardProps {
@@ -12,8 +12,8 @@ interface AiCoachCardProps {
 
 export function AiCoachCard({ tip, isLoading, onChatPress }: AiCoachCardProps) {
   const { T } = useForgeTheme();
-    const { T: ForgeTheme } = useForgeTheme();
-    const styles = useStyles(ForgeTheme);
+  const { T: ForgeTheme } = useForgeTheme();
+  const styles = useStyles(ForgeTheme);
   return (
     <View style={styles.card}>
       {/* Left forge accent bar */}
@@ -50,53 +50,53 @@ export function AiCoachCard({ tip, isLoading, onChatPress }: AiCoachCardProps) {
 }
 
 const useStyles = (T: any) => StyleSheet.create({
-          card: {
-            backgroundColor: T.colors.bg1,
-            borderRadius: 16,
-            borderWidth: 1,
-            borderColor: T.colors.b1,
-            overflow: 'hidden',
-            flexDirection: 'row',
-            shadowColor: T.colors.forge,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.04,
-            shadowRadius: 20,
-            elevation: 3,
-          },
-          accentBar: {
-            width: 3,
-            backgroundColor: T.colors.forge,
-          },
-          row: {
-            flex: 1,
-            flexDirection: 'row',
-            gap: 12,
-            padding: 16,
-          },
-          iconWrap: {
-            width: 38, height: 38, borderRadius: 19,
-            backgroundColor: T.colors.bg2,
-            alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-          },
-          content: { flex: 1 },
-          label: {
-            fontSize: 10, fontWeight: '700',
-            color: T.colors.forge,
-            textTransform: 'uppercase', letterSpacing: 0.6,
-            marginBottom: 6,
-          },
-          tipText: { fontSize: 13, color: T.colors.t1, lineHeight: 20 },
-          chatBtn: {
-            alignSelf: 'flex-start',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
-            backgroundColor: T.colors.bg2,
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-            borderRadius: 20,
-            marginTop: 12,
-          },
-          chatBtnText: { fontSize: 12, fontWeight: '600', color: T.colors.forge },
-        });
+  card: {
+    backgroundColor: T.colors.bg1,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: T.colors.b1,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    shadowColor: T.colors.forge,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.04,
+    shadowRadius: 20,
+    elevation: 3,
+  },
+  accentBar: {
+    width: 3,
+    backgroundColor: T.colors.forge,
+  },
+  row: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 12,
+    padding: 16,
+  },
+  iconWrap: {
+    width: 38, height: 38, borderRadius: 19,
+    backgroundColor: T.colors.bg2,
+    alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
+  },
+  content: { flex: 1 },
+  label: {
+    fontSize: 10, fontWeight: '700',
+    color: T.colors.forge,
+    textTransform: 'uppercase', letterSpacing: 0.6,
+    marginBottom: 6,
+  },
+  tipText: { fontSize: 13, color: T.colors.t1, lineHeight: 20 },
+  chatBtn: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: T.colors.bg2,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginTop: 12,
+  },
+  chatBtnText: { fontSize: 12, fontWeight: '600', color: T.colors.forge },
+});

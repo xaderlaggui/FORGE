@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useForgeTheme } from '../hooks/useForgeTheme';
 import { supabase } from '../services/supabase';
 import { useAuthStore } from '../stores/authStore';
-import { useForgeTheme } from '../hooks/useForgeTheme';
 
 export default function MeasurementsScreen() {
   const router = useRouter();
@@ -27,8 +27,8 @@ export default function MeasurementsScreen() {
       const newEntry = {
         chest: chest ? Number(chest) : undefined,
         waist: waist ? Number(waist) : undefined,
-        arms:  arms  ? Number(arms)  : undefined,
-        legs:  legs  ? Number(legs)  : undefined,
+        arms: arms ? Number(arms) : undefined,
+        legs: legs ? Number(legs) : undefined,
         date: new Date().toISOString(),
       };
       // Fetch current measurements array and append
@@ -44,10 +44,10 @@ export default function MeasurementsScreen() {
         .update({ measurements: updatedMeasurements })
         .eq('id', user?.uid);
       if (error) throw error;
-      
+
       // Instantly update local state so the Progress screen re-renders
       setUser({ ...user, measurements: updatedMeasurements } as any);
-      
+
       router.back();
     } catch (e) {
       Alert.alert('Error', 'Failed to save measurements.');
@@ -87,7 +87,7 @@ export default function MeasurementsScreen() {
         <TouchableOpacity style={s.saveBtn} onPress={handleSave} disabled={isSaving}>
           <Text style={s.saveBtnText}>{isSaving ? 'SAVING...' : 'SAVE MEASUREMENTS'}</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={s.cancelBtn} onPress={() => router.back()} disabled={isSaving}>
           <Text style={s.cancelBtnText}>CANCEL</Text>
         </TouchableOpacity>
@@ -100,17 +100,17 @@ const useS = (T: any) => StyleSheet.create({
   container: { flex: 1, backgroundColor: T.colors.bg1, padding: 24, paddingTop: 40 },
   title: { fontSize: 24, fontWeight: '900', color: T.colors.t1, letterSpacing: 1, marginBottom: 4 },
   subtitle: { fontSize: 12, color: T.colors.t3, marginBottom: 32 },
-  
+
   form: { flex: 1 },
   row: { flexDirection: 'row', gap: 16, marginBottom: 24 },
   col: { flex: 1 },
-  
+
   label: { fontSize: 10, fontWeight: '800', color: T.colors.t3, letterSpacing: 1, marginBottom: 8 },
   input: { backgroundColor: T.colors.bg2, borderWidth: 1, borderColor: T.colors.b1, borderRadius: 12, padding: 16, color: T.colors.t1, fontSize: 16, fontWeight: '700' },
-  
+
   saveBtn: { backgroundColor: T.colors.forge, padding: 18, borderRadius: 12, alignItems: 'center', marginTop: 12, shadowColor: T.colors.forge, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 10, elevation: 5 },
   saveBtnText: { color: '#000', fontSize: 14, fontWeight: '900', letterSpacing: 1 },
-  
+
   cancelBtn: { padding: 18, alignItems: 'center', marginTop: 8 },
   cancelBtnText: { color: T.colors.t3, fontSize: 12, fontWeight: '800', letterSpacing: 1 }
 });
