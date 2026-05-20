@@ -64,6 +64,12 @@ export function useProgressData(weightTimeframe: string = '7D') {
     }
   }
 
+  // Adjust startDate to only start when they first added their weight
+  const firstEntryDate = sortedHistory.length > 0 ? dayjs(sortedHistory[0].date).startOf('day') : todayDate;
+  if (firstEntryDate.isAfter(startDate)) {
+    startDate = firstEntryDate;
+  }
+
   const numDays = todayDate.diff(startDate, 'day') + 1;
   const lineData: { value: number; label: string }[] = [];
 
@@ -103,6 +109,15 @@ export function useProgressData(weightTimeframe: string = '7D') {
     lineData.push({
       value: dailyWeight,
       label
+    });
+  }
+
+  // Safeguard: Ensure we have at least 2 points for the LineChart to render
+  if (lineData.length === 1) {
+    const singlePoint = lineData[0];
+    lineData.unshift({
+      value: singlePoint.value,
+      label: 'Start'
     });
   }
 
