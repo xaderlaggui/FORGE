@@ -15,6 +15,7 @@ export interface StatCardProps {
   value: string | number;
   unit?: string;
   delta?: number;
+  subText?: string;
   onPress?: () => void;
 }
 

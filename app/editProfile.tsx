@@ -15,6 +15,7 @@ import {
 import { ForgeButton } from '../components/forge/ForgeButton';
 import { supabase } from '../services/supabase';
 import { useAuthStore } from '../stores/authStore';
+import { calculateBMI } from '../utils/bmi';
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Prefer not to say'];
 const GOAL_OPTIONS = ['Lose Weight', 'Build Muscle', 'Improve Endurance', 'Stay Active'];
@@ -60,6 +61,24 @@ export default function EditProfileScreen() {
         ? Math.round(parseFloat(weight) * 0.453592)
         : parseFloat(weight) || 0;
 
+      const { bmi } = (heightVal > 0 && weightVal > 0)
+        ? calculateBMI(weightVal, heightVal)
+        : { bmi: 0 };
+
+      const weightLbs = Math.round(weightVal * 2.20462);
+
+      const existingWeightHistory = (user as any)?.weight_history || (user as any)?.weightHistory || [];
+      const updatedWeightHistory = [
+        ...existingWeightHistory,
+        { value: weightLbs, date: new Date().toISOString() }
+      ];
+
+      const existingBmiHistory = (user as any)?.bmi_history || (user as any)?.bmiHistory || [];
+      const updatedBmiHistory = [
+        ...existingBmiHistory,
+        { value: bmi, date: new Date().toISOString() }
+      ];
+
       const updated = {
         ...user,
         displayName,
@@ -69,6 +88,9 @@ export default function EditProfileScreen() {
         date_of_birth: dob,
         height: heightVal,
         weight: weightVal,
+        bmi,
+        weight_history: updatedWeightHistory,
+        bmi_history: updatedBmiHistory,
         photoURL: photoUri || user.photoURL,
         photo_url: photoUri || user.photoURL,
       };
@@ -81,6 +103,9 @@ export default function EditProfileScreen() {
           date_of_birth: dob,
           height: heightVal,
           weight: weightVal,
+          bmi,
+          weight_history: updatedWeightHistory,
+          bmi_history: updatedBmiHistory,
           photo_url: photoUri || (user as any).photoURL,
         })
         .eq('id', user.uid);

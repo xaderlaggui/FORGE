@@ -4,7 +4,7 @@ import { TrendingDown, TrendingUp, Minus } from 'lucide-react-native';
 import { StatCardProps } from '../types';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 
-export function StatCard({ label, value, unit, delta, onPress }: StatCardProps) {
+export function StatCard({ label, value, unit, delta, subText, onPress }: StatCardProps) {
     const { T } = useForgeTheme();
     const sc = useSc(T);
   const isDown = delta !== undefined && delta < 0;
@@ -23,6 +23,11 @@ export function StatCard({ label, value, unit, delta, onPress }: StatCardProps) 
             {Math.abs(delta)} lbs
           </Text>
         </View>
+      )}
+      {subText !== undefined && (
+        <Text style={{ fontSize: 11, color: T.colors.t3, marginTop: 6, fontWeight: '600' }} maxFontSizeMultiplier={1.2}>
+          {subText}
+        </Text>
       )}
     </TouchableOpacity>
   );

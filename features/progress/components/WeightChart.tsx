@@ -68,7 +68,7 @@ export function WeightChart({
               yAxisOffset={minVal - 5}
               maxValue={maxVal - minVal + 10}
               noOfSections={4}
-              stepValue={Math.ceil((maxVal - minVal) / 4)}
+              stepValue={Math.max(1, Math.ceil((maxVal - minVal) / 4))}
               height={140}
               width={SCREEN_W - 72}
             />

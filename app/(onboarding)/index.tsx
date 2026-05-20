@@ -34,6 +34,7 @@ export default function OnboardingScreen() {
     try {
       setLoading(true);
       const { bmi } = calculateBMI(weightNum, heightNum);
+      const weightLbs = Math.round(weightNum * 2.20462);
       const updates = {
         age: ageNum,
         height: heightNum,
@@ -43,6 +44,7 @@ export default function OnboardingScreen() {
         diet_preference: dietPreference,
         equipment_access: equipmentAccess,
         bmi_history: [{ value: bmi, date: new Date().toISOString() }],
+        weight_history: [{ value: weightLbs, date: new Date().toISOString() }],
         is_onboarded: true,
       };
       const { error } = await supabase

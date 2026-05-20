@@ -28,18 +28,26 @@ export function useProgressData() {
   const [isUploading, setIsUploading] = useState(false);
 
   // ── Weight data ──
-  const rawHistory: WeightEntry[] = (user as any)?.weightHistory || [];
+  const rawHistory: WeightEntry[] = (user as any)?.weight_history || (user as any)?.weightHistory || [];
+  const userWeightLbs = user?.weight ? Math.round(user.weight * 2.20462) : 0;
 
-  const lineData = rawHistory.length > 0
-    ? rawHistory.map(item => ({ value: item.value, label: item.date.slice(0, 5) }))
-    : [{ value: 0, label: 'No Data' }];
-
-  const currentWeight = rawHistory.length > 0 ? rawHistory[rawHistory.length - 1].value : 0;
-  const startWeight   = rawHistory.length > 0 ? rawHistory[0].value : 0;
+  const currentWeight = rawHistory.length > 0 ? rawHistory[rawHistory.length - 1].value : userWeightLbs;
+  const startWeight   = rawHistory.length > 0 ? rawHistory[0].value : userWeightLbs;
   const weightDiff    = startWeight > 0 ? +(currentWeight - startWeight).toFixed(1) : 0;
 
-  const minVal = rawHistory.length > 0 ? Math.min(...rawHistory.map(r => r.value)) : 0;
-  const maxVal = rawHistory.length > 0 ? Math.max(...rawHistory.map(r => r.value)) : 0;
+  const lineData = rawHistory.length > 0
+    ? rawHistory.map(item => ({ value: item.value, label: item.date.includes('T') || item.date.includes('-') ? dayjs(item.date).format('MM/DD') : item.date.slice(0, 5) }))
+    : [
+        { value: userWeightLbs, label: 'Start' },
+        { value: userWeightLbs, label: 'Today' }
+      ];
+
+  const minVal = rawHistory.length > 0 ? Math.min(...rawHistory.map(r => r.value)) : userWeightLbs;
+  const maxVal = rawHistory.length > 0 ? Math.max(...rawHistory.map(r => r.value)) : userWeightLbs;
+
+  const bmiCalcText = user?.height && user?.weight
+    ? `${Math.round(user.height)} x ${Math.round(user.weight)}`
+    : undefined;
 
   // ── Measurements ──
   const measurements: MeasurementEntry[] = (user as any)?.measurements || [];
@@ -169,5 +177,6 @@ export function useProgressData() {
     latest, prev,
     firstPhoto, lastPhoto,
     isUploading, takePhoto,
+    bmiCalcText,
   };
 }

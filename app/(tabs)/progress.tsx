@@ -29,7 +29,8 @@ export default function ProgressScreen() {
     activityDates,
     latest, prev,
     firstPhoto, lastPhoto,
-    isUploading, takePhoto
+    isUploading, takePhoto,
+    bmiCalcText
   } = useProgressData();
 
   const [weightTimeframe, setWeightTimeframe] = useState('7D');
@@ -62,7 +63,7 @@ export default function ProgressScreen() {
       <View style={s.statsRow}>
         <StatCard label="Current" value={currentWeight} unit="lbs" delta={weightDiff} />
         <StatCard label="Started" value={startWeight} unit="lbs" />
-        <StatCard label="BMI" value={user?.bmi?.toFixed(1) ?? '—'} />
+        <StatCard label="BMI" value={user?.bmi?.toFixed(1) ?? '—'} subText={bmiCalcText} />
       </View>
 
       {/* ── Composition: Weight Chart ── */}
