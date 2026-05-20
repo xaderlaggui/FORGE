@@ -258,7 +258,8 @@ export function InteractivePhotoCard({
         stickerTheme={stickerTheme}
         setStickerTheme={setStickerTheme}
         shareImage={handleShareExport}
-        isSharing={false} // could map this to an exporting state if needed
+        isSharing={false}
+        shareViewShotRef={shareViewShotRef}
       />
     </>
   );

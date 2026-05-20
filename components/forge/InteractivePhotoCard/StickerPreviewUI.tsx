@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
 import { useForgeTheme } from '@/hooks/useForgeTheme';
+import React from 'react';
+import { Text, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { formatDuration } from '../../../utils/format';
 import { useStyles } from './InteractivePhotoCardStyles';
 import { StickerTheme, getStickerColors } from './InteractivePhotoCardTypes';
@@ -47,7 +47,7 @@ export function StickerPreviewUI({ workout, stickerTheme }: StickerPreviewUIProp
             },
           ]}
         >
-          TRACKED WITH FORGE
+          FORGE
         </Text>
       </View>
 
