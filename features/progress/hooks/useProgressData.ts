@@ -27,13 +27,18 @@ export function useProgressData() {
   const [timeframe, setTimeframe] = useState<'1W' | '1M'>('1W');
   const [isUploading, setIsUploading] = useState(false);
 
-  // ── Weight data from bmi_history JSON column ──
-  const rawHistory: WeightEntry[] = (((user as any)?.bmi_history || (user as any)?.bmiHistory || []) as any[])
-    .map((item: any) => ({
-      value: item.weight || (item.value > 50 ? item.value : 0), // Fallback to item.value for seed data (weight in lbs)
-      date: item.date
-    }))
-    .filter(item => item.value > 0);
+  // ── Weight data ──
+  let rawHistory: WeightEntry[] = (user as any)?.weight_history || (user as any)?.weightHistory || [];
+
+  // Fallback to reading weight from bmi_history (like the seeded mock data) if weight_history is empty
+  if (rawHistory.length === 0) {
+    rawHistory = (((user as any)?.bmi_history || (user as any)?.bmiHistory || []) as any[])
+      .map((item: any) => ({
+        value: item.weight || (item.value > 50 ? item.value : 0),
+        date: item.date
+      }))
+      .filter(item => item.value > 0);
+  }
 
   const userWeightLbs = user?.weight ? Math.round(user.weight * 2.20462) : 0;
 
