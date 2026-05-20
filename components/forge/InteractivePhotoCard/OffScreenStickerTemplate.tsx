@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import ViewShot from 'react-native-view-shot';
 import { formatDuration } from '../../../utils/format';
@@ -15,16 +15,18 @@ export function OffScreenStickerTemplate({ workout, stickerTheme, shareViewShotR
   const stickerColors = getStickerColors(stickerTheme);
 
   return (
-    <View style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
-      <ViewShot
-        ref={shareViewShotRef}
-        style={{
-          width: 720,
-          height: 720,
-          backgroundColor: 'transparent',
-        }}
-        options={{ format: 'png', quality: 1.0 }}
-      >
+    <ViewShot
+      ref={shareViewShotRef}
+      style={{
+        position: 'absolute',
+        left: -9999,
+        width: 720,
+        height: 720,
+        backgroundColor: 'transparent',
+        overflow: 'hidden',
+      }}
+      options={{ format: 'png', quality: 1.0 }}
+    >
       {/* Stats Panel overlaid directly on the transparent canvas */}
       <View
         style={{
@@ -205,6 +207,5 @@ export function OffScreenStickerTemplate({ workout, stickerTheme, shareViewShotR
         </View>
       </View>
     </ViewShot>
-    </View>
   );
 }
