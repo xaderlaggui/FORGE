@@ -104,7 +104,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
           )}
           <ForgeButton
             label="View Details"
-            onPress={() => router.push({ pathname: '/activeWorkout', params: { id: loggedWorkout.id } })}
+            onPress={() => router.push({ pathname: '/workoutDetail', params: { id: loggedWorkout.id } })}
             variant="secondary"
           />
         </View>

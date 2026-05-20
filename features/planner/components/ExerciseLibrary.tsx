@@ -1,10 +1,12 @@
-import { X, Search } from 'lucide-react-native';
-import React, { useState, useMemo } from 'react';
-import { Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
+import { X, Search, Sparkles } from 'lucide-react-native';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput, ActivityIndicator } from 'react-native';
 import Body from 'react-native-body-highlighter';
 import { ForgeSkeleton } from '../../../components/forge/ForgeSkeleton';
 import type { Exercise } from '../../../types';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { groqComplete } from '../../../services/groq';
+import { EXERCISE_TIP_SYSTEM_PROMPT, exerciseTipUserPrompt } from '../../../constants/prompts';
 
 function SkeletonLibrary() {
     const { T } = useForgeTheme();
@@ -87,8 +89,41 @@ export function ExercisePreviewModal({
   onClose: () => void,
   onAdd?: (ex: Exercise) => void 
 }) {
-    const { T } = useForgeTheme();
-    const s = useS(T);
+  const { T } = useForgeTheme();
+  const s = useS(T);
+  const [aiTip, setAiTip] = useState<string | null>(null);
+  const [isLoadingTip, setIsLoadingTip] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!exercise) {
+      setAiTip(null);
+      setIsLoadingTip(false);
+      return;
+    }
+
+    const fetchTip = async () => {
+      setIsLoadingTip(true);
+      setAiTip(null);
+      try {
+        const messages = [
+          { role: 'system' as const, content: EXERCISE_TIP_SYSTEM_PROMPT },
+          { role: 'user' as const, content: exerciseTipUserPrompt(exercise.name) }
+        ];
+        const tip = await groqComplete(messages, { max_tokens: 150, temperature: 0.7 });
+        if (isMounted) setAiTip(tip);
+      } catch (e) {
+        console.error('Failed to fetch AI tip:', e);
+        if (isMounted) setAiTip("Focus on a slow, controlled negative to maximize muscle tension.");
+      } finally {
+        if (isMounted) setIsLoadingTip(false);
+      }
+    };
+    fetchTip();
+    
+    return () => { isMounted = false; };
+  }, [exercise]);
+
   if (!exercise) return null;
   const slugs = mapMusclesToSlugs(exercise.muscleGroups);
 
@@ -106,16 +141,34 @@ export function ExercisePreviewModal({
           {exercise.muscleGroups.join(', ')} • {exercise.equipment}
         </Text>
 
-        <View style={s.bodyRow}>
-          <View style={s.bodyWrapper}>
-            <Body data={slugs as any} gender="male" side="front" scale={0.9} colors={['#FF5C2E', '#FF5C2E']} border={T.colors.b1} />
-            <Text style={s.bodyLabel}>FRONT</Text>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+          <View style={s.bodyRow}>
+            <View style={s.bodyWrapper}>
+              <Body data={slugs as any} gender="male" side="front" scale={0.9} colors={['#FF5C2E', '#FF5C2E']} border={T.colors.b1} />
+              <Text style={s.bodyLabel}>FRONT</Text>
+            </View>
+            <View style={s.bodyWrapper}>
+              <Body data={slugs as any} gender="male" side="back" scale={0.9} colors={['#FF5C2E', '#FF5C2E']} border={T.colors.b1} />
+              <Text style={s.bodyLabel}>BACK</Text>
+            </View>
           </View>
-          <View style={s.bodyWrapper}>
-            <Body data={slugs as any} gender="male" side="back" scale={0.9} colors={['#FF5C2E', '#FF5C2E']} border={T.colors.b1} />
-            <Text style={s.bodyLabel}>BACK</Text>
+
+          {/* AI Coach Tips Section */}
+          <View style={s.aiTipCard}>
+            <View style={s.aiTipHeader}>
+              <Sparkles size={16} color={T.colors.forge} />
+              <Text style={s.aiTipTitle}>AI Coach Tip</Text>
+            </View>
+            {isLoadingTip ? (
+              <View style={{ gap: 8 }}>
+                <ForgeSkeleton width="100%" height={14} radius={4} />
+                <ForgeSkeleton width="80%" height={14} radius={4} />
+              </View>
+            ) : (
+              <Text style={s.aiTipText}>{aiTip}</Text>
+            )}
           </View>
-        </View>
+        </ScrollView>
 
         {onAdd && (
           <View style={{ padding: T.spacing.page, marginTop: 'auto', marginBottom: 20 }}>
@@ -273,5 +326,22 @@ const useS = (T: any) => StyleSheet.create({
           },
           searchInput: { flex: 1, color: T.colors.t1, fontSize: 15, fontWeight: '500' },
           addBtn: { backgroundColor: T.colors.forge, padding: 16, borderRadius: 12, alignItems: 'center' },
-          addBtnText: { color: '#000', fontSize: 16, fontWeight: '800' }
+          addBtnText: { color: '#000', fontSize: 16, fontWeight: '800' },
+          aiTipCard: {
+            backgroundColor: T.colors.bg1,
+            borderWidth: 1, borderColor: T.colors.b1,
+            borderRadius: 16,
+            padding: 16,
+            marginHorizontal: T.spacing.page,
+            marginTop: 24,
+          },
+          aiTipHeader: {
+            flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12,
+          },
+          aiTipTitle: {
+            color: T.colors.t1, fontSize: 14, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5,
+          },
+          aiTipText: {
+            color: T.colors.t2, fontSize: 14, lineHeight: 22, fontWeight: '500',
+          }
         });
