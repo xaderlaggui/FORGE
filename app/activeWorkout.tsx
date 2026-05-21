@@ -61,7 +61,7 @@ export default function ActiveWorkoutScreen() {
   if (summary) {
     return (
       <View style={[styles.container, { padding: 24, justifyContent: 'center', alignItems: 'center' }]}>
-        <BearMascot variant="HYPED" size="xl" />
+        <BearMascot variant="PROUD" size="xl" />
         <Text style={{ fontSize: 36, fontWeight: '900', color: T.colors.t1, marginTop: 32, letterSpacing: 1 }}>WORKOUT</Text>
         <Text style={{ fontSize: 36, fontWeight: '900', color: T.colors.forge, letterSpacing: 1 }}>COMPLETE!</Text>
 
