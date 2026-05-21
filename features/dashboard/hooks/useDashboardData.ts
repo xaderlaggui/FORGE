@@ -3,6 +3,7 @@ import { useAiCoach } from '../../../hooks/useAiCoach';
 import { useNutrition } from '../../../hooks/useNutrition';
 import { useStreak } from '../../../hooks/useStreak';
 import { useWorkouts } from '../../../hooks/useWorkouts';
+import { useAllNutritionLogs } from '../../../hooks/useAllNutritionLogs';
 import { useAuthStore } from '../../../stores/authStore';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../../services/supabase';
@@ -12,6 +13,7 @@ export function useDashboardData() {
   const { user } = useAuthStore();
   const { data: nutrition, isLoading: isNutritionLoading } = useNutrition();
   const { workouts, isLoading: isWorkoutsLoading } = useWorkouts();
+  const { nutritionLogs, isLoading: isNutritionLogsLoading } = useAllNutritionLogs();
   const { data: aiTip, isLoading: isAiLoading } = useAiCoach();
 
   const { data: activePlan, isLoading: isLoadingActivePlan } = useQuery({
@@ -31,7 +33,7 @@ export function useDashboardData() {
     enabled: !!user?.uid,
   });
 
-  const isLoading = isNutritionLoading || isWorkoutsLoading || isLoadingActivePlan;
+  const isLoading = isNutritionLoading || isWorkoutsLoading || isNutritionLogsLoading || isLoadingActivePlan;
 
   // ── Derived data ──
   const waterLiters = (nutrition?.waterMl ?? 0) / 1000;
@@ -84,9 +86,20 @@ export function useDashboardData() {
     ? [...new Set<string>(plannedWorkout.exercises.flatMap((ex: any) => ex.muscleGroups ?? []))].filter(Boolean)
     : [];
 
-  const recentWorkouts = [...(workouts ?? [])]
+  const allItems: any[] = [];
+  workouts?.forEach(w => {
+    allItems.push({ ...w, _type: 'workout' });
+  });
+  nutritionLogs?.forEach(log => {
+    const loggedMeals = (log.meals || []).filter((m: any) => m.calories > 0);
+    if (loggedMeals.length > 0) {
+      allItems.push({ ...log, _type: 'meal', loggedMeals });
+    }
+  });
+
+  const recentActivity = allItems
     .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 2);
+    .slice(0, 3);
 
   const startOfWeek = dayjs().startOf('week').add(1, 'day');
   let workoutsThisWeek = 0;
@@ -136,7 +149,7 @@ export function useDashboardData() {
     plannedWorkout,
     loggedWorkout,
     muscleTags: muscleTags as string[],
-    recentWorkouts,
+    recentActivity,
     weekActivity,
     workoutsThisWeek,
     totalVolumeLbs: todayVolumeLbs,
