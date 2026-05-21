@@ -1,6 +1,7 @@
-import { BEAR } from '@/constants/bearAssets';
 import { MascotImages } from '@/constants/mascotImages';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { SpriteMascot } from '../components/forge/SpriteMascot';
+import { getSpriteForActivity } from '../features/sprites/activity-sprite-map';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
@@ -120,19 +121,28 @@ export default function ChatScreen() {
             const actType = parsed.type || 'strength';
             const duration = parsed.durationMinutes ?? 0;
             const distance = parsed.distanceKm ?? null;
-            const estCalories = Math.round(duration * (actType === 'run' ? 10 : actType === 'walk' ? 4 : 5));
+            
+            // Rely on AI's calculated calories, fallback to basic formula
+            const estCalories = parsed.calories ?? Math.round(duration * (actType === 'run' ? 10 : actType === 'walk' ? 4 : 5));
+            const pace = parsed.pace ?? null;
+            const steps = parsed.steps ?? null;
+
+            let finalActivityName = parsed.activityName || 'Workout';
+            finalActivityName = finalActivityName.charAt(0).toUpperCase() + finalActivityName.slice(1);
 
             const workoutId = `chat_${Date.now()}`;
             const { error } = await supabase.from('workouts').insert({
               id: workoutId,
               user_id: user.uid,
               date: dayjs().format('YYYY-MM-DD'),
-              notes: parsed.activityName,
+              notes: finalActivityName,
               type: actType,
               exercises: [],
               "durationMin": duration,
               calories: estCalories,
               distanceKm: distance,
+              pace: pace,
+              steps: steps,
               created_at: new Date().toISOString(),
             });
             if (error) throw error;
@@ -143,7 +153,7 @@ export default function ChatScreen() {
             displayText = parsed.message || 'Activity logged!';
             logged = true;
             activity = {
-              activityName: parsed.activityName,
+              activityName: finalActivityName,
               type: actType,
               durationMinutes: duration,
               distanceKm: distance,
@@ -158,13 +168,18 @@ export default function ChatScreen() {
       historyRef.current.push({ role: 'assistant', content: raw });
       const newMsgId = (Date.now() + 1).toString();
       const spriteConfig = chatbotSpriteController.getSpriteForMessage(userMsg, false, false);
+      let finalSpriteId = spriteConfig.spriteId;
+      if (logged && activity) {
+        finalSpriteId = getSpriteForActivity(activity.activityName, activity.type);
+      }
+      
       setMessages(prev => [...prev, { 
         id: newMsgId, 
         text: displayText, 
         isAi: true, 
         logged, 
         activity, 
-        spriteId: spriteConfig.spriteId 
+        spriteId: finalSpriteId 
       }]);
 
     } catch (err: any) {
@@ -185,14 +200,6 @@ export default function ChatScreen() {
     }
   };
 
-  // Pick the right bear image for the activity type
-  const getActivityImage = (type?: string) => {
-    switch (type) {
-      case 'run': case 'walk': case 'cardio': return BEAR.RUNNING;
-      case 'strength': return BEAR.LIFTING;
-      default: return BEAR.FLEXING;
-    }
-  };
 
   const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
@@ -210,11 +217,9 @@ export default function ChatScreen() {
         {/* Activity Card */}
         {item.logged && item.activity && (
           <View style={s.activityCard}>
-            <Image
-              source={getActivityImage(item.activity.type)}
-              style={s.activityCardImage}
-              resizeMode="contain"
-            />
+            <View style={{ marginRight: 12, alignSelf: 'center', marginLeft: -5 }}>
+              <SpriteMascot spriteId={getSpriteForActivity(item.activity.activityName, item.activity.type)} size="md" />
+            </View>
             <View style={s.activityCardInfo}>
               <Text style={s.activityCardBadge}>{capitalize(item.activity.type)} Logged ✓</Text>
               <Text style={s.activityCardName}>{item.activity.activityName}</Text>

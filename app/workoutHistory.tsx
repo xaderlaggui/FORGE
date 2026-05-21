@@ -10,6 +10,7 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIn
 import { BearMascot } from '../components/forge/BearMascot';
 import { SpriteMascot } from '../components/forge/SpriteMascot';
 import { EmptyStateSpriteMap } from '../features/sprites/EmptyStateSpriteMap';
+import { getSpriteForActivity } from '../features/sprites/activity-sprite-map';
 import { useWorkouts } from '../hooks/useWorkouts';
 
 // ── Activity Images (using Bear mascot assets) ──
@@ -165,11 +166,21 @@ export default function WorkoutHistoryScreen() {
             >
               {/* Activity Image */}
               <View style={s.imageWrap}>
-                <Image
-                  source={item.photoUrl ? { uri: item.photoUrl } : (ACTIVITY_IMAGES[item.type] || ACTIVITY_IMAGES.strength)}
-                  style={item.photoUrl ? { width: '100%', height: '100%' } : s.activityImage}
-                  resizeMode={item.photoUrl ? 'cover' : 'contain'}
-                />
+                {item.photoUrl ? (
+                  <Image
+                    source={{ uri: item.photoUrl }}
+                    style={{ width: '100%', height: '100%' }}
+                    resizeMode="cover"
+                  />
+                ) : item.type === 'meal' ? (
+                  <Image
+                    source={ACTIVITY_IMAGES.meal}
+                    style={s.activityImage}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <SpriteMascot spriteId={getSpriteForActivity(item.title, item.type)} size="sm" />
+                )}
               </View>
 
               {/* Content */}

@@ -82,7 +82,7 @@ export default function HomeScreen() {
       </View>
 
       {/* ── Composition: Recent Activity ── */}
-      <RecentWorkoutsList recentWorkouts={data.recentWorkouts} />
+      <RecentWorkoutsList recentActivity={data.recentActivity} />
 
     </ScrollView>
   );

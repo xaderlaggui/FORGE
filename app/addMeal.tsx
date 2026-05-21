@@ -396,7 +396,7 @@ const useS = (T: any) => StyleSheet.create({
     paddingVertical: 25, paddingHorizontal: 32,
     borderRadius: 999,
     borderWidth: 1, borderColor: T.colors.forge + '4D',
-    marginBottom: 20,
+    marginBottom: 15,
     shadowColor: T.colors.forge, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 24, elevation: 12,
     backgroundColor: T.colors.bg1
   },
@@ -404,25 +404,25 @@ const useS = (T: any) => StyleSheet.create({
   caloriesLabel: { fontSize: 10, fontWeight: '800', color: T.colors.t2, letterSpacing: 2, marginTop: -4 },
 
   grid: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: 8, width: '100%', marginBottom: 16
+    flexDirection: 'row', flexWrap: 'wrap', gap: 8, width: '100%', marginBottom: 10
   },
   card: {
-    flex: 1, minWidth: '45%',
+    flex: 1, minWidth: '33%',
     backgroundColor: T.colors.bg1,
-    borderRadius: 12, padding: 25,
+    borderRadius: 15, padding: 18,
     borderWidth: 1, borderColor: T.colors.b1
   },
   cardHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8
   },
   cardLabel: { fontSize: 11, fontWeight: '700', color: T.colors.t2, letterSpacing: 1 },
-  cardValueRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 4 },
+  cardValueRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 1 },
   cardValue: { fontSize: 23, fontWeight: '900', color: T.colors.t1, textAlign: 'center', minWidth: 30, padding: 0 },
   cardUnit: { fontSize: 11, fontWeight: '600', color: T.colors.t3, marginBottom: 2 },
 
   notesRow: {
     flexDirection: 'row', alignItems: 'flex-start', gap: 8,
-    width: '100%', paddingHorizontal: 8, marginBottom: 15
+    width: '100%', paddingHorizontal: 8, marginBottom: 10
   },
   notesText: { flex: 1, fontSize: 11, fontWeight: '500', color: T.colors.t3, lineHeight: 16 },
 
