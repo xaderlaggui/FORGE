@@ -112,7 +112,7 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
           ...(() => {
             switch (bearMood) {
               case 'HYPED': // workout_complete (No CTA)
-                return { right: -25, bottom: -43, width: 170, height: 220 };
+                return { right: -21, bottom: -43, width: 170, height: 220 };
               case 'THINKING': // rest_day (No CTA)
                 return { right: -16, bottom: -20, width: 160, height: 200 };
               case 'STERN': // home_idle (Has CTA Button)

@@ -8,6 +8,11 @@ export class WorkoutSpriteMapper {
    */
   public getSpriteForWorkout(workoutType: string): string {
     const typeLower = workoutType.toLowerCase().replace(' ', '_');
+
+    if (typeLower.includes('push')) return 'overhead-press';
+    if (typeLower.includes('pull')) return 'pull-ups';
+    if (typeLower.includes('leg')) return 'leg-press';
+
     const validSprites = workoutTypeToSpriteMap[typeLower];
 
     if (validSprites && validSprites.length > 0) {
@@ -16,7 +21,7 @@ export class WorkoutSpriteMapper {
     }
 
     // Default fallback for unknown workout types
-    return 'shredder';
+    return 'flex';
   }
 }
 

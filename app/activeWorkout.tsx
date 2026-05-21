@@ -10,10 +10,10 @@ import { useActiveSession } from '../features/workout/hooks/useActiveSession';
 
 // Shared Components
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { SpriteMascot } from '../components/forge/SpriteMascot';
 import { ForgeButton } from '../components/forge/ForgeButton';
-import { workoutSpriteMapper } from '../features/sprites/WorkoutSpriteMapper';
+import { SpriteMascot } from '../components/forge/SpriteMascot';
 import { NumpadBottomSheet, RestTimerWidget } from '../components/forge/WorkoutWidgets';
+import { workoutSpriteMapper } from '../features/sprites/WorkoutSpriteMapper';
 
 const PRESETS = [
   { label: '3×8', sets: 3, reps: 8 },
@@ -32,7 +32,10 @@ export default function ActiveWorkoutScreen() {
   const session = useActiveSession(id, date, routineId, title);
   const [summary, setSummary] = useState<{ mins: number, volume: number, id: string } | null>(null);
   const [rpe, setRpe] = useState<string | null>(null);
-  const workoutSpriteId = workoutSpriteMapper.getSpriteForWorkout((title as string) || 'workout');
+  const [contentHeight, setContentHeight] = useState(0);
+  const [scrollViewHeight, setScrollViewHeight] = useState(0);
+  const canScroll = contentHeight > scrollViewHeight;
+  const workoutSpriteId = workoutSpriteMapper.getSpriteForWorkout(session.workoutTitle || (title as string) || 'workout');
 
   const handleFinish = async () => {
     try {
@@ -63,7 +66,7 @@ export default function ActiveWorkoutScreen() {
   if (summary) {
     return (
       <View style={[styles.container, { padding: 24, justifyContent: 'center', alignItems: 'center' }]}>
-        <SpriteMascot spriteId={workoutSpriteId} screen="workout_complete" size="xl" />
+        <SpriteMascot spriteId="celebrate" screen="workout_complete" size="xl" />
         <Text style={{ fontSize: 36, fontWeight: '900', color: T.colors.t1, marginTop: 32, letterSpacing: 1 }}>WORKOUT</Text>
         <Text style={{ fontSize: 36, fontWeight: '900', color: T.colors.forge, letterSpacing: 1 }}>COMPLETE!</Text>
 
@@ -119,7 +122,15 @@ export default function ActiveWorkoutScreen() {
         onBack={handleBack}
       />
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={canScroll}
+        bounces={canScroll}
+        onContentSizeChange={(w, h) => setContentHeight(h)}
+        onLayout={(e) => setScrollViewHeight(e.nativeEvent.layout.height)}
+      >
         {!session.workoutStarted ? (
           <View style={styles.startOverlay}>
             <View style={{ alignItems: 'center', marginBottom: 20 }}>
@@ -132,27 +143,7 @@ export default function ActiveWorkoutScreen() {
           </View>
         ) : (
           <>
-            {/* Feature 4: Volume Tracker */}
-            <View style={{ alignItems: 'center', marginVertical: 10 }}>
-              <SpriteMascot spriteId={workoutSpriteId} screen="workout_active" size="md" />
-            </View>
-            <View style={styles.volumeTracker}>
-              <View style={styles.volStat}>
-                <Text style={styles.volValue}>{session.volumeStats.volume.toLocaleString()}</Text>
-                <Text style={styles.volLabel}>LBS VOL</Text>
-              </View>
-              <View style={styles.volDivider} />
-              <View style={styles.volStat}>
-                <Text style={styles.volValue}>{session.volumeStats.completedSets}</Text>
-                <Text style={styles.volLabel}>SETS DONE</Text>
-              </View>
-              <View style={styles.volDivider} />
-              <View style={styles.volStat}>
-                <Text style={styles.volValue}>{session.doneExercises}/{session.totalExercises}</Text>
-                <Text style={styles.volLabel}>EXERCISES</Text>
-              </View>
-            </View>
-
+            {/* Volume Tracker removed from here */}
             {/* Exercise Navigator */}
             <View style={styles.navigator}>
               <TouchableOpacity
@@ -210,12 +201,28 @@ export default function ActiveWorkoutScreen() {
                   onRemoveSet={(exIdx, setIdx) => session.removeSet(session.currentExerciseIndex, setIdx)}
                   onOpenNumpad={(exIdx, setIdx, field) => session.openNumpad(session.currentExerciseIndex, setIdx, field)}
                 />
+
+                {/* Feature 4: Volume Tracker */}
+                <View style={[styles.volumeTracker, { marginTop: 10 }]}>
+                  <View style={styles.volStat}>
+                    <Text style={styles.volValue}>{session.volumeStats.volume.toLocaleString()}</Text>
+                    <Text style={styles.volLabel}>LBS VOL</Text>
+                  </View>
+                  <View style={styles.volDivider} />
+                  <View style={styles.volStat}>
+                    <Text style={styles.volValue}>{session.volumeStats.completedSets}</Text>
+                    <Text style={styles.volLabel}>SETS DONE</Text>
+                  </View>
+                  <View style={styles.volDivider} />
+                  <View style={styles.volStat}>
+                    <Text style={styles.volValue}>{session.doneExercises}/{session.totalExercises}</Text>
+                    <Text style={styles.volLabel}>EXERCISES</Text>
+                  </View>
+                </View>
               </>
             )}
           </>
         )}
-
-        <View style={{ height: 200 }} />
       </ScrollView>
 
       {/* Rest Timer (Absolute) */}
@@ -328,7 +335,6 @@ const useStyles = (T: any) => StyleSheet.create({
   },
 
   footer: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
     padding: T.spacing.page, paddingBottom: 36,
     backgroundColor: T.colors.bg0,
     borderTopWidth: 0.5, borderTopColor: T.colors.b1,

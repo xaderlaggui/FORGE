@@ -29,8 +29,8 @@ export const SpriteMascot: React.FC<SpriteMascotProps> = ({
   imageStyle,
   animation = 'static',
 }) => {
-  const finalSpriteId = spriteId || (screen ? screenToDefaultSpriteMap[screen] : 'forge');
-  const src = spriteAssets[finalSpriteId] || spriteAssets['forge'];
+  const finalSpriteId = spriteId || (screen ? screenToDefaultSpriteMap[screen] : 'smiling-coach');
+  const src = spriteAssets[finalSpriteId] || spriteAssets['smiling-coach'];
   const dimension = SIZE_MAP[size];
 
   const translateY = useSharedValue(0);

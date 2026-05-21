@@ -1,8 +1,8 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { AlertCircle, Candy, Droplets, Dumbbell, Flame, Leaf, Save, Sparkles, Star, Wheat, X } from 'lucide-react-native';
+import { AlertCircle, Candy, Droplets, Dumbbell, Flame, Leaf, Save, Sparkles, Star, Wheat } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MEAL_ANALYSIS_SYSTEM_PROMPT } from '../constants/prompts';
 import { useNutrition } from '../hooks/useNutrition';
 import { groqComplete } from '../services/groq';
@@ -202,16 +202,14 @@ export default function AddMealScreen() {
   return (
     <View style={s.container}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.iconBtn}>
-          <X size={24} color={T.colors.t1} />
-        </TouchableOpacity>
-        <Text style={s.title}>
-          LOG {resolvedMealName.toUpperCase()}
-        </Text>
-        <View style={{ width: 40 }} />
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }}>
+          <Text style={[s.title, { fontSize: 16 }]}>
+            LOG {resolvedMealName.toUpperCase()}
+          </Text>
+        </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
+      <View style={s.scroll}>
         {!analyzed ? (
           <View style={s.analyzeWrap}>
             <Text style={s.aiPrompt}>What did you eat?</Text>
@@ -348,7 +346,7 @@ export default function AddMealScreen() {
             </TouchableOpacity>
           </View>
         )}
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -363,7 +361,7 @@ const useS = (T: any) => StyleSheet.create({
   title: { fontSize: 14, fontWeight: '700', color: T.colors.t3, letterSpacing: 1 },
   scroll: { padding: 16, paddingBottom: 40 },
 
-  analyzeWrap: { marginTop: 24 },
+  analyzeWrap: { marginTop: 0 },
   aiPrompt: { fontSize: 24, fontWeight: '700', color: T.colors.t1, marginBottom: 16 },
   aiInput: {
     backgroundColor: T.colors.bg1, borderWidth: 1, borderColor: T.colors.b1,

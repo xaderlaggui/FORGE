@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { ChevronLeft, MoreHorizontal } from 'lucide-react-native';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { ChevronLeft, MoreHorizontal } from 'lucide-react-native';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface LiveTimerHeaderProps {
   timerLabel: string;
@@ -27,7 +27,7 @@ export function LiveTimerHeader({
 
       <View style={{ alignItems: 'center' }}>
         <Text style={styles.subtitle}>
-          EXERCISE {doneExercises + 1} OF {totalExercises}
+          Elapsed Time
         </Text>
         <View style={styles.timerBadge}>
           <View style={styles.timerDot} />

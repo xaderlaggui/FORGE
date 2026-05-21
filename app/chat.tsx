@@ -268,8 +268,8 @@ export default function ChatScreen() {
       {!item.isAi && (
         <TouchableOpacity onPress={() => router.push('/settings')} activeOpacity={0.8}>
           <View style={[s.avatarWrap, { backgroundColor: T.colors.bg3, overflow: 'hidden' }]}>
-            {user?.photoURL ? (
-              <Image source={{ uri: user.photoURL }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+            {(user?.photoURL || (user as any)?.photo_url) ? (
+              <Image source={{ uri: user?.photoURL || (user as any)?.photo_url }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
             ) : (
               <UserIcon size={15} color={T.colors.t1} />
             )}
@@ -286,18 +286,15 @@ export default function ChatScreen() {
     >
       {/* ── Header ── */}
       <View style={s.header}>
-        <View style={s.headerLeft}>
-          <View>
+        <View style={[s.headerLeft, { flex: 1, justifyContent: 'center' }]}>
+          <View style={{ alignItems: 'center' }}>
             <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>FORGE Coach</Text>
             <View style={s.onlineDot}>
               <View style={s.onlineDotCircle} />
-              <Text style={s.onlineText} maxFontSizeMultiplier={1.2}>Online</Text>
+              <Text style={s.onlineText} maxFontSizeMultiplier={1.2}>Online — Llama 3.3 70B</Text>
             </View>
           </View>
         </View>
-        <TouchableOpacity onPress={() => router.back()} style={s.closeBtn}>
-          <X size={18} color={T.colors.t2} />
-        </TouchableOpacity>
       </View>
 
       {/* ── Messages ── */}
@@ -358,7 +355,7 @@ const useS = (T: any) => StyleSheet.create({
   // Header
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingTop: 60, paddingBottom: T.spacing.px3, paddingHorizontal: T.spacing.page,
+    paddingTop: 30, paddingBottom: T.spacing.px3, paddingHorizontal: T.spacing.page,
     borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
     backgroundColor: T.colors.bg1,
   },
@@ -391,6 +388,7 @@ const useS = (T: any) => StyleSheet.create({
     backgroundColor: T.colors.forgeDim,
     alignItems: 'center', justifyContent: 'center',
     flexShrink: 0,
+    right: -2
   },
   bubble: {
     maxWidth: '78%', paddingHorizontal: 14, paddingVertical: 10, borderRadius: T.radii.lg,

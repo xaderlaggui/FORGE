@@ -1,15 +1,22 @@
+import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { X } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity,
-  Pressable, Modal, FlatList
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
 import Animated, {
-  useSharedValue, useAnimatedStyle, withRepeat,
-  withTiming, withSequence, Easing
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming
 } from 'react-native-reanimated';
-import { X } from 'lucide-react-native';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
+import Svg, { Circle } from 'react-native-svg';
 
 // ─────────────────────────────────────────────
 // 1. Circular Arc Rest Timer Widget
@@ -27,8 +34,8 @@ export function RestTimerWidget({
   restTime, totalTime = 60, isResting,
   onSkip, onAddTime, onTogglePause
 }: RestTimerWidgetProps) {
-  const { T } = useForgeTheme();
-  const timerStyles = useTimerStyles(T);
+  const { T, isDark } = useForgeTheme();
+  const timerStyles = useTimerStyles(T, isDark);
   const SIZE = 88;
   const R = 40;
   const CIRCUMFERENCE = 2 * Math.PI * R;
@@ -87,31 +94,31 @@ export function RestTimerWidget({
   );
 }
 
-const useTimerStyles = (T: any) => StyleSheet.create({
-          container: {
-            flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-            backgroundColor: 'rgba(20,20,22,0.95)',
-            borderRadius: 24, borderWidth: 0.5, borderColor: T.colors.b1,
-            paddingHorizontal: 16, paddingVertical: 14,
-            shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.4, shadowRadius: 40,
-            elevation: 20,
-          },
-          sideBtn: {
-            width: 44, height: 44, borderRadius: 22,
-            backgroundColor: T.colors.bg2,
-            alignItems: 'center', justifyContent: 'center',
-          },
-          sideBtnText: { fontSize: 11, fontWeight: '600', color: T.colors.t2 },
-          circle: { width: 88, height: 88, alignItems: 'center', justifyContent: 'center' },
-          circleInner: { width: 88, height: 88, alignItems: 'center', justifyContent: 'center' },
-          timerText: {
-            fontFamily: undefined,
-            fontSize: 24, fontWeight: '700',
-            color: T.colors.forge,
-            lineHeight: 28,
-          },
-          timerSub: { fontSize: 9, color: T.colors.t3, textTransform: 'uppercase', letterSpacing: 0.8, marginTop: 2 },
-        });
+const useTimerStyles = (T: any, isDark: boolean) => StyleSheet.create({
+  container: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    backgroundColor: isDark ? 'rgba(20,20,22,0.95)' : 'rgba(255,255,255,0.95)',
+    borderRadius: 24, borderWidth: 0.5, borderColor: T.colors.b1,
+    paddingHorizontal: 16, paddingVertical: 14,
+    shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: isDark ? 0.4 : 0.15, shadowRadius: 40,
+    elevation: 20,
+  },
+  sideBtn: {
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: T.colors.bg2,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  sideBtnText: { fontSize: 11, fontWeight: '600', color: T.colors.t2 },
+  circle: { width: 88, height: 88, alignItems: 'center', justifyContent: 'center' },
+  circleInner: { width: 88, height: 88, alignItems: 'center', justifyContent: 'center' },
+  timerText: {
+    fontFamily: undefined,
+    fontSize: 24, fontWeight: '700',
+    color: T.colors.forge,
+    lineHeight: 28,
+  },
+  timerSub: { fontSize: 9, color: T.colors.t3, textTransform: 'uppercase', letterSpacing: 0.8, marginTop: 2 },
+});
 
 
 // ─────────────────────────────────────────────
@@ -132,8 +139,8 @@ export function NumpadBottomSheet({
   visible, value, label = 'Log Value',
   onValueChange, onDone, onClose
 }: NumpadBottomSheetProps) {
-  const { T } = useForgeTheme();
-  const numpadStyles = useNumpadStyles(T);
+  const { T, isDark } = useForgeTheme();
+  const numpadStyles = useNumpadStyles(T, isDark);
   const handleKey = useCallback((key: string) => {
     if (key === '⌫') {
       onValueChange(value.slice(0, -1));
@@ -188,36 +195,36 @@ export function NumpadBottomSheet({
   );
 }
 
-const useNumpadStyles = (T: any) => StyleSheet.create({
-          overlay: {
-            flex: 1,
-            justifyContent: 'flex-end',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-          },
-          sheet: {
-            backgroundColor: T.colors.bg1,
-            borderTopLeftRadius: 24, borderTopRightRadius: 24,
-            borderTopWidth: 0.5, borderColor: T.colors.b1,
-            paddingHorizontal: 16, paddingBottom: 36, paddingTop: 12,
-            shadowColor: '#000', shadowOffset: { width: 0, height: -20 }, shadowOpacity: 0.5, shadowRadius: 40, elevation: 30,
-          },
-          handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: T.colors.bg3, alignSelf: 'center', marginBottom: 16 },
-          header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, paddingHorizontal: 4 },
-          headerLabel: { fontSize: 14, fontWeight: '600', color: T.colors.t1 },
-          closeBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: T.colors.bg2, alignItems: 'center', justifyContent: 'center' },
-          display: { alignItems: 'center', paddingVertical: 12 },
-          displayText: { fontSize: 40, fontWeight: '700', color: T.colors.t1 },
-          grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-          key: {
-            width: '30%', height: 54, backgroundColor: T.colors.bg2,
-            borderRadius: 14, alignItems: 'center', justifyContent: 'center',
-            flexGrow: 1,
-          },
-          keyText: { fontSize: 20, fontWeight: '500', color: T.colors.t1 },
-          doneBtn: {
-            backgroundColor: T.colors.forge, height: 54, borderRadius: 14,
-            alignItems: 'center', justifyContent: 'center', marginTop: 4,
-            shadowColor: T.colors.forge, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 15, elevation: 5,
-          },
-          doneBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
-        });
+const useNumpadStyles = (T: any, isDark: boolean) => StyleSheet.create({
+  overlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  sheet: {
+    backgroundColor: T.colors.bg1,
+    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    borderTopWidth: 0.5, borderColor: T.colors.b1,
+    paddingHorizontal: 16, paddingBottom: 36, paddingTop: 12,
+    shadowColor: '#000', shadowOffset: { width: 0, height: -20 }, shadowOpacity: isDark ? 0.5 : 0.2, shadowRadius: 40, elevation: 30,
+  },
+  handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: T.colors.bg3, alignSelf: 'center', marginBottom: 16 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, paddingHorizontal: 4 },
+  headerLabel: { fontSize: 14, fontWeight: '600', color: T.colors.t1 },
+  closeBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: T.colors.bg2, alignItems: 'center', justifyContent: 'center' },
+  display: { alignItems: 'center', paddingVertical: 12 },
+  displayText: { fontSize: 40, fontWeight: '700', color: T.colors.t1 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
+  key: {
+    width: '30%', height: 54, backgroundColor: T.colors.bg2,
+    borderRadius: 14, alignItems: 'center', justifyContent: 'center',
+    flexGrow: 1,
+  },
+  keyText: { fontSize: 20, fontWeight: '500', color: T.colors.t1 },
+  doneBtn: {
+    backgroundColor: T.colors.forge, height: 54, borderRadius: 14,
+    alignItems: 'center', justifyContent: 'center', marginTop: 4,
+    shadowColor: T.colors.forge, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 15, elevation: 5,
+  },
+  doneBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
+});
