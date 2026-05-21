@@ -108,7 +108,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
             variant="secondary"
           />
         </View>
-        <BearMascot variant="APPROVING" size="lg" style={{ position: 'absolute', right: -8, bottom: 46, zIndex: 10 }} />
+        <BearMascot variant="APPROVING" style={{ height: 200, width: 200, position: 'absolute', right: -30, bottom: 35, zIndex: 10 }} />
       </View>
     );
   }
