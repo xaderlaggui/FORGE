@@ -110,7 +110,7 @@ export default function SettingsScreen() {
     <ScrollView style={[s.container, { backgroundColor: T.colors.bg0 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16}>
       {/* ── Header ── */}
       <View style={[s.header, { borderBottomColor: T.colors.b1, backgroundColor: T.colors.bg0 }]}>
-        <Text style={[s.headerTitle, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>Settings</Text>
+        <Text style={[s.headerTitle, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>Profile</Text>
       </View>
 
       {/* ── Profile Card ── */}
@@ -152,53 +152,6 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      {/* ── Developer / Admin Section ── */}
-      {__DEV__ && (
-        <View style={s.section}>
-          <Text style={[s.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Developer</Text>
-          <View style={[s.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
-            <View style={{ padding: T.spacing.px4 }}>
-              <Text style={s.devHint} maxFontSizeMultiplier={1.2}>
-                Need test data? Seed the Firestore database with default exercises.
-              </Text>
-              <ForgeButton
-                label="Seed Exercises"
-                onPress={handleSeed}
-                loading={seeding}
-                variant="secondary"
-                leftIcon={<Database size={16} color={T.colors.forge} />}
-                style={{ marginBottom: 12 }}
-              />
-              <ForgeButton
-                label="Inject Mock User Data"
-                onPress={async () => {
-                  try {
-                    if (!user?.uid) return;
-                    setSeeding(true);
-                    const { seedMockUser } = await import('../../utils/seedData');
-                    await seedMockUser(user.uid);
-                    Alert.alert('Success', 'Mock profile and workouts injected to Firestore!');
-                  } catch (e: any) {
-                    Alert.alert('Error', e.message);
-                  } finally {
-                    setSeeding(false);
-                  }
-                }}
-                loading={seeding}
-                variant="secondary"
-                leftIcon={<Database size={16} color={T.colors.forge} />}
-                style={{ marginBottom: 12 }}
-              />
-              <ForgeButton
-                label="Generate AI Plan"
-                onPress={() => router.push('/aiPlan')}
-                variant="primary"
-                leftIcon={<Database size={16} color="#000" />}
-              />
-            </View>
-          </View>
-        </View>
-      )}
 
       {/* ── Actions ── */}
       <View style={s.section}>
