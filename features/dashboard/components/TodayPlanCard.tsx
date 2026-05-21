@@ -29,7 +29,7 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
   const isRestDay = !plannedWorkout || plannedWorkout.dayType === 'Rest';
   const isCompleted = !!loggedWorkout;
 
-  const bearMood = useBearMood(isCompleted ? 'workout_complete' : isRestDay ? 'rest_day' : 'home_idle');
+  const bearMood = useBearMood(isCompleted ? 'workout_complete' : isRestDay ? 'rest_day' : 'accountability');
 
   return (
     <View style={{ position: 'relative', overflow: 'visible', marginHorizontal: T.spacing.page, marginBottom: T.spacing.px5 }}>
@@ -99,7 +99,6 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
               })}
               variant="primary"
               size="md"
-              pulse
               accessibilityLabel="Start today's workout"
             />
           )}
@@ -110,14 +109,21 @@ export function TodayPlanCard({ isLoading, plannedWorkout, loggedWorkout, muscle
         size="lg"
         style={{
           position: 'absolute',
-          right: -34,
-          bottom: -35, // Overflow bottom slightly
-          width: 193,
-          height: 193
+          ...(() => {
+            switch (bearMood) {
+              case 'HYPED': // workout_complete (No CTA)
+                return { right: -25, bottom: -43, width: 170, height: 220 };
+              case 'THINKING': // rest_day (No CTA)
+                return { right: -25, bottom: 15, width: 160, height: 160 };
+              case 'STERN': // home_idle (Has CTA Button)
+              default:
+                return { right: -34, bottom: 72.7, width: 193, height: 135 }; // Sticky above the button
+            }
+          })()
         }}
         imageStyle={{
           width: '100%',
-          height: 193
+          height: '100%'
         }}
       />
     </View>
