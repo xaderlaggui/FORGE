@@ -55,11 +55,7 @@ export default function SplashScreen() {
     navigated.current = true;
 
     if (userRef.current) {
-      if (userRef.current.isOnboarded) {
-        router.replace('/(tabs)');
-      } else {
-        router.replace('/(onboarding)');
-      }
+      router.replace('/(tabs)');
     } else {
       router.replace('/(auth)/welcome');
     }
