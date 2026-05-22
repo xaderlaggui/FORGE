@@ -33,11 +33,11 @@ function ForgeFAB() {
   const pulseOpacity = useSharedValue(0.6);
   useEffect(() => {
     pulseScale.value = withRepeat(
-      withTiming(1.7, { duration: 1400, easing: Easing.out(Easing.ease) }),
+      withTiming(1.8, { duration: 1800, easing: Easing.out(Easing.cubic) }),
       -1, false
     );
     pulseOpacity.value = withRepeat(
-      withTiming(0, { duration: 1400, easing: Easing.out(Easing.ease) }),
+      withTiming(0, { duration: 1800, easing: Easing.out(Easing.cubic) }),
       -1, false
     );
   }, []);
