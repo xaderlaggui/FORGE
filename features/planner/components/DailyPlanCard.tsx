@@ -7,6 +7,7 @@ import { BearMascot } from '../../../components/forge/BearMascot';
 import { ForgeButton } from '../../../components/forge/ForgeButton';
 import { ForgeSkeleton } from '../../../components/forge/ForgeSkeleton';
 import { useExercises } from '../../../hooks/useExercises';
+import { classifyWorkoutFromExercises } from '../../../utils/workoutClassifier';
 import { mapMusclesToSlugs } from './ExerciseLibrary';
 
 function SkeletonPlanner() {
@@ -86,15 +87,24 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
 
   if (isCompleted) {
     const data = getHeatmapData(loggedWorkout);
+
+    let totalVolume = 0;
+    loggedWorkout.exercises?.forEach((ex: any) => {
+      ex.sets?.forEach((set: any) => {
+        totalVolume += (set.weight || 0) * (set.reps || 0);
+      });
+    });
+
     return (
       <View style={{ position: 'relative', overflow: 'visible', ...T.shadows.lift }}>
         <View style={[s.todayCard, { overflow: 'hidden' }]}>
           <View style={{ position: 'absolute', top: -20, right: -20, width: 110, height: 110, borderRadius: 55, backgroundColor: T.colors.forgeDim }} />
 
           <Text style={s.todayTitle} maxFontSizeMultiplier={1.2}>Completed</Text>
-          <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{loggedWorkout.notes || 'Workout Logged'}</Text>
+          <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{classifyWorkoutFromExercises(loggedWorkout.exercises)}</Text>
           <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
-            {loggedWorkout.exercises?.length ?? 0} Exercises Completed
+            {loggedWorkout.exercises?.length ?? 0} Exercises{'\n'}
+            {loggedWorkout.durationMin || 0} min • {totalVolume.toLocaleString()} kg Vol
           </Text>
           {data.length > 0 && (
             <View style={s.heatmapFigures}>
@@ -108,7 +118,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
             variant="secondary"
           />
         </View>
-        <BearMascot variant="APPROVING" style={{ height: 200, width: 200, position: 'absolute', right: -30, bottom: 35, zIndex: 10 }} />
+        <BearMascot variant="APPROVING" style={{ height: 140, width: 140, position: 'absolute', right: -10, bottom: 47, zIndex: 10 }} />
       </View>
     );
   }
@@ -121,7 +131,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
           <View style={{ position: 'absolute', top: -20, right: -20, width: 110, height: 110, borderRadius: 55, backgroundColor: T.colors.forgeDim }} />
 
           <Text style={s.todayTitle} maxFontSizeMultiplier={1.2}>Scheduled Routine</Text>
-          <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{plannedWorkout.title}</Text>
+          <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{classifyWorkoutFromExercises(plannedWorkout.exercises)}</Text>
           <Text style={s.todayMeta} maxFontSizeMultiplier={1.2}>
             {plannedWorkout.exercises?.length ?? 0} Exercises Prescribed
           </Text>
@@ -140,7 +150,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
           {isToday && (
             <ForgeButton
               label="▶ Start Routine"
-              onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr, title: plannedWorkout.title } })}
+              onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr, title: classifyWorkoutFromExercises(plannedWorkout.exercises), plannedExercises: JSON.stringify(plannedWorkout.exercises) } })}
               pulse
             />
           )}

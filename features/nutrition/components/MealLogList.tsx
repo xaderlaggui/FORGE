@@ -1,9 +1,11 @@
+import { useForgeTheme } from '@/hooks/useForgeTheme';
 import { useRouter } from 'expo-router';
 import { Apple, Moon, Sparkles, Sun, Sunrise } from 'lucide-react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import { ForgeSkeleton } from '../../../components/forge/ForgeSkeleton';
 import { MealDef } from '../types';
 
 const MEAL_DEFS: MealDef[] = [
@@ -23,7 +25,6 @@ const getMealIcon = (emoji: string, color: string) => {
   }
 };
 
-import { useForgeTheme } from "@/hooks/useForgeTheme";
 import type { GeneratedPlan } from '../../../services/GeneratorEngine';
 
 interface MealLogListProps {
@@ -38,6 +39,7 @@ export function MealLogList({ meals, activePlan, updateNutrition }: MealLogListP
   const { T } = useForgeTheme();
   const s = useS(T);
   const router = useRouter();
+  const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
 
   return (
     <View style={s.section}>
@@ -49,21 +51,36 @@ export function MealLogList({ meals, activePlan, updateNutrition }: MealLogListP
         return (
           <View key={key}>
             <View style={[s.sectionHeader, { marginTop: index === 0 ? 6 : 14 }]}>
-                <View style={s.sectionTitleRow}>
-                  <View style={s.mealIconWrap}>
-                    {getMealIcon(emoji, T.colors.forge)}
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={s.sectionTitle}>{label}</Text>
-                    {meal.isAiParsed && <Sparkles size={14} color={T.colors.green} />}
-                  </View>
+              <View style={s.sectionTitleRow}>
+                <View style={s.mealIconWrap}>
+                  {getMealIcon(emoji, T.colors.forge)}
                 </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text style={s.sectionTitle}>{label}</Text>
+                  {meal.isAiParsed && !isEmpty && <Sparkles size={14} color={T.colors.green} />}
+                </View>
+              </View>
               <Text style={[s.sectionCals, isEmpty && { color: T.colors.red }]}>
                 {isEmpty ? 'Not Logged' : `${meal.calories} kcal`}
               </Text>
             </View>
 
-            {isEmpty ? (
+            {loggingMealKey === key ? (
+              <View style={s.mealCardWrapper}>
+                <View style={s.mealCard}>
+                  <View style={[s.foodRow, { backgroundColor: T.colors.bg1 }]}>
+                    <View style={{ flex: 1, paddingRight: 8 }}>
+                      <ForgeSkeleton width="60%" height={14} radius={4} style={{ marginBottom: 6 }} />
+                      <ForgeSkeleton width="40%" height={10} radius={4} />
+                    </View>
+                    <View style={{ alignItems: 'flex-end' }}>
+                      <ForgeSkeleton width={40} height={14} radius={4} style={{ marginBottom: 6 }} />
+                      <ForgeSkeleton width={80} height={10} radius={4} />
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ) : isEmpty ? (
               <View style={s.emptyActions}>
                 <PulseAnimatedView style={{ flex: 1 }}>
                   <View style={[s.mealCardWrapper, { flex: 1, marginBottom: 0 }]}>
@@ -123,7 +140,13 @@ export function MealLogList({ meals, activePlan, updateNutrition }: MealLogListP
                         } else {
                           newMeals = [...meals, mealData];
                         }
-                        await updateNutrition({ meals: newMeals });
+
+                        try {
+                          setLoggingMealKey(key);
+                          await updateNutrition({ meals: newMeals });
+                        } finally {
+                          setLoggingMealKey(null);
+                        }
                       }
                     }}
                   >

@@ -27,9 +27,9 @@ export default function ActiveWorkoutScreen() {
   const { T } = useForgeTheme();
   const styles = useStyles(T);
   const router = useRouter();
-  const { id, date, routineId, title } = useLocalSearchParams();
+  const { id, date, routineId, title, plannedExercises } = useLocalSearchParams();
 
-  const session = useActiveSession(id, date, routineId, title);
+  const session = useActiveSession(id, date, routineId, title, plannedExercises);
   const [summary, setSummary] = useState<{ mins: number, volume: number, id: string } | null>(null);
   const [rpe, setRpe] = useState<string | null>(null);
   const [contentHeight, setContentHeight] = useState(0);
@@ -120,6 +120,8 @@ export default function ActiveWorkoutScreen() {
         totalExercises={session.totalExercises}
         doneExercises={session.doneExercises}
         onBack={handleBack}
+        isTimerPaused={session.isTimerPaused}
+        onToggleTimer={() => session.setIsTimerPaused((p: boolean) => !p)}
       />
 
       <ScrollView

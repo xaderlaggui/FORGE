@@ -1,7 +1,8 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { Search, Sparkles, X } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
 import Body from 'react-native-body-highlighter';
 import { ForgeSkeleton } from '../../../components/forge/ForgeSkeleton';
 import { EXERCISE_TIP_SYSTEM_PROMPT, exerciseTipUserPrompt } from '../../../constants/prompts';
@@ -163,7 +164,7 @@ export function ExercisePreviewModal({
               <Image
                 source={require('../../../assets/images/mascot/tips.png')}
                 style={{ width: 110, height: 130, marginLeft: -15, marginRight: 8 }}
-                resizeMode="contain"
+                contentFit="contain"
               />
 
               <View style={[s.aiTipCard, { flex: 1, marginTop: 0, marginHorizontal: 0, position: 'relative' }]}>

@@ -72,7 +72,7 @@ export function usePlannerData() {
 
   // Filter workout for selected day
   const loggedWorkout = useMemo(() => {
-    return workouts?.find(w => w.date.startsWith(activeDateStr));
+    return workouts?.find(w => w.date.startsWith(activeDateStr) && (w.type === 'strength' || (w.exercises && w.exercises.length > 0)));
   }, [workouts, activeDateStr]);
 
   const plannedWorkout = useMemo(() => {
@@ -95,7 +95,7 @@ export function usePlannerData() {
       }
     }
     // 2. Fallback to legacy static plan
-    return (user as any)?.plan_weekly_schedule || (user as any)?.plan?.weeklySchedule?.[activeDayIdx];
+    return (user as any)?.plan_weekly_schedule?.[activeDayIdx] || (user as any)?.plan?.weeklySchedule?.[activeDayIdx];
   }, [activePlan, activeDayIdx, user]);
 
   return {
