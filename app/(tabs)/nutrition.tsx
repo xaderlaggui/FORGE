@@ -2,19 +2,21 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 // Feature dependencies
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { MascotImage } from '../../components/common/MascotImage';
 import { DailyCalorieSummary } from '../../features/nutrition/components/DailyCalorieSummary';
 import { HydrationTracker } from '../../features/nutrition/components/HydrationTracker';
 import { MacroBreakdown } from '../../features/nutrition/components/MacroBreakdown';
 import { MealLogList } from '../../features/nutrition/components/MealLogList';
+import { NutritionCoachBubble } from '../../features/nutrition/components/NutritionCoachBubble';
 import { NutritionSkeleton } from '../../features/nutrition/components/NutritionSkeleton';
 import { useDailyNutrition } from '../../features/nutrition/hooks/useDailyNutrition';
 
+import { useRouter } from 'expo-router';
 import { useScrollToHideNav } from '../../hooks/useScrollToHideNav';
 
 export default function NutritionScreen() {
   const { T } = useForgeTheme();
   const s = useS(T);
+  const router = useRouter();
   const { onScroll } = useScrollToHideNav();
 
   // Clean Architecture: Logic and data fetching are handled by the hook
@@ -58,16 +60,10 @@ export default function NutritionScreen() {
       />
 
       {/* ── Composition: Meals ── */}
+      <NutritionCoachBubble onGeneratePress={() => router.push('/aiPlan')} />
+
       {nutrition.totalCalories === 0 && (
         <View style={{ alignItems: 'center', marginTop: 32, marginBottom: -16, zIndex: 10 }}>
-          <MascotImage
-            mascot="nutrition"
-            width={160}
-            height={160}
-            animation="none"
-            accessibilityLabel="Forge the bear holding a healthy meal bowl"
-            style={{ alignSelf: 'center', marginBottom: 16 }}
-          />
         </View>
       )}
 
