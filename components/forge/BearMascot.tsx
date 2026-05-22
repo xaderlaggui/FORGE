@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Image, StyleSheet, StyleProp, ViewStyle, ImageStyle } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence, Easing } from 'react-native-reanimated';
+import { Image, ImageStyle, StyleProp, ViewStyle } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { BEAR, BearKey } from '../../constants/bearAssets';
 
 interface BearMascotProps {
@@ -12,10 +12,10 @@ interface BearMascotProps {
 }
 
 const SIZE_MAP = {
-  sm:  64,
-  md:  96,
-  lg:  144,
-  xl:  208,
+  sm: 64,
+  md: 96,
+  lg: 144,
+  xl: 208,
 };
 
 export const BearMascot: React.FC<BearMascotProps> = ({
@@ -60,7 +60,7 @@ export const BearMascot: React.FC<BearMascotProps> = ({
 
   return (
     <Animated.View style={[
-      { width: isWide ? '100%' : dimension, height: isWide ? undefined : dimension, maxWidth: 320, aspectRatio: isWide ? 885/384 : undefined },
+      { width: isWide ? '100%' : dimension, height: isWide ? undefined : dimension, maxWidth: 320, aspectRatio: isWide ? 885 / 384 : undefined },
       animatedStyle,
       style
     ]}>
