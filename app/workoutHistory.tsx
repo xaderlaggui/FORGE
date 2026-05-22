@@ -249,7 +249,7 @@ const useS = (T: any) => StyleSheet.create({
 
   card: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: T.colors.bg1, borderRadius: T.radii.xl,
+    backgroundColor: T.colors.bg1, ...T.shadows.lift, borderRadius: T.radii.xl,
     borderWidth: 0.5, borderColor: T.colors.b1,
     padding: 14, marginBottom: 12,
     gap: 12,
