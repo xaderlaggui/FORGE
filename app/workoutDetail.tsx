@@ -141,7 +141,7 @@ export default function WorkoutDetailScreen() {
         </ViewShot>
       ) : (
         <View style={s.cardioContainer}>
-          <ViewShot ref={viewShotRef} style={{ backgroundColor: T.colors.bg1 }} options={{ format: 'jpg', quality: 0.9 }}>
+          <ViewShot ref={viewShotRef} style={{ backgroundColor: T.colors.bg1, ...T.shadows.lift }} options={{ format: 'jpg', quality: 0.9 }}>
             <View style={[s.shareCard, { backgroundColor: T.colors.bg2, justifyContent: 'center', alignItems: 'center' }]}>
               <Text style={{ color: T.colors.t3 }}>Add a photo to generate share card</Text>
             </View>
@@ -343,7 +343,7 @@ const useStyles = (T: any) => StyleSheet.create({
   },
   sStatCard: {
     flex: 1, minWidth: '40%',
-    backgroundColor: T.colors.bg1, borderRadius: T.radii.lg,
+    backgroundColor: T.colors.bg1, ...T.shadows.lift, borderRadius: T.radii.lg,
     borderWidth: 0.5, borderColor: T.colors.b1,
     paddingVertical: 16, paddingHorizontal: 12,
     alignItems: 'center',
@@ -352,7 +352,7 @@ const useStyles = (T: any) => StyleSheet.create({
   sStatLbl: { fontSize: 9, fontWeight: '800', color: T.colors.t3, letterSpacing: 1, textTransform: 'uppercase' },
 
   listHeader: { fontSize: 13, fontWeight: '700', color: T.colors.t3, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 14 },
-  exRow: { marginBottom: 14, backgroundColor: T.colors.bg1, borderRadius: T.radii.xl, borderWidth: 0.5, borderColor: T.colors.b1, overflow: 'hidden' },
+  exRow: { marginBottom: 14, backgroundColor: T.colors.bg1, ...T.shadows.lift, borderRadius: T.radii.xl, borderWidth: 0.5, borderColor: T.colors.b1, overflow: 'hidden' },
   exHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, paddingBottom: 10 },
   exNumBadge: { width: 24, height: 24, borderRadius: 12, backgroundColor: T.colors.forgeDim, alignItems: 'center', justifyContent: 'center' },
   exNumText: { fontSize: 11, fontWeight: '800', color: T.colors.forge },
