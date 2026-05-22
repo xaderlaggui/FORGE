@@ -15,34 +15,36 @@ export function AiCoachCard({ tip, isLoading, onChatPress }: AiCoachCardProps) {
   const { T: ForgeTheme } = useForgeTheme();
   const styles = useStyles(ForgeTheme);
   return (
-    <View style={styles.card}>
-      {/* Left forge accent bar */}
-      <View style={styles.accentBar} />
+    <View style={styles.cardWrapper}>
+      <View style={styles.card}>
+        {/* Left forge accent bar */}
+        <View style={styles.accentBar} />
 
-      <View style={styles.row}>
-        <View style={styles.iconWrap}>
-          <MessageSquare size={18} color={T.colors.forge} />
-        </View>
+        <View style={styles.row}>
+          <View style={styles.iconWrap}>
+            <MessageSquare size={18} color={T.colors.forge} />
+          </View>
 
-        <View style={styles.content}>
-          <Text style={styles.label}>Personalized</Text>
+          <View style={styles.content}>
+            <Text style={styles.label}>Personalized</Text>
 
-          {isLoading ? (
-            <ActivityIndicator size="small" color={T.colors.forge} style={{ alignSelf: 'flex-start', marginVertical: 4 }} />
-          ) : (
-            <TypewriterText
-              style={styles.tipText}
-              numberOfLines={3}
-              text={tip || "You're doing great! Keep pushing your limits today."}
-              delay={18}
-              animate={!!tip}
-            />
-          )}
+            {isLoading ? (
+              <ActivityIndicator size="small" color={T.colors.forge} style={{ alignSelf: 'flex-start', marginVertical: 4 }} />
+            ) : (
+              <TypewriterText
+                style={styles.tipText}
+                numberOfLines={3}
+                text={tip || "You're doing great! Keep pushing your limits today."}
+                delay={18}
+                animate={!!tip}
+              />
+            )}
 
-          <TouchableOpacity style={styles.chatBtn} onPress={onChatPress} activeOpacity={0.7}>
-            <Text style={styles.chatBtnText}>Chat with Coach</Text>
-            <ChevronRight size={14} color={T.colors.forge} />
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.chatBtn} onPress={onChatPress} activeOpacity={0.7}>
+              <Text style={styles.chatBtnText}>Chat with Coach</Text>
+              <ChevronRight size={14} color={T.colors.forge} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -50,6 +52,10 @@ export function AiCoachCard({ tip, isLoading, onChatPress }: AiCoachCardProps) {
 }
 
 const useStyles = (T: any) => StyleSheet.create({
+  cardWrapper: {
+    ...T.shadows.lift,
+    borderRadius: 16,
+  },
   card: {
     backgroundColor: T.colors.bg1,
     borderRadius: 16,
@@ -57,11 +63,6 @@ const useStyles = (T: any) => StyleSheet.create({
     borderColor: T.colors.b1,
     overflow: 'hidden',
     flexDirection: 'row',
-    shadowColor: T.colors.forge,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.04,
-    shadowRadius: 20,
-    elevation: 3,
   },
   accentBar: {
     width: 3,
