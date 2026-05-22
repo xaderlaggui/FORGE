@@ -6,6 +6,7 @@ import { Activity, AlertTriangle, CalendarDays, ChevronLeft, Plus, Target, X } f
 import React, { useMemo, useState } from 'react';
 import { Alert, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { ForgeButton } from '../components/forge/ForgeButton';
+import { ForgeSkeleton } from '../components/forge/ForgeSkeleton';
 import { ExerciseLibrary } from '../features/planner/components/ExerciseLibrary';
 import { WeeklyCalendar } from '../features/planner/components/WeeklyCalendar';
 import { useExercises } from '../hooks/useExercises';
@@ -13,6 +14,35 @@ import { GeneratedPlan, generateWorkoutPlanOnly } from '../services/GeneratorEng
 import { supabase } from '../services/supabase';
 import { useAuthStore } from '../stores/authStore';
 import { ActivityLevel, calculateNutritionTargets, Goal } from '../utils/nutritionEngine';
+
+function GeneratorSkeleton({ T }: { T: any }) {
+  return (
+    <View style={{ padding: 16 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30 }}>
+        {Array.from({ length: 7 }).map((_, i) => (
+          <ForgeSkeleton key={i} width={38} height={52} radius={12} />
+        ))}
+      </View>
+      <ForgeSkeleton width={160} height={28} radius={8} style={{ marginBottom: 20 }} />
+      {Array.from({ length: 4 }).map((_, i) => (
+        <View key={i} style={{ backgroundColor: T.colors.bg1, borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 0.5, borderColor: T.colors.b1 }}>
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+            <ForgeSkeleton circle size={48} />
+            <View style={{ flex: 1, gap: 8 }}>
+              <ForgeSkeleton width="70%" height={16} radius={4} />
+              <ForgeSkeleton width="40%" height={12} radius={4} />
+            </View>
+          </View>
+          <View style={{ marginTop: 16, flexDirection: 'row', gap: 8 }}>
+            <ForgeSkeleton width={60} height={24} radius={12} />
+            <ForgeSkeleton width={60} height={24} radius={12} />
+            <ForgeSkeleton width={60} height={24} radius={12} />
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
 
 export default function PlanGeneratorScreen() {
   const { T } = useForgeTheme();
@@ -261,8 +291,11 @@ export default function PlanGeneratorScreen() {
     <View style={s.container}>
 
       <ScrollView style={s.scroll} contentContainerStyle={s.content} bounces={false}>
-
-        <View style={s.hero}>
+        {isGenerating ? (
+          <GeneratorSkeleton T={T} />
+        ) : (
+          <>
+            <View style={s.hero}>
           <Text style={s.heroTitle}>Build Your Routine</Text>
           <Text style={s.heroSubtitle}>Let the AI pick specific exercises from the library tailored to your goals.</Text>
         </View>
@@ -317,18 +350,19 @@ export default function PlanGeneratorScreen() {
             <AlertTriangle size={18} color={T.colors.t2} />
             <Text style={s.sectionTitle}>Injuries or Limitations (Optional)</Text>
           </View>
-          <TextInput
-            style={s.textarea}
-            value={injuries}
-            onChangeText={setInjuries}
-            placeholder="e.g. bad lower back, shoulder impingement..."
-            placeholderTextColor={T.colors.t3}
-            multiline
-            numberOfLines={3}
-            textAlignVertical="top"
-          />
-        </View>
-
+            <TextInput
+              style={s.textarea}
+              value={injuries}
+              onChangeText={setInjuries}
+              placeholder="e.g. bad lower back, shoulder impingement..."
+              placeholderTextColor={T.colors.t3}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+            />
+          </View>
+        </>
+        )}
       </ScrollView>
 
       <View style={s.footer}>

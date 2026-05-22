@@ -6,7 +6,8 @@ import { formatDuration } from '../utils/format';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React, { useMemo } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { Image } from 'expo-image';
 import { BearMascot } from '../components/forge/BearMascot';
 import { SpriteMascot } from '../components/forge/SpriteMascot';
 import { EmptyStateSpriteMap } from '../features/sprites/EmptyStateSpriteMap';
@@ -173,13 +174,13 @@ export default function WorkoutHistoryScreen() {
                   <Image
                     source={{ uri: item.photoUrl }}
                     style={{ width: '100%', height: '100%' }}
-                    resizeMode="cover"
+                    contentFit="cover"
                   />
                 ) : item.type === 'meal' ? (
                   <Image
                     source={ACTIVITY_IMAGES.meal}
                     style={s.activityImage}
-                    resizeMode="contain"
+                    contentFit="contain"
                   />
                 ) : (
                   <SpriteMascot spriteId={getSpriteForActivity(item.title, item.type)} size="sm" />
