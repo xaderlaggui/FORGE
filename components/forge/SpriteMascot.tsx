@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Image, StyleProp, ViewStyle, ImageStyle } from 'react-native';
+import { StyleProp, ViewStyle, ImageStyle } from 'react-native';
+import { Image } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence, Easing, withSpring } from 'react-native-reanimated';
 import { spriteAssets } from '../../features/sprites/sprite-assets';
 import { AnimationType, ScreenType } from '../../features/sprites/sprite-types';

@@ -107,6 +107,7 @@ const useTimerStyles = (T: any, isDark: boolean) => StyleSheet.create({
     width: 44, height: 44, borderRadius: 22,
     backgroundColor: T.colors.bg2,
     alignItems: 'center', justifyContent: 'center',
+    borderColor: T.colors.forge, borderWidth: 1,
   },
   sideBtnText: { fontSize: 11, fontWeight: '600', color: T.colors.t2 },
   circle: { width: 88, height: 88, alignItems: 'center', justifyContent: 'center' },

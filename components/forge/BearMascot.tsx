@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Image, ImageStyle, StyleProp, ViewStyle } from 'react-native';
+import { ImageStyle, StyleProp, ViewStyle } from 'react-native';
+import { Image } from 'expo-image';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { BEAR, BearKey } from '../../constants/bearAssets';
 
