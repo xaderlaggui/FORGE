@@ -3,9 +3,9 @@ import { useUIStore } from '@/stores/uiStore';
 import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import { Tabs, usePathname, useRouter } from 'expo-router';
 import { Dumbbell, Home, PieChart, Sparkles, TrendingUp, User as UserIcon, UtensilsCrossed } from 'lucide-react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ForgeFAB() {
@@ -28,9 +28,28 @@ function ForgeFAB() {
     transform: [{ translateY: translateY.value }]
   }));
 
+  // Ripple pulse ring
+  const pulseScale = useSharedValue(1);
+  const pulseOpacity = useSharedValue(0.6);
+  useEffect(() => {
+    pulseScale.value = withRepeat(
+      withTiming(1.7, { duration: 1400, easing: Easing.out(Easing.ease) }),
+      -1, false
+    );
+    pulseOpacity.value = withRepeat(
+      withTiming(0, { duration: 1400, easing: Easing.out(Easing.ease) }),
+      -1, false
+    );
+  }, []);
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseScale.value }],
+    opacity: pulseOpacity.value,
+  }));
+
   if (isNutrition) {
     return (
       <Animated.View style={[styles.fabWrapper, animatedStyle, { bottom: 85 + insets.bottom }]}>
+        <Animated.View style={[styles.fabRing, { backgroundColor: T.colors.forge }, pulseStyle]} />
         <TouchableOpacity
           style={[styles.fab, { backgroundColor: T.colors.forge, shadowColor: T.colors.forge }]}
           onPress={() => router.push('/addMeal')}
@@ -47,6 +66,7 @@ function ForgeFAB() {
   if (isHome) {
     return (
       <Animated.View style={[styles.fabWrapper, animatedStyle, { bottom: 85 + insets.bottom }]}>
+        <Animated.View style={[styles.fabRing, { backgroundColor: aiColor }, pulseStyle]} />
         <TouchableOpacity
           style={[styles.fab, { backgroundColor: aiColor, shadowColor: aiColor }]}
           onPress={() => router.push('/chat')}
@@ -202,5 +222,12 @@ const useStyles = (T: any) => StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
     zIndex: 100,
+  },
+  fabRing: {
+    position: 'absolute',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    zIndex: 99,
   },
 });
