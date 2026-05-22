@@ -1,5 +1,5 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { ChevronLeft, MoreHorizontal } from 'lucide-react-native';
+import { ChevronLeft, Play, Pause } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -8,6 +8,8 @@ interface LiveTimerHeaderProps {
   totalExercises: number;
   doneExercises: number;
   onBack: () => void;
+  isTimerPaused?: boolean;
+  onToggleTimer?: () => void;
 }
 
 export function LiveTimerHeader({
@@ -15,6 +17,8 @@ export function LiveTimerHeader({
   totalExercises,
   doneExercises,
   onBack,
+  isTimerPaused,
+  onToggleTimer,
 }: LiveTimerHeaderProps): React.JSX.Element {
   const { T } = useForgeTheme();
   const styles = useStyles(T);
@@ -37,8 +41,12 @@ export function LiveTimerHeader({
         </View>
       </View>
 
-      <TouchableOpacity style={styles.backBtn}>
-        <MoreHorizontal size={20} color={T.colors.t2} />
+      <TouchableOpacity style={styles.backBtn} onPress={onToggleTimer}>
+        {isTimerPaused ? (
+          <Play size={20} color={T.colors.forge} fill={T.colors.forge} style={{ marginLeft: 2 }} />
+        ) : (
+          <Pause size={20} color={T.colors.forge} fill={T.colors.forge} />
+        )}
       </TouchableOpacity>
     </View>
   );

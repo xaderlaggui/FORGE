@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForgeTheme Color Scheme & Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Palette variables mapped from ForgeTheme */
+      --forge: #FF5C2E;
+      --forge-mid: #FF7D54;
+      --forge-muted: #CC4A25;
+      --forge-dim: rgba(255, 92, 46, 0.15);
+      
+      --green: #32D74B;
+      --green-dim: rgba(50, 215, 75, 0.12);
+      --blue: #0A84FF;
+      --blue-dim: rgba(10, 132, 255, 0.12);
+      --gold: #FF9F0A;
+      --gold-dim: rgba(255, 159, 10, 0.12);
+      --red: #FF453A;
+      --red-dim: rgba(255, 69, 58, 0.12);
+      --purple: #BF5AF2;
+      --purple-dim: rgba(191, 90, 242, 0.12);
+
+      /* adaptive dark base specs (rendering the primary design mode here) */
+      --bg0: #111113;
+      --bg1: #1C1C1E;
+      --bg2: #2C2C2E;
+      --bg3: #3A3A3C;
+      --b1: #2C2C2E;
+      --t1: #F5F5F7;
+      --t2: #AEAEB2;
+      --t3: #6E6E73;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg0);
+      color: var(--t1);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      padding: 40px 20px;
+      -webkit-print-color-adjust: exact; /* Force rendering of colors */
+      print-color-adjust: exact;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header Design */
+    header {
+      border-bottom: 2px solid var(--b1);
+      padding-bottom: 30px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .brand-accent-line {
+      height: 4px;
+      background: linear-gradient(90deg, var(--forge) 0%, var(--purple) 50%, var(--blue) 100%);
+      border-radius: 2px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      color: var(--t1);
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--t2);
+      font-weight: 500;
+    }
+
+    /* Print Button */
+    .print-btn {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      background-color: var(--forge);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 92, 46, 0.4);
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .print-btn:hover {
+      transform: translateY(-2px);
+      background-color: var(--forge-mid);
+    }
+
+    .print-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Sections */
+    section {
+      margin-bottom: 48px;
+      page-break-inside: avoid; /* Prevent ugly middle-section print breaks */
+    }
+
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--forge);
+      padding-left: 12px;
+      color: var(--t1);
+    }
+
+    p {
+      color: var(--t2);
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      background-color: var(--bg1);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--b1);
+    }
+
+    th, td {
+      padding: 16px;
+      text-align: left;
+      font-size: 14px;
+      border-bottom: 1px solid var(--b1);
+    }
+
+    th {
+      background-color: var(--bg2);
+      color: var(--t1);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Color Grid visual cards */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .color-card {
+      background-color: var(--bg1);
+      border: 1px solid var(--b1);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .color-swatch {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .color-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .color-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--t1);
+    }
+
+    .color-hex {
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--t3);
+    }
+
+    .color-desc {
+      font-size: 12px;
+      color: var(--t2);
+      margin-top: 2px;
+    }
+
+    /* Alert Banner block styling */
+    .alert-block {
+      background-color: var(--bg1);
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .alert-block.warning {
+      border-left-color: var(--forge);
+    }
+
+    .alert-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--t1);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .alert-content {
+      font-size: 13px;
+      color: var(--t2);
+      line-height: 1.5;
+    }
+
+    /* Code block stylings */
+    pre {
+      background-color: var(--bg1);
+      border: 1px solid var(--b1);
+      padding: 20px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-family: Courier, monospace;
+      font-size: 13px;
+      color: var(--t1);
+      margin-bottom: 24px;
+    }
+
+    code {
+      font-family: Courier, monospace;
+      font-size: 13px;
+    }
+
+    /* Print Specific Tweaks */
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0;
+      }
+      
+      .print-btn {
+        display: none !important;
+      }
+
+      /* Force dynamic colors print values */
+      :root {
+        --bg0: #ffffff;
+        --bg1: #f9f9fb;
+        --bg2: #f1f1f4;
+        --bg3: #e5e5ea;
+        --b1: #d2d2d7;
+        --t1: #1d1d1f;
+        --t2: #48484a;
+        --t3: #8e8e93;
+      }
+
+      .color-card {
+        border: 1px solid #d2d2d7 !important;
+        background-color: #f9f9fb !important;
+        page-break-inside: avoid;
+      }
+
+      pre {
+        background-color: #f9f9fb !important;
+        border: 1px solid #d2d2d7 !important;
+        color: #000000 !important;
+      }
+
+      section {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="print-btn" onclick="window.print()">🖨️ Export to PDF</button>
+
+  <div class="container">
+    <header>
+      <div class="brand-accent-line"></div>
+      <h1>ForgeTheme Design System</h1>
+      <div class="subtitle">Comprehensive Color Scheme & UI Token Documentation</div>
+    </header>
+
+    <!-- INTRO -->
+    <section>
+      <h2>Design Philosophy</h2>
+      <p>
+        ForgeTheme is a high-fidelity, adaptive user experience system. Built on a rich graphite layout in dark mode and an editorial off-white in light mode, the layout leverages highly vibrant accents to categorize active parameters of training, hydration, nutrition, and intelligent AI interaction.
+      </p>
+      <div class="alert-block">
+        <div class="alert-title">🎨 Premium Aesthetic Rule</div>
+        <div class="alert-content">
+          Never hardcode color strings in components (e.g. <code>#FFFFFF</code> or <code>#FF5C2E</code>). Always bind styles to the reactive <code>T.colors</code> token registry, which automatically adapts colors when the theme shifts.
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCENT SECTION -->
+    <section>
+      <h2>1. Brand & Semantic Accent Palette</h2>
+      <p>These colors remain consistent across both Light and Dark modes to anchor the user interface's visual consistency.</p>
+      
+      <div class="color-grid">
+        <div class="color-card">
+          <div class="color-swatch" style="background-color: var(--forge);"></div>
+          <div class="color-details">
+            <span class="color-name">forge</span>
+            <span class="color-hex">#FF5C2E</span>
+            <span class="color-desc">Signature Brand Orange. Buttons & active nav.</span>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-swatch" style="background-color: var(--green);"></div>
+          <div class="color-details">
+            <span class="color-name">green</span>
+            <span class="color-hex">#32D74B</span>
+            <span class="color-desc">Protein tracking & AI sparkles indicator.</span>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-swatch" style="background-color: var(--blue);"></div>
+          <div class="color-details">
+            <span class="color-name">blue</span>
+            <span class="color-hex">#0A84FF</span>
+            <span class="color-desc">Carbohydrates & Hydration water graphs.</span>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-swatch" style="background-color: var(--gold);"></div>
+          <div class="color-details">
+            <span class="color-name">gold</span>
+            <span class="color-hex">#FF9F0A</span>
+            <span class="color-desc">Fats tracking & workout streak metrics.</span>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-swatch" style="background-color: var(--red);"></div>
+          <div class="color-details">
+            <span class="color-name">red</span>
+            <span class="color-hex">#FF453A</span>
+            <span class="color-desc">Swipe deletion & calorie limit warnings.</span>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-swatch" style="background-color: var(--purple);"></div>
+          <div class="color-details">
+            <span class="color-name">purple</span>
+            <span class="color-hex">#BF5AF2</span>
+            <span class="color-desc">AI Personal Coach and Physique metrics.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MATRICES SECTION -->
+    <section>
+      <h2>2. Adaptive Interface Bases</h2>
+      <p>Surface, border, and typography tokens dynamically shift according to the system scheme setting.</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Token Name</th>
+            <th>Dark Mode Value</th>
+            <th>Light Mode Value</th>
+            <th>Layout Usage Context</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>bg0</strong></td>
+            <td>#111113</td>
+            <td>#F5F5F7</td>
+            <td>Main viewport scaffold and frame page background.</td>
+          </tr>
+          <tr>
+            <td><strong>bg1</strong></td>
+            <td>#1C1C1E</td>
+            <td>#FFFFFF</td>
+            <td>Standard block card component, log module surface.</td>
+          </tr>
+          <tr>
+            <td><strong>bg2</strong></td>
+            <td>#2C2C2E</td>
+            <td>#FBFBFD</td>
+            <td>Subtle nested headers, secondary tables or item rows.</td>
+          </tr>
+          <tr>
+            <td><strong>bg3</strong></td>
+            <td>#3A3A3C</td>
+            <td>#E5E5EA</td>
+            <td>Input bar backgrounds, macro sliders track limits.</td>
+          </tr>
+          <tr>
+            <td><strong>t1</strong></td>
+            <td>#F5F5F7</td>
+            <td>#1D1D1F</td>
+            <td>Primary text titles, bold units and core logs stats labels.</td>
+          </tr>
+          <tr>
+            <td><strong>t2</strong></td>
+            <td>#AEAEB2</td>
+            <td>#6E6E73</td>
+            <td>Secondary caption summaries, macro values, card metadata.</td>
+          </tr>
+          <tr>
+            <td><strong>b1</strong></td>
+            <td>#2C2C2E</td>
+            <td>#D2D2D7</td>
+            <td>Subtle separation lines and cards outer perimeters borders.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CONTEXT CATEGORIES -->
+    <section>
+      <h2>3. Dynamic Feature Mapping</h2>
+      <p>To retain semantic weight across screens, components map to exact color indices in the accent spectrum:</p>
+      <ul>
+        <li style="margin-bottom: 12px; margin-left: 20px;">
+          <strong style="color: var(--forge);">Forge Accent (Orange)</strong>: Main action tabs, streak numbers, and highlight active components.
+        </li>
+        <li style="margin-bottom: 12px; margin-left: 20px;">
+          <strong style="color: var(--green);">AI Parse & Sparkles (Green)</strong>: AI-powered sparkles next to meal log lists to denote items logged from generative parsing inputs.
+        </li>
+        <li style="margin-bottom: 12px; margin-left: 20px;">
+          <strong style="color: var(--blue);">Hydration Flow (Blue)</strong>: Hydration level bar fill metrics, droplet log triggers, glass and bottle actions.
+        </li>
+        <li style="margin-bottom: 12px; margin-left: 20px;">
+          <strong style="color: var(--red);">Action Triggers (Red)</strong>: Behind-the-card swipe actions that initiate delete queries.
+        </li>
+      </ul>
+    </section>
+
+    <!-- DEVELOPER SNIPPETS -->
+    <section>
+      <h2>4. Implementation Pattern</h2>
+      <p>Retrieve the theme objects reactively in custom screens using standard syntax:</p>
+      <pre>
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useForgeTheme } from "@/hooks/useForgeTheme";
+
+export function ActiveMetricCard() {
+  const { T } = useForgeTheme();
+  const styles = useStyles(T);
+
+  return (
+    &lt;View style={styles.card}&gt;
+      &lt;Text style={styles.text}&gt;Reactive Layout Token&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+const useStyles = (T: any) =&gt; StyleSheet.create({
+  card: {
+    backgroundColor: T.colors.bg1,
+    padding: T.spacing.px4,
+    borderWidth: 1,
+    borderColor: T.colors.b1,
+    ...T.shadows.lift,
+  },
+  text: {
+    color: T.colors.t1,
+    fontSize: T.typography.sizes.body,
+  }
+});</pre>
+    </section>
+  </div>
+
+</body>
+</html>

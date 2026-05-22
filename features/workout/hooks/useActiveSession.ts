@@ -6,12 +6,13 @@ import { useWorkouts } from '../../../hooks/useWorkouts';
 import { useRoutines } from '../../../hooks/useRoutines';
 import { ExerciseState, NumpadTarget } from '../types';
 
-export function useActiveSession(id?: string | string[], date?: string | string[], routineId?: string | string[], title?: string | string[]) {
+export function useActiveSession(id?: string | string[], date?: string | string[], routineId?: string | string[], title?: string | string[], plannedExercises?: string | string[]) {
   const router = useRouter();
   const { workouts, saveWorkout } = useWorkouts();
   const { routines } = useRoutines();
 
   const [workoutStarted, setWorkoutStarted] = useState(false);
+  const [isTimerPaused, setIsTimerPaused] = useState(true);
   const [timer, setTimer] = useState(0);
   const [isResting, setIsResting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -75,6 +76,33 @@ export function useActiveSession(id?: string | string[], date?: string | string[
           })),
         })));
       }
+    } else if (plannedExercises && typeof plannedExercises === 'string') {
+      if (typeof title === 'string') setWorkoutTitle(title);
+      try {
+        const parsed = JSON.parse(plannedExercises);
+        if (parsed && parsed.length > 0) {
+          setExercises(parsed.map((ex: any) => ({
+            name: ex.name,
+            sets: Array.from({ length: 3 }).map((_, idx) => ({
+              id: idx + 1,
+              prev: getPrev(ex.name, idx),
+              weight: '',
+              reps: '10',
+              done: false,
+            })),
+          })));
+        } else {
+          setExercises([{ 
+            name: 'Bench Press (Barbell)', 
+            sets: [
+              { id: 1, prev: getPrev('Bench Press (Barbell)', 0), weight: '', reps: '', done: false },
+              { id: 2, prev: getPrev('Bench Press (Barbell)', 1), weight: '', reps: '', done: false },
+            ] 
+          }]);
+        }
+      } catch (e) {
+        console.error('Failed to parse plannedExercises', e);
+      }
     } else {
       if (typeof title === 'string') {
         setWorkoutTitle(title);
@@ -92,10 +120,10 @@ export function useActiveSession(id?: string | string[], date?: string | string[
 
   // General Timer
   useEffect(() => {
-    if (!workoutStarted) return;
+    if (!workoutStarted || isTimerPaused) return;
     const iv = setInterval(() => setTimer(t => t + 1), 1000);
     return () => clearInterval(iv);
-  }, [workoutStarted]);
+  }, [workoutStarted, isTimerPaused]);
 
   // Rest Countdown
   useEffect(() => {
@@ -255,7 +283,7 @@ export function useActiveSession(id?: string | string[], date?: string | string[
     timer, timerLabel, isResting, isPaused, restTime, totalRestTime,
     workoutTitle, exercises, numpadVisible, numpadValue, numpadLabel,
     doneExercises, totalExercises, currentExerciseIndex, setCurrentExerciseIndex,
-    allSetsComplete, volumeStats, personalRecords,
+    allSetsComplete, volumeStats, personalRecords, isTimerPaused, setIsTimerPaused,
     setNumpadValue, setNumpadVisible, setIsResting, setRestTime, setIsPaused,
     toggleSet, addSet, removeSet, selectPreset, openNumpad, commitNumpad, finishWorkout
   };

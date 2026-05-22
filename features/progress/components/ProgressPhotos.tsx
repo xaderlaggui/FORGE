@@ -1,7 +1,8 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { Camera, X } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
 import dayjs from 'dayjs';
 
 interface ProgressPhotosProps {
@@ -56,7 +57,7 @@ export function ProgressPhotos({
               activeOpacity={0.85}
             >
               {photo?.url ? (
-                <Image source={{ uri: photo.url }} style={StyleSheet.absoluteFill as any} resizeMode="cover" />
+                <Image source={{ uri: photo.url }} style={StyleSheet.absoluteFill as any} contentFit="cover" />
               ) : (
                 <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: 0.3 }]}>
                   <Camera size={24} color={T.colors.t2} />
@@ -89,7 +90,7 @@ export function ProgressPhotos({
                 {selectedPhoto.badge} Photo
               </Text>
               
-              <Image source={{ uri: selectedPhoto.url }} style={s.modalImage} resizeMode="contain" />
+              <Image source={{ uri: selectedPhoto.url }} style={s.modalImage} contentFit="contain" />
 
               <View style={s.metaWrap}>
                 <Text style={s.dateText} maxFontSizeMultiplier={1.2}>
