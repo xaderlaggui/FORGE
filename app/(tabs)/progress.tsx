@@ -73,7 +73,7 @@ export default function ProgressScreen() {
       </View>
       {/* ── Composition: Key Stats ── */}
       <View style={s.statsRow}>
-        <StatCard label="Current" value={currentWeight} unit="lbs" delta={weightDiff} />
+        <StatCard label="Current" value={currentWeight} unit="lbs" delta={weightDiff} userGoal={(user as any)?.fitness_goal || (user as any)?.fitnessGoal} />
         <StatCard label="Started" value={startWeight} unit="lbs" />
         <StatCard label="BMI" value={user?.bmi?.toFixed(1) ?? '—'} subText={bmiCategory} valueColor={bmiColor} Icon={bmiIcon} />
       </View>
