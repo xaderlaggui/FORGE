@@ -69,10 +69,12 @@ export default function PersonalizeModal() {
       setUser({ ...user, ...updates, isOnboarded: true } as any);
 
       // Navigate back to tabs
-      if (router.canGoBack()) {
+      if (router.canDismiss()) {
+        router.dismissAll();
+      } else if (router.canGoBack()) {
         router.back();
       } else {
-        router.replace('/(tabs)');
+        router.navigate('/(tabs)');
       }
 
     } catch (error: any) {
