@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { supabase } from '../services/supabase';
-import { calculateBMI } from '../utils/bmi';
-import { useAuthStore } from '../stores/authStore';
 import { useForgeTheme } from '@/hooks/useForgeTheme';
-import { Sparkles, ArrowRight } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { ArrowRight } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SpriteMascot } from '../components/forge/SpriteMascot';
 import { onboardingSpriteSequence } from '../features/sprites/OnboardingSpriteSequence';
+import { supabase } from '../services/supabase';
+import { useAuthStore } from '../stores/authStore';
+import { calculateBMI } from '../utils/bmi';
 
 export default function PersonalizeModal() {
   const { T } = useForgeTheme();
   const styles = useStyles(T);
   const router = useRouter();
-  
+
   const spriteConfig = onboardingSpriteSequence.getSpriteForStep(4);
-  
+
   const [age, setAge] = useState('');
   const [height, setHeight] = useState(''); // cm
   const [weight, setWeight] = useState(''); // kg
   const [loading, setLoading] = useState(false);
-  
+
   // AI Generator Preferences
-  const [fitnessGoal, setFitnessGoal] = useState<'cut'|'maintain'|'bulk'>('maintain');
-  const [dietPreference, setDietPreference] = useState<'anything'|'vegan'|'keto'>('anything');
-  const [equipmentAccess, setEquipmentAccess] = useState<'full'|'dumbbells'|'bodyweight'>('full');
+  const [fitnessGoal, setFitnessGoal] = useState<'cut' | 'maintain' | 'bulk'>('maintain');
+  const [dietPreference, setDietPreference] = useState<'anything' | 'vegan' | 'keto'>('anything');
+  const [equipmentAccess, setEquipmentAccess] = useState<'full' | 'dumbbells' | 'bodyweight'>('full');
 
   const { user, setUser } = useAuthStore();
 
@@ -45,7 +45,7 @@ export default function PersonalizeModal() {
       setLoading(true);
       const { bmi } = calculateBMI(weightNum, heightNum);
       const weightLbs = Math.round(weightNum * 2.20462);
-      
+
       const updates = {
         age: ageNum,
         height: heightNum,
@@ -58,23 +58,23 @@ export default function PersonalizeModal() {
         weight_history: [{ value: weightLbs, date: new Date().toISOString() }],
         is_onboarded: true,
       };
-      
+
       const { error } = await supabase
         .from('profiles')
         .update(updates)
         .eq('id', user.uid);
-        
+
       if (error) throw error;
-      
+
       setUser({ ...user, ...updates, isOnboarded: true } as any);
-      
+
       // Navigate back to tabs
       if (router.canGoBack()) {
         router.back();
       } else {
         router.replace('/(tabs)');
       }
-      
+
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
@@ -113,7 +113,7 @@ export default function PersonalizeModal() {
 
         <Animated.View entering={FadeInDown.delay(200).duration(600)} style={styles.card}>
           <Text style={styles.sectionTitle}>Physical Stats</Text>
-          
+
           <View style={styles.row}>
             <View style={styles.inputGroupFlex}>
               <Text style={styles.label}>Age</Text>
@@ -157,7 +157,7 @@ export default function PersonalizeModal() {
 
         <Animated.View entering={FadeInDown.delay(300).duration(600)} style={styles.card}>
           <Text style={styles.sectionTitle}>Your Preferences</Text>
-          
+
           <View style={styles.pickerGroup}>
             <Text style={styles.label}>Primary Goal</Text>
             <View style={styles.pillRow}>
@@ -214,8 +214,8 @@ export default function PersonalizeModal() {
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(400).duration(600)}>
-          <TouchableOpacity 
-            style={styles.button} 
+          <TouchableOpacity
+            style={styles.button}
             onPress={handleCompleteSetup}
             disabled={loading}
             activeOpacity={0.8}
