@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { ForgeButton } from '../../components/forge/ForgeButton';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { SpriteMascot } from '../../components/forge/SpriteMascot';
-import { onboardingSpriteSequence } from '../../features/sprites/OnboardingSpriteSequence';
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,18 +17,21 @@ export default function WelcomeScreen() {
       index: 0,
       title: 'Train Like A Pro',
       description: 'Dynamic PPL splits constructed mathematically for your specific body and frequency.',
+      spriteId: 'overhead-press',
     },
     {
       id: '2',
       index: 1,
       title: 'Macro Precision',
       description: 'Calculates your exact TDEE to give you perfect caloric targets whether you want to shred or bulk.',
+      spriteId: 'deadlift',
     },
     {
       id: '3',
       index: 2,
       title: 'Progressive Overload',
       description: 'The app remembers your reps and automatically increments your weights every week.',
+      spriteId: 'bench-press',
     }
   ];
 
@@ -64,16 +66,11 @@ export default function WelcomeScreen() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         renderItem={({ item }) => {
-          const config = onboardingSpriteSequence.getSpriteForStep(item.index);
           return (
             <View style={s.slide}>
-              <TouchableOpacity style={s.iconWrap} activeOpacity={0.8} onPress={() => alert(config.messageSuggestion)}>
-                <SpriteMascot 
-                  spriteId={config.spriteId} 
-                  animation={config.animation} 
-                  size="xl" 
-                />
-              </TouchableOpacity>
+              <View style={s.iconWrap}>
+                <SpriteMascot spriteId={item.spriteId} animation="fade-in" size="xl" />
+              </View>
               <Text style={s.title}>{item.title}</Text>
               <Text style={s.description}>{item.description}</Text>
             </View>
