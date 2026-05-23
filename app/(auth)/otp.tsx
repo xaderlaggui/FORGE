@@ -18,6 +18,7 @@ import Animated, {
 import { MascotImage } from '../../components/common/MascotImage';
 import { supabase } from '../../services/supabase';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { useAuthStore } from '../../stores/authStore';
 
 export default function OtpScreen() {
   const { T } = useForgeTheme();
@@ -52,12 +53,16 @@ export default function OtpScreen() {
       const { data, error } = await supabase.auth.verifyOtp({
         email,
         token: otp,
-        type: 'email',
+        type: 'signup',
       });
       if (error) throw error;
       
-      // Successfully authenticated. Navigate to password setup.
-      router.push('/(auth)/password');
+      // The user wanted to NOT be auto-logged in. So we sign them out immediately.
+      await supabase.auth.signOut();
+      useAuthStore.getState().setUser(null);
+
+      // Successfully authenticated and verified. Navigate to hooray.
+      router.push('/(auth)/hooray');
     } catch (error: any) {
       Alert.alert('Verification Failed', error.message);
     } finally {
@@ -68,7 +73,10 @@ export default function OtpScreen() {
   const handleResend = async () => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({ email });
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      });
       if (error) throw error;
       Alert.alert('Sent', 'A new verification code has been sent to your email.');
     } catch (error: any) {
