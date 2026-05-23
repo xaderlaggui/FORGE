@@ -1,5 +1,5 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { Check, CircleDot, Flame } from 'lucide-react-native';
+import { Check, CircleDot, Flame, Moon } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -85,8 +85,7 @@ export function WeeklyProgressDots({ weekActivity, streak, restDayIndices = [] }
                 {isDone ? (
                   <Check size={14} color={isToday ? T.colors.bg0 : T.colors.forge} strokeWidth={3} />
                 ) : isRest && !isFuture ? (
-                  // Rest day icon — moon/pause symbol using a small styled view
-                  <View style={s.restDot} />
+                  <Moon size={12} color={isToday ? T.colors.bg0 : '#6B8EBF'} fill={isToday ? T.colors.bg0 : '#6B8EBF'} />
                 ) : isToday ? (
                   <CircleDot size={14} color={T.colors.bg0} />
                 ) : (
