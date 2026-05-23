@@ -6,6 +6,7 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ForgeButton } from '../../components/forge/ForgeButton';
+import { FadeTabWrapper } from '../../components/common/FadeTabWrapper';
 import { useForgeTheme } from '../../hooks/useForgeTheme';
 import { supabase } from '../../services/supabase';
 import { useAuthStore } from '../../stores/authStore';
@@ -108,7 +109,8 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView style={[s.container, { backgroundColor: T.colors.bg0 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16} bounces={false}>
+    <FadeTabWrapper style={[s.container, { backgroundColor: T.colors.bg0 }]}>
+      <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16} bounces={false}>
       {/* ── Header ── */}
       <View style={[s.header, { borderBottomColor: T.colors.b1, backgroundColor: T.colors.bg0 }]}>
         <Text style={[s.headerTitle, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>Profile</Text>
@@ -163,7 +165,8 @@ export default function SettingsScreen() {
         <Text style={s.version} maxFontSizeMultiplier={1.2}>FORGE App v1.0.0</Text>
       </View>
 
-    </ScrollView>
+      </ScrollView>
+    </FadeTabWrapper>
   );
 }
 
