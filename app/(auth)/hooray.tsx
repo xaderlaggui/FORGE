@@ -36,10 +36,8 @@ export default function HoorayScreen() {
   }));
 
   const handleContinue = async () => {
-    // This completes the signup flow. Sign them out so they must explicitly log in.
-    // The explicit login will then trigger the Personalization redirect.
-    await supabase.auth.signOut();
-    useAuthStore.getState().setUser(null);
+    // The user has already been signed out in password.tsx.
+    // Navigating to login will require them to explicitly log in.
     router.replace('/(auth)/login');
   };
 
