@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // Feature Modules
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { TopFog } from '../../components/forge/TopFog';
 import { FadeTabWrapper } from '../../components/common/FadeTabWrapper';
+import { TopFog } from '../../components/forge/TopFog';
 import { BodyMeasurementsCard } from '../../features/progress/components/BodyMeasurementsCard';
 import { PhysiqueCoachBubble } from '../../features/progress/components/PhysiqueCoachBubble';
 import { ProgressPhotos } from '../../features/progress/components/ProgressPhotos';
@@ -60,87 +60,85 @@ export default function ProgressScreen() {
     <FadeTabWrapper style={s.container}>
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16} bounces={false}>
 
-      {/* ── Composition: Header ── */}
-      <View style={s.header}>
-        <View>
-          <Text style={s.headerSub} maxFontSizeMultiplier={1.2}>Your Journey</Text>
-          <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>Progress</Text>
-        </View>
-        {/* Camera button */}
-        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+        {/* ── Composition: Header ── */}
+        <View style={s.header}>
+          <View>
+            <Text style={s.headerSub} maxFontSizeMultiplier={1.2}>Your Journey</Text>
+            <Text style={s.headerTitle} maxFontSizeMultiplier={1.2}>Progress</Text>
+          </View>
+          {/* History button */}
           <TouchableOpacity
-            style={s.cameraBtn}
+            style={{ padding: 10, top: -7 }}
             onPress={() => router.push('/workoutHistory')}
           >
-            <History size={18} color={T.colors.t1} />
+            <History size={24} color={T.colors.t1} />
           </TouchableOpacity>
         </View>
-      </View>
-      {/* ── Composition: Key Stats ── */}
-      <View style={s.statsRow}>
-        {(() => {
-          const rawGoal = (user as any)?.fitness_goal || (user as any)?.fitnessGoal;
-          const goalDisplay = rawGoal === 'bulk' ? 'Bulking' : rawGoal === 'cut' ? 'Cutting' : rawGoal === 'maintain' ? 'Maintaining' : undefined;
-          return (
-            <>
-              <StatCard label="Current" value={currentWeight} unit={weightUnit} delta={weightDiff} userGoal={rawGoal} />
-              <StatCard label="Started" value={startWeight} unit={weightUnit} subText={goalDisplay} />
-            </>
-          );
-        })()}
-        <StatCard label="BMI" value={user?.bmi?.toFixed(1) ?? '—'} subText={bmiCategory} valueColor={bmiColor} Icon={bmiIcon} />
-      </View>
+        {/* ── Composition: Key Stats ── */}
+        <View style={s.statsRow}>
+          {(() => {
+            const rawGoal = (user as any)?.fitness_goal || (user as any)?.fitnessGoal;
+            const goalDisplay = rawGoal === 'bulk' ? 'Bulking' : rawGoal === 'cut' ? 'Cutting' : rawGoal === 'maintain' ? 'Maintaining' : undefined;
+            return (
+              <>
+                <StatCard label="Current" value={currentWeight} unit={weightUnit} delta={weightDiff} userGoal={rawGoal} />
+                <StatCard label="Started" value={startWeight} unit={weightUnit} subText={goalDisplay} />
+              </>
+            );
+          })()}
+          <StatCard label="BMI" value={user?.bmi?.toFixed(1) ?? '—'} subText={bmiCategory} valueColor={bmiColor} Icon={bmiIcon} />
+        </View>
 
-      {/* ── Composition: Weight Chart ── */}
-      <WeightChart
-        timeframe={weightTimeframe}
-        setTimeframe={setWeightTimeframe}
-        weightDiff={weightDiff}
-        lineData={lineData}
-        minVal={minVal}
-        maxVal={maxVal}
-        weightUnit={weightUnit}
-      />
-
-      {/* ── Composition: Body Measurements ── */}
-      <View style={s.section}>
-        <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Body Measurements</Text>
-        <BodyMeasurementsCard
-          latest={latest}
-          prev={prev}
-          onPressDetail={() => router.push('/measurements')}
-        />
-      </View>
-
-      {/* ── Composition: Progressive Overload ── */}
-      <VolumeChart
-        volumeLineData={volumeLineData}
-        weeklyVolumeData={weeklyVolumeData}
-        monthlyVolumeData={monthlyVolumeData}
-        currentVolume={currentVolume}
-        volumeDiff={volumeDiff}
-        minVol={minVol}
-        maxVol={maxVol}
-        timeframe={volumeTimeframe}
-        setTimeframe={setVolumeTimeframe}
-        weightUnit={weightUnit}
-      />
-
-      {/* ── Composition: Transformation ── */}
-      <View style={s.section}>
-        <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Transformation</Text>
-        <ProgressPhotos
-          firstPhoto={firstPhoto}
-          lastPhoto={lastPhoto}
-          photosLength={(user as any)?.progress_photos?.length || 0}
-          isUploading={isUploading}
-          onTakePhoto={takePhoto}
+        {/* ── Composition: Weight Chart ── */}
+        <WeightChart
+          timeframe={weightTimeframe}
+          setTimeframe={setWeightTimeframe}
+          weightDiff={weightDiff}
+          lineData={lineData}
+          minVal={minVal}
+          maxVal={maxVal}
+          weightUnit={weightUnit}
         />
 
-        <PhysiqueCoachBubble hasPhotos={!!(firstPhoto && lastPhoto)} onUploadPress={takePhoto} />
-      </View>
+        {/* ── Composition: Body Measurements ── */}
+        <View style={s.section}>
+          <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Body Measurements</Text>
+          <BodyMeasurementsCard
+            latest={latest}
+            prev={prev}
+            onPressDetail={() => router.push('/measurements')}
+          />
+        </View>
 
-    </ScrollView>
+        {/* ── Composition: Progressive Overload ── */}
+        <VolumeChart
+          volumeLineData={volumeLineData}
+          weeklyVolumeData={weeklyVolumeData}
+          monthlyVolumeData={monthlyVolumeData}
+          currentVolume={currentVolume}
+          volumeDiff={volumeDiff}
+          minVol={minVol}
+          maxVol={maxVol}
+          timeframe={volumeTimeframe}
+          setTimeframe={setVolumeTimeframe}
+          weightUnit={weightUnit}
+        />
+
+        {/* ── Composition: Transformation ── */}
+        <View style={s.section}>
+          <Text style={s.sectionLabel} maxFontSizeMultiplier={1.2}>Transformation</Text>
+          <ProgressPhotos
+            firstPhoto={firstPhoto}
+            lastPhoto={lastPhoto}
+            photosLength={(user as any)?.progress_photos?.length || 0}
+            isUploading={isUploading}
+            onTakePhoto={takePhoto}
+          />
+
+          <PhysiqueCoachBubble hasPhotos={!!(firstPhoto && lastPhoto)} onUploadPress={takePhoto} />
+        </View>
+
+      </ScrollView>
       <TopFog top={0} height={40} />
     </FadeTabWrapper>
   );
@@ -158,8 +156,7 @@ const useS = (T: any) => StyleSheet.create({
   headerTitle: { fontSize: T.typography.sizes.h1, fontWeight: '700', color: T.colors.t1 },
   cameraBtn: {
     width: 40, height: 40, borderRadius: T.radii.md,
-    backgroundColor: T.colors.forgeDim,
-    borderWidth: 0.5, borderColor: 'rgba(255,92,46,0.3)',
+
     alignItems: 'center', justifyContent: 'center',
   },
 
