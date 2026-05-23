@@ -1,8 +1,8 @@
 import { useForgeTheme } from '@/hooks/useForgeTheme';
 import { useRouter } from 'expo-router';
 import { ArrowRight } from 'lucide-react-native';
-import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, BackHandler } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, BackHandler, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SpriteMascot } from '../components/forge/SpriteMascot';
 import { onboardingSpriteSequence } from '../features/sprites/OnboardingSpriteSequence';
@@ -25,8 +25,8 @@ export default function PersonalizeModal() {
   // Prevent back navigation
   useEffect(() => {
     const onBackPress = () => true; // Returning true prevents default behavior
-    BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
   }, []);
 
   // AI Generator Preferences
@@ -69,21 +69,19 @@ export default function PersonalizeModal() {
 
       const { error } = await supabase
         .from('profiles')
-        .update(updates)
-        .eq('id', user.uid);
+        .upsert({
+          id: user.uid,
+          email: user.email,
+          name: user.displayName,
+          ...updates
+        });
 
       if (error) throw error;
 
       setUser({ ...user, ...updates, isOnboarded: true } as any);
 
-      // Navigate back to tabs
-      if (router.canDismiss()) {
-        router.dismissAll();
-      } else if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.navigate('/(tabs)');
-      }
+      // Cleanly replace route with main dashboard tabs
+      router.replace('/(tabs)');
 
     } catch (error: any) {
       Alert.alert('Error', error.message);
