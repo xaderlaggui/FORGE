@@ -1,6 +1,6 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { useRouter } from 'expo-router';
-import { Mail, User } from 'lucide-react-native';
+import { Lock, Mail, User } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   ActivityIndicator, Alert,
@@ -23,12 +23,23 @@ function InputField({
   icon, placeholder, value, onChangeText,
   fieldKey, secureTextEntry = false,
   keyboardType = 'default', returnKeyType = 'next',
-  focusedField, setFocusedField, onSubmitEditing
+  focusedField, setFocusedField, onSubmitEditing,
+  validationState
 }: any) {
   const { T } = useForgeTheme();
   const s = useS(T);
+
+  let borderColor = 'transparent';
+  if (validationState === 'error') borderColor = '#ef4444';
+  else if (validationState === 'success') borderColor = '#4ade80';
+  else if (focusedField === fieldKey) borderColor = T.colors.forge;
+
   return (
-    <View style={[s.inputWrap, focusedField === fieldKey && s.inputWrapFocused]}>
+    <View style={[
+      s.inputWrap,
+      focusedField === fieldKey && s.inputWrapFocused,
+      validationState && { borderColor, borderWidth: 1 }
+    ]}>
       {React.cloneElement(icon, {
         color: focusedField === fieldKey ? T.colors.forge : T.colors.t3,
         size: 18,
@@ -57,8 +68,50 @@ export default function SignupScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [emailTaken, setEmailTaken] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+
+  const [hasLength, setHasLength] = useState(false);
+  const [hasUpper, setHasUpper] = useState(false);
+  const [hasSpecial, setHasSpecial] = useState(false);
+  const [hasNumber, setHasNumber] = useState(false);
+  const [passwordsMatch, setPasswordsMatch] = useState(false);
+
+  React.useEffect(() => {
+    setHasLength(password.length >= 8);
+    setHasUpper(/[A-Z]/.test(password));
+    setHasSpecial(/[!@#$%^&*(),.?":{}|<>]/.test(password));
+    setHasNumber(/[0-9]/.test(password));
+    setPasswordsMatch(password.length > 0 && password === confirmPassword);
+  }, [password, confirmPassword]);
+
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+  React.useEffect(() => {
+    if (!isValidEmail) {
+      setEmailAvailable(null);
+      setEmailTaken(false);
+      return;
+    }
+
+    const checkEmail = async () => {
+      const { data, error } = await supabase.rpc('is_email_taken', { lookup_email: email.trim().toLowerCase() });
+      if (!error && data !== null) {
+        setEmailTaken(data);
+        setEmailAvailable(!data);
+      }
+    };
+
+    const timer = setTimeout(checkEmail, 600);
+    return () => clearTimeout(timer);
+  }, [email, isValidEmail]);
+
+  const allPasswordRulesMet = hasLength && hasUpper && hasSpecial && hasNumber;
+  const isValid = allPasswordRulesMet && passwordsMatch && name.trim() && isValidEmail && !emailTaken;
 
   // Entrance animation
   const opacity = useSharedValue(0);
@@ -73,15 +126,16 @@ export default function SignupScreen() {
   }));
 
   const handleSignup = async () => {
-    if (!name.trim() || !email.trim()) {
-      Alert.alert('Missing fields', 'Please provide your name and email.');
+    if (!isValid) {
+      Alert.alert('Invalid Form', 'Please ensure all fields and password requirements are met.');
       return;
     }
 
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({
+      const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
+        password: password,
         options: {
           data: {
             display_name: name.trim(),
@@ -89,6 +143,12 @@ export default function SignupScreen() {
         },
       });
       if (error) throw error;
+
+      // Supabase returns an empty identities array if the email is already in use
+      if (data.user?.identities?.length === 0) {
+        setEmailTaken(true);
+        return;
+      }
 
       // Navigate to OTP screen
       router.push({
@@ -147,17 +207,69 @@ export default function SignupScreen() {
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
+            focusedField={focusedField}
+            setFocusedField={setFocusedField}
+            validationState={emailTaken || (email.length > 0 && !isValidEmail) ? 'error' : (emailAvailable ? 'success' : null)}
+          />
+          {email.length > 0 && !isValidEmail && (
+            <Text style={s.emailTakenText}>Invalid email format</Text>
+          )}
+          {emailTaken && (
+            <Text style={s.emailTakenText}>Email already taken</Text>
+          )}
+          <InputField
+            fieldKey="password"
+            icon={<Lock />}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            focusedField={focusedField}
+            setFocusedField={setFocusedField}
+            validationState={password.length > 0 ? (allPasswordRulesMet ? 'success' : 'error') : null}
+          />
+          {/* Password Validation Rules */}
+          {password.length > 0 && !allPasswordRulesMet && (
+            <View style={s.validationContainer}>
+              {!hasLength && (
+                <Text style={s.ruleFail}>• Minimum 8 characters</Text>
+              )}
+              {!hasUpper && (
+                <Text style={s.ruleFail}>• At least 1 uppercase letter</Text>
+              )}
+              {!hasSpecial && (
+                <Text style={s.ruleFail}>• At least 1 special character</Text>
+              )}
+              {!hasNumber && (
+                <Text style={s.ruleFail}>• At least 1 number</Text>
+              )}
+            </View>
+          )}
+
+          <InputField
+            fieldKey="confirmPassword"
+            icon={<Lock />}
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
             returnKeyType="done"
             focusedField={focusedField}
             setFocusedField={setFocusedField}
             onSubmitEditing={handleSignup}
+            validationState={confirmPassword.length > 0 ? (passwordsMatch ? 'success' : 'error') : null}
           />
+
+          {/* Confirm Match Indicator */}
+          {confirmPassword.length > 0 && !passwordsMatch && (
+            <Text style={s.matchText}>✕ Passwords do not match</Text>
+          )}
 
           {/* CTA */}
           <TouchableOpacity
-            style={[s.btn, loading && { opacity: 0.7 }]}
+            style={[s.btn, (!isValid || loading) && { opacity: 0.7 }]}
             onPress={handleSignup}
-            disabled={loading}
+            disabled={!isValid || loading}
             activeOpacity={0.85}
           >
             {loading
@@ -224,6 +336,12 @@ const useS = (T: any) => StyleSheet.create({
     backgroundColor: T.colors.bg1,
   },
   input: { flex: 1, fontSize: 15, color: T.colors.t1 },
+
+  // Validation
+  validationContainer: { width: '100%', marginBottom: 12, paddingHorizontal: 4 },
+  ruleFail: { fontSize: 13, color: T.colors.danger || '#ef4444', marginBottom: 4 },
+  matchText: { fontSize: 13, alignSelf: 'flex-start', paddingHorizontal: 4, marginBottom: 12, marginTop: -4, color: T.colors.danger || '#ef4444' },
+  emailTakenText: { fontSize: 13, alignSelf: 'flex-start', paddingHorizontal: 4, marginBottom: 12, marginTop: -4, color: T.colors.danger || '#ef4444', fontWeight: '500' },
 
   // Button
   btn: {
