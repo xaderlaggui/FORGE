@@ -3,6 +3,7 @@ import { Camera } from 'lucide-react-native';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AiCoachCard } from '../../components/forge/AiCoachCard';
+import { FadeTabWrapper } from '../../components/common/FadeTabWrapper';
 
 // Dashboard Feature Modules
 import { useForgeTheme } from "@/hooks/useForgeTheme";
@@ -26,7 +27,7 @@ export default function HomeScreen() {
   const data = useDashboardData();
 
   return (
-    <View style={styles.container}>
+    <FadeTabWrapper style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
@@ -88,7 +89,7 @@ export default function HomeScreen() {
 
     </ScrollView>
       <TopFog top={0} height={40} />
-    </View>
+    </FadeTabWrapper>
   );
 }
 
