@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 // Feature Modules
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { TopFog } from '../../components/forge/TopFog';
+import { FadeTabWrapper } from '../../components/common/FadeTabWrapper';
 import { BodyMeasurementsCard } from '../../features/progress/components/BodyMeasurementsCard';
 import { PhysiqueCoachBubble } from '../../features/progress/components/PhysiqueCoachBubble';
 import { ProgressPhotos } from '../../features/progress/components/ProgressPhotos';
@@ -56,7 +57,7 @@ export default function ProgressScreen() {
           : AlertTriangle;
 
   return (
-    <View style={s.container}>
+    <FadeTabWrapper style={s.container}>
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16} bounces={false}>
 
       {/* ── Composition: Header ── */}
@@ -141,7 +142,7 @@ export default function ProgressScreen() {
 
     </ScrollView>
       <TopFog top={0} height={40} />
-    </View>
+    </FadeTabWrapper>
   );
 }
 
