@@ -1,23 +1,48 @@
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigationState } from '@react-navigation/native';
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, ViewStyle } from 'react-native';
+import { Animated, Easing, StyleProp, ViewStyle } from 'react-native';
 
-export function FadeTabWrapper({ children, style }: { children: React.ReactNode, style?: ViewStyle }) {
+export function FadeTabWrapper({ children, style }: { children: React.ReactNode, style?: StyleProp<ViewStyle> }) {
   const isFocused = useIsFocused();
-  const opacity = useRef(new Animated.Value(0)).current;
+
+  // Get the tab navigator's active index
+  const tabIndex = useNavigationState(state => state?.type === 'tab' ? state.index : null);
+  const prevTabIndex = useRef(tabIndex);
+
+  const opacity = useRef(new Animated.Value(1)).current;
+  const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.timing(opacity, {
-      toValue: isFocused ? 1 : 0,
-      duration: 220,
-      easing: Easing.inOut(Easing.ease),
-      useNativeDriver: true,
-    }).start();
-  }, [isFocused]);
+    // We only animate if we are coming into focus AND the actual tab changed!
+    // If tabIndex is the same as before, it means we are just returning from a modal.
+    if (isFocused && tabIndex !== prevTabIndex.current) {
+      opacity.setValue(0.5);
+      scale.setValue(0.97);
 
-  // Use a slight delay for initial mount to ensure smooth transition from initial screen
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 200,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(scale, {
+          toValue: 1,
+          duration: 250,
+          easing: Easing.out(Easing.back(1.5)),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+
+    // Always update the prev index tracker
+    if (isFocused) {
+      prevTabIndex.current = tabIndex;
+    }
+  }, [isFocused, tabIndex]);
+
   return (
-    <Animated.View style={[{ flex: 1, opacity }, style]}>
+    <Animated.View style={[{ flex: 1, opacity, transform: [{ scale }] }, style]}>
       {children}
     </Animated.View>
   );

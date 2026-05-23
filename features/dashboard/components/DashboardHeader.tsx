@@ -1,11 +1,11 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Bell } from 'lucide-react-native';
+import { Bell, User } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
-import { getGreeting, getInitial } from '../utils';
+import { getGreeting } from '../utils';
 
 interface DashboardHeaderProps {
   displayName?: string | null;
@@ -36,7 +36,7 @@ export function DashboardHeader({ displayName, photoUrl }: DashboardHeaderProps)
                 {photoUrl ? (
                   <Image source={{ uri: photoUrl }} style={{ width: '100%', height: '100%' }} />
                 ) : (
-                  <Text style={s.avatarText}>{getInitial(displayName)}</Text>
+                  <User size={18} color={T.colors.t2} />
                 )}
               </View>
             </LinearGradient>

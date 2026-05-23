@@ -1,7 +1,8 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { useRouter } from 'expo-router';
+import { Eye } from 'lucide-react-native';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Body from 'react-native-body-highlighter';
 import { BearMascot } from '../../../components/forge/BearMascot';
 import { ForgeButton } from '../../../components/forge/ForgeButton';
@@ -128,7 +129,15 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
     return (
       <View style={{ position: 'relative', overflow: 'visible', ...T.shadows.lift }}>
         <View style={[s.todayCard, { overflow: 'hidden' }]}>
+          {/* Decorative blob + preview eye button */}
           <View style={{ position: 'absolute', top: -20, right: -20, width: 110, height: 110, borderRadius: 55, backgroundColor: T.colors.forgeDim }} />
+          <TouchableOpacity
+            onPress={() => router.push({ pathname: '/routinePreview', params: { title: classifyWorkoutFromExercises(plannedWorkout.exercises), exercises: JSON.stringify(plannedWorkout.exercises) } })}
+            style={{ position: 'absolute', top: 20, right: 20, width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Eye size={18} color={T.colors.forge} />
+          </TouchableOpacity>
 
           <Text style={s.todayTitle} maxFontSizeMultiplier={1.2}>Scheduled Routine</Text>
           <Text style={s.todaySub} maxFontSizeMultiplier={1.2}>{classifyWorkoutFromExercises(plannedWorkout.exercises)}</Text>
@@ -149,7 +158,7 @@ export function DailyPlanCard({ isLoading, loggedWorkout, plannedWorkout, active
           )}
           {isToday && (
             <ForgeButton
-              label="▶ Start Routine"
+              label="▶ Start"
               onPress={() => router.push({ pathname: '/activeWorkout', params: { date: activeDateStr, title: classifyWorkoutFromExercises(plannedWorkout.exercises), plannedExercises: JSON.stringify(plannedWorkout.exercises) } })}
               pulse
             />

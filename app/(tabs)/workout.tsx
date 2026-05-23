@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
-import { ForgeSegment } from '../../components/forge/ForgeSegment';
 import { FadeTabWrapper } from '../../components/common/FadeTabWrapper';
+import { ForgeSegment } from '../../components/forge/ForgeSegment';
 
 // Feature Modules
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { useRouter } from 'expo-router';
-import { Dumbbell, RefreshCw } from 'lucide-react-native';
+import { Dumbbell } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DailyPlanCard } from '../../features/planner/components/DailyPlanCard';
 import { ExerciseLibrary } from '../../features/planner/components/ExerciseLibrary';
@@ -32,10 +32,10 @@ export default function WorkoutScreen() {
     activePlan,
   } = usePlannerData();
 
-  const handleRegenerateWorkoutPlan = () => {
+  const handleGenerateWorkoutPlan = () => {
     if (activePlan) {
       Alert.alert(
-        'Generate New Weekly Workout Plan?',
+        'Regenerate Workout Plan?',
         'This will replace your current active AI workout plan. Are you sure?',
         [
           { text: 'Cancel', style: 'cancel' },
@@ -60,8 +60,8 @@ export default function WorkoutScreen() {
             <Text style={s.headerSub} maxFontSizeMultiplier={1.2}>Your Training</Text>
             <Text style={s.title} maxFontSizeMultiplier={1.2}>Workout Planner</Text>
           </View>
-          <TouchableOpacity onPress={handleRegenerateWorkoutPlan} style={{ padding: 4, marginTop: 4 }}>
-            <RefreshCw size={22} color={T.colors.t1} />
+          <TouchableOpacity onPress={handleGenerateWorkoutPlan} style={{ padding: 10, top: 3 }}>
+            <Dumbbell size={24} color={T.colors.t1} />
           </TouchableOpacity>
         </View>
         <ForgeSegment

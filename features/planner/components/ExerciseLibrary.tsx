@@ -126,10 +126,16 @@ export function ExercisePreviewModal({
   }, [exercise]);
 
   if (!exercise) return null;
-  const slugs = mapMusclesToSlugs(exercise.muscleGroups);
+  const slugs = mapMusclesToSlugs(exercise.muscleGroups || []);
 
   return (
-    <Modal visible={!!exercise} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal 
+      visible={!!exercise} 
+      animationType="slide" 
+      presentationStyle="pageSheet" 
+      onRequestClose={onClose}
+      onDismiss={onClose}
+    >
       <SafeAreaView style={s.modalContainer}>
         <View style={s.modalHeader}>
           <Text style={s.modalTitle}>{exercise.name}</Text>
@@ -139,7 +145,7 @@ export function ExercisePreviewModal({
         </View>
 
         <Text style={s.modalSub}>
-          {exercise.muscleGroups.join(', ')} • {exercise.equipment}
+          {(exercise.muscleGroups || []).join(', ')} • {exercise.equipment}
         </Text>
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
@@ -235,11 +241,11 @@ export function ExerciseLibrary({ exercises, isLoading, onSelect }: ExerciseLibr
       if (['push', 'pull', 'legs'].includes(lowerCat)) {
         list = list.filter(e => e.category === lowerCat);
       } else if (lowerCat === 'arms') {
-        list = list.filter(e => e.muscleGroups.includes('biceps') || e.muscleGroups.includes('triceps'));
+        list = list.filter(e => (e.muscleGroups || []).includes('biceps') || (e.muscleGroups || []).includes('triceps'));
       } else if (lowerCat === 'core') {
-        list = list.filter(e => e.muscleGroups.includes('abs') || e.muscleGroups.includes('core'));
+        list = list.filter(e => (e.muscleGroups || []).includes('abs') || (e.muscleGroups || []).includes('core'));
       } else {
-        list = list.filter(e => e.muscleGroups.includes(lowerCat));
+        list = list.filter(e => (e.muscleGroups || []).includes(lowerCat));
       }
     }
 
@@ -248,7 +254,7 @@ export function ExerciseLibrary({ exercises, isLoading, onSelect }: ExerciseLibr
       const q = searchQuery.toLowerCase();
       list = list.filter(e =>
         e.name.toLowerCase().includes(q) ||
-        e.muscleGroups.some(m => m.toLowerCase().includes(q))
+        (e.muscleGroups || []).some(m => m.toLowerCase().includes(q))
       );
     }
     return list;
@@ -293,7 +299,7 @@ export function ExerciseLibrary({ exercises, isLoading, onSelect }: ExerciseLibr
             <TouchableOpacity key={item.id} style={s.card} onPress={() => setSelectedEx(item)} activeOpacity={0.7}>
               <Text style={s.cardTitle} maxFontSizeMultiplier={1.2}>{item.name}</Text>
               <Text style={s.cardSub} maxFontSizeMultiplier={1.2}>
-                {item.muscleGroups.join(', ')} • {item.equipment}
+                {(item.muscleGroups || []).join(', ')} • {item.equipment}
               </Text>
             </TouchableOpacity>
           ))

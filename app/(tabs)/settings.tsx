@@ -1,12 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'expo-router';
-import { Database, LogOut, Moon, Shield, Smartphone, Sparkles, Sun, User as UserIcon } from 'lucide-react-native';
-import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ForgeButton } from '../../components/forge/ForgeButton';
+import { useRouter } from 'expo-router';
+import { LogOut, Moon, Shield, Smartphone, Sun, User as UserIcon } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FadeTabWrapper } from '../../components/common/FadeTabWrapper';
+import { ForgeButton } from '../../components/forge/ForgeButton';
 import { useForgeTheme } from '../../hooks/useForgeTheme';
 import { supabase } from '../../services/supabase';
 import { useAuthStore } from '../../stores/authStore';
@@ -111,59 +111,57 @@ export default function SettingsScreen() {
   return (
     <FadeTabWrapper style={[s.container, { backgroundColor: T.colors.bg0 }]}>
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={16} bounces={false}>
-      {/* ── Header ── */}
-      <View style={[s.header, { borderBottomColor: T.colors.b1, backgroundColor: T.colors.bg0 }]}>
-        <Text style={[s.headerTitle, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>Profile</Text>
-      </View>
+        {/* ── Header ── */}
+        <View style={[s.header, { borderBottomColor: T.colors.b1, backgroundColor: T.colors.bg0 }]}>
+          <Text style={[s.headerTitle, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>Profile</Text>
+        </View>
 
-      {/* ── Profile Card ── */}
-      <View style={[s.profileCard, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
-        <LinearGradient colors={[T.colors.forge, '#b33e1d']} style={{ width: 64, height: 64, borderRadius: 32, padding: 3 }}>
-          <View style={[s.avatar, { backgroundColor: T.colors.bg0, flex: 1, width: '100%', height: '100%', borderRadius: 32, overflow: 'hidden' }]}>
-            {(user?.photoURL || (user as any)?.photo_url) ? (
-              <Image source={{ uri: user?.photoURL || (user as any)?.photo_url }} style={{ width: '100%', height: '100%' }} />
-            ) : (
-              <Text style={{ fontSize: 24, fontWeight: '800', color: T.colors.t1 }}>
-                {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'A'}
-              </Text>
-            )}
+        {/* ── Profile Card ── */}
+        <View style={[s.profileCard, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
+          <LinearGradient colors={[T.colors.forge, '#b33e1d']} style={{ width: 64, height: 64, borderRadius: 32, padding: 3 }}>
+            <View style={[s.avatar, { backgroundColor: T.colors.bg0, flex: 1, width: '100%', height: '100%', borderRadius: 32, overflow: 'hidden' }]}>
+              {(user?.photoURL || (user as any)?.photo_url) ? (
+                <Image source={{ uri: user?.photoURL || (user as any)?.photo_url }} style={{ width: '100%', height: '100%' }} />
+              ) : (
+                <UserIcon size={32} color={T.colors.t2} />
+              )}
+            </View>
+          </LinearGradient>
+          <View style={s.profileInfo}>
+            <Text style={[s.profileName, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>{user?.displayName || 'Athlete'}</Text>
+            <Text style={[s.profileEmail, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>{user?.email || 'No email linked'}</Text>
           </View>
-        </LinearGradient>
-        <View style={s.profileInfo}>
-          <Text style={[s.profileName, { color: T.colors.t1 }]} maxFontSizeMultiplier={1.2}>{user?.displayName || 'Athlete'}</Text>
-          <Text style={[s.profileEmail, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>{user?.email || 'No email linked'}</Text>
         </View>
-      </View>
 
-      {/* ── Appearance ── */}
-      <View style={s.section}>
-        <Text style={[s.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Appearance</Text>
-        <View style={[s.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
-          <ThemeToggle T={T} />
+        {/* ── Appearance ── */}
+        <View style={s.section}>
+          <Text style={[s.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Appearance</Text>
+          <View style={[s.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
+            <ThemeToggle T={T} />
+          </View>
         </View>
-      </View>
 
-      {/* ── Preferences Section ── */}
-      <View style={s.section}>
-        <Text style={[s.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Preferences</Text>
-        <View style={[s.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
-          <SettingRow T={T} icon={<UserIcon size={18} color={T.colors.t1} />} label="Edit Profile" onPress={() => router.push('/editProfile')} />
-          <View style={[s.divider, { backgroundColor: T.colors.b1 }]} />
-          <SettingRow T={T} icon={<Shield size={18} color={T.colors.t1} />} label="Privacy & Security" onPress={() => router.push('/privacySecurity')} />
+        {/* ── Preferences Section ── */}
+        <View style={s.section}>
+          <Text style={[s.sectionLabel, { color: T.colors.t3 }]} maxFontSizeMultiplier={1.2}>Preferences</Text>
+          <View style={[s.card, { backgroundColor: T.colors.bg1, borderColor: T.colors.b1 }]}>
+            <SettingRow T={T} icon={<UserIcon size={18} color={T.colors.t1} />} label="Edit Profile" onPress={() => router.push('/editProfile')} />
+            <View style={[s.divider, { backgroundColor: T.colors.b1 }]} />
+            <SettingRow T={T} icon={<Shield size={18} color={T.colors.t1} />} label="Privacy & Security" onPress={() => router.push('/privacySecurity')} />
+          </View>
         </View>
-      </View>
 
 
-      {/* ── Actions ── */}
-      <View style={s.section}>
-        <ForgeButton
-          label="Log Out"
-          onPress={handleLogout}
-          variant="danger"
-          leftIcon={<LogOut size={16} color="#fff" />}
-        />
-        <Text style={s.version} maxFontSizeMultiplier={1.2}>FORGE App v1.0.0</Text>
-      </View>
+        {/* ── Actions ── */}
+        <View style={s.section}>
+          <ForgeButton
+            label="Log Out"
+            onPress={handleLogout}
+            variant="danger"
+            leftIcon={<LogOut size={16} color="#fff" />}
+          />
+          <Text style={s.version} maxFontSizeMultiplier={1.2}>FORGE App v1.0.0</Text>
+        </View>
 
       </ScrollView>
     </FadeTabWrapper>

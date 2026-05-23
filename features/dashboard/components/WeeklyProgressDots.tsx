@@ -1,5 +1,5 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { Check, Flame, CircleDot } from 'lucide-react-native';
+import { Check, CircleDot, Flame } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -130,7 +130,7 @@ const useStyles = (T: any) => StyleSheet.create({
     alignItems: 'stretch',
     backgroundColor: T.colors.bg1,
     ...T.shadows.lift,
-    padding: 12,
+    padding: 10,
     borderRadius: 16,
     borderWidth: 0.5,
     borderColor: T.colors.b1,
@@ -141,7 +141,9 @@ const useStyles = (T: any) => StyleSheet.create({
     paddingVertical: 5,
     width: 40,
     borderRadius: 20,
-    gap: 4,
+    gap: 0,
+    borderWidth: .3,
+    borderColor: T.colors.b2,
   },
   dayPillToday: {
     backgroundColor: T.colors.forge,
@@ -175,7 +177,7 @@ const useStyles = (T: any) => StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: T.colors.bg2,
+    backgroundColor: T.colors.t3,
   },
   restDot: {
     width: 6,

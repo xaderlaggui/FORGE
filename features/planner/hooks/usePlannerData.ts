@@ -16,10 +16,10 @@ export function usePlannerData() {
     const now = new Date();
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     const todayPH = new Date(utc + (3600000 * 8)); // UTC+8
-    
+
     const dayOfWeek = todayPH.getDay();
     const currentIdx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    
+
     const startOfWeek = new Date(todayPH);
     startOfWeek.setDate(todayPH.getDate() - currentIdx);
 
@@ -43,9 +43,16 @@ export function usePlannerData() {
   const { data: exercises, isLoading: isLoadingExercises } = useQuery({
     queryKey: ['exercises'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('exercises').select('*');
+      const { data, error } = await supabase
+        .from('exercises')
+        .select('*')
+        .order('name', { ascending: false });
       if (error) throw error;
-      return (data || []) as Exercise[];
+      return (data || []).map((ex: any) => ({
+        ...ex,
+        muscleGroups: Array.isArray(ex.muscleGroups) ? ex.muscleGroups : (ex.target_muscle_group ? ex.target_muscle_group.split(',').map((s: string) => s.trim()) : []),
+        category: ex.category || 'All',
+      })) as Exercise[];
     }
   });
 
