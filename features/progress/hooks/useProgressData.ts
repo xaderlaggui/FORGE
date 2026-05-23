@@ -142,8 +142,9 @@ export function useProgressData(weightTimeframe: string = '7D') {
 
   // ── Photos ──
   const photos = (user as any)?.progress_photos || (user as any)?.progressPhotos || [];
-  const firstPhoto = photos.length > 0 ? photos[0] : null;
-  const lastPhoto  = photos.length > 0 ? photos[photos.length - 1] : null;
+  // Fixed 2-slot model: index 0 = Before, index 1 = Current (independent slots)
+  const firstPhoto = photos[0] ?? null;
+  const lastPhoto  = photos[1] ?? null;
 
   // ── Volume: aggregate per day ──
   const today = dayjs();
@@ -229,8 +230,12 @@ export function useProgressData(weightTimeframe: string = '7D') {
         
       const existing = profile?.progress_photos || [];
       const updatedPhotos = [...existing];
-      
-      if (typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex < updatedPhotos.length) {
+
+      if (typeof targetIndex === 'number' && targetIndex >= 0) {
+        // Pad array with nulls so we can set a specific slot (e.g. index 1 even if empty)
+        while (updatedPhotos.length <= targetIndex) {
+          updatedPhotos.push(null);
+        }
         updatedPhotos[targetIndex] = { url: publicUrl, date: new Date().toISOString() };
       } else {
         updatedPhotos.push({ url: publicUrl, date: new Date().toISOString() });
