@@ -56,3 +56,6 @@ constants/prompts.ts
 /docs/
 /ai/
 /scripts/
+
+# database schema
+schema.sql
