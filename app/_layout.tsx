@@ -18,10 +18,6 @@ const queryClient = new QueryClient();
 
 export { ErrorBoundary } from 'expo-router';
 
-export const unstable_settings = {
-  initialRouteName: 'splash',
-};
-
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -30,7 +26,7 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  const { setUser, setLoading } = useAuthStore();
+  const { setUser, setLoading, isLoading } = useAuthStore();
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -55,13 +51,18 @@ export default function RootLayout() {
             setUser({
               uid: session.user.id,
               email: session.user.email || '',
-              displayName: profile?.display_name || '',
+              displayName: profile?.name || profile?.display_name || session.user.user_metadata?.display_name || '',
               isOnboarded: profile?.is_onboarded || false,
               ...profile,
             } as any);
           } catch (e) {
             console.error('Error fetching user profile:', e);
-            setUser({ uid: session.user.id, email: session.user.email || '', displayName: '', isOnboarded: false } as any);
+            setUser({ 
+              uid: session.user.id, 
+              email: session.user.email || '', 
+              displayName: session.user.user_metadata?.display_name || '', 
+              isOnboarded: false 
+            } as any);
           }
         } else {
           setUser(null);
@@ -73,10 +74,12 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
-  }, [loaded]);
+    if (loaded && !isLoading) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [loaded, isLoading]);
 
-  if (!loaded) return null;
+  if (!loaded || isLoading) return null;
 
   return <RootLayoutNav />;
 }
@@ -109,11 +112,9 @@ function RootLayoutNav() {
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    const inSplash    = segments[0] === 'splash';
-
-    // Never redirect while on splash or while segments haven't resolved yet.
-    // The splash screen is the sole gatekeeper for initial navigation.
-    if (inSplash || !segments[0]) return;
+    
+    // Never redirect while segments haven't resolved yet.
+    if (!segments[0]) return;
 
     if (!user) {
       if (!inAuthGroup) {
@@ -142,9 +143,8 @@ function RootLayoutNav() {
         <ThemeProvider value={navTheme}>
           <StatusBar style={isDark ? 'light' : 'dark'} />
           <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="splash" />
             <Stack.Screen name="(auth)" />
-            <Stack.Screen name="personalize" options={{ presentation: 'modal', gestureEnabled: false }} />
+            <Stack.Screen name="personalize" options={{ gestureEnabled: false, animation: 'fade' }} />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="+not-found" />
             <Stack.Screen name="addMeal"      options={{ presentation: 'formSheet', sheetAllowedDetents: 'fitToContents', sheetGrabberVisible: true }} />
@@ -158,6 +158,7 @@ function RootLayoutNav() {
             <Stack.Screen name="aiPlan" />
             <Stack.Screen name="buildRoutine" />
             <Stack.Screen name="plan-generator" />
+            <Stack.Screen name="routinePreview" options={{ presentation: 'formSheet', sheetAllowedDetents: 'fitToContents', sheetGrabberVisible: true }} />
           </Stack>
         </ThemeProvider>
       </QueryClientProvider>
