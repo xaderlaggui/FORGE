@@ -48,7 +48,7 @@ export function ProgressPhotos({
       <View style={s.photoGrid}>
         {[
           { photo: firstPhoto, badge: 'Before', index: 0 },
-          { photo: lastPhoto, badge: 'Current', index: Math.max(0, photosLength - 1) }
+          { photo: lastPhoto, badge: 'Current', index: 1 }
         ].map(({ photo, badge, index }) => (
           <View key={badge} style={{ flex: 1, aspectRatio: 0.72, ...T.shadows.lift, borderRadius: T.radii.lg }}>
             <TouchableOpacity
