@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { ForgeSegment } from '../../components/forge/ForgeSegment';
+import { FadeTabWrapper } from '../../components/common/FadeTabWrapper';
 
 // Feature Modules
 import { useForgeTheme } from "@/hooks/useForgeTheme";
@@ -51,7 +52,7 @@ export default function WorkoutScreen() {
   };
 
   return (
-    <View style={s.container}>
+    <FadeTabWrapper style={s.container}>
       {/* ── Composition: Header ── */}
       <View style={s.header}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: T.spacing.px4 }}>
@@ -111,7 +112,7 @@ export default function WorkoutScreen() {
           </PulseAnimatedView>
         </View>
       )}
-    </View>
+    </FadeTabWrapper>
   );
 }
 
