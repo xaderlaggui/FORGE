@@ -7,14 +7,14 @@ import { usePlannerData } from '../../planner/hooks/usePlannerData';
 
 // Card padding (16px each side) + page margin (16px each side)
 const SCREEN_W = Dimensions.get('window').width;
-const PAGE_MARGIN = 32;  // marginHorizontal: 16 each side
+const PAGE_MARGIN = 50;  // marginHorizontal: 16 each side
 const CARD_PAD = 32;  // padding: 16 each side
 const GIFTED_LEFT = 0;   // yAxisLabelWidth override = 0
-const CHART_W = SCREEN_W - PAGE_MARGIN - CARD_PAD - 2; // -2 for border
+const CHART_W = SCREEN_W - PAGE_MARGIN - CARD_PAD + 5; // -2 for border
 
 const BAR_SPACING = 8;
 const NUM_BARS = 7;
-const BAR_W = Math.floor((CHART_W - BAR_SPACING * (NUM_BARS - 1)) / NUM_BARS);
+const BAR_W = Math.floor((CHART_W - BAR_SPACING * (NUM_BARS)) / NUM_BARS);
 
 // Calendar constants
 const CAL_GAP = 4;
@@ -97,20 +97,20 @@ export function VolumeChart({
 
   // ── Weekly: 7-bar chart, fits container exactly ──────────────────────────
   const renderWeekly = () => (
-    <View style={{ marginTop: 17, left: -6 }}>
+    <View style={{ marginTop: 17 }}>
       <BarChart
         data={displayWeeklyData.map(d => {
           const isFuture = (d as any).isFuture;
           const isRest = isRestDay(d.date);
           const displayVal = d.value > 0 ? d.value : (displayMaxVol > 0 ? displayMaxVol * 0.08 : 100);
-          
+
           let color = T.colors.bg3 + '60'; // default empty
           if (d.value > 0) {
             color = d.isToday ? T.colors.forge : (T.colors.forge + '88');
           } else if (isRest) {
             color = T.colors.blue;
           }
-          
+
           return {
             value: displayVal,
             label: d.label,
@@ -125,6 +125,7 @@ export function VolumeChart({
         })}
         barWidth={BAR_W}
         spacing={BAR_SPACING}
+        endSpacing={0}
         roundedTop
         roundedBottom
         rulesType="solid"
@@ -226,59 +227,59 @@ export function VolumeChart({
       <View style={{ ...T.shadows.lift, borderRadius: T.radii.xl }}>
         <View style={s.chartCard}>
 
-        {/* Header */}
-        <View style={[s.chartHeader, !hasTrainingData && { opacity: 0.15 }]}>
-          <View style={{ flex: 1 }}>
-            <Text style={s.chartTitle} maxFontSizeMultiplier={1.2}>Total Volume</Text>
-            <Text style={s.chartSub} maxFontSizeMultiplier={1.2}>
-              {currentVolume === 0
-                ? "No volume today"
-                : `${currentVolume.toLocaleString()} ${weightUnit} today`
-              }
-            </Text>
-          </View>
-          <View style={[s.deltaBadge, isUp ? s.deltaBadgeUp : s.deltaBadgeDown]}>
-            {isUp
-              ? <TrendingUp size={12} color={T.colors.forge} />
-              : <TrendingDown size={12} color={T.colors.t3} />}
-            <Text style={[s.deltaBadgeText, volumeDiff <= 0 ? { color: T.colors.t3 } : { color: T.colors.forge }]} maxFontSizeMultiplier={1.2}>
-              {volumeDiff > 0 ? '+' : ''}{volumeDiff.toLocaleString()} {weightUnit}
-            </Text>
-          </View>
-        </View>
-
-        {/* Timeframe toggle */}
-        <View style={[s.toggle, !hasTrainingData && { opacity: 0.15 }]}>
-          {(['1W', '1M'] as const).map(t => (
-            <TouchableOpacity
-              key={t}
-              style={[s.toggleBtn, timeframe === t && s.toggleBtnActive]}
-              onPress={() => setTimeframe(t)}
-              disabled={!hasTrainingData}
-            >
-              <Text style={[s.toggleText, timeframe === t && s.toggleTextActive]}>
-                {t === '1W' ? 'Week' : 'Month'}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View style={{ position: 'relative' }}>
-          <View style={!hasTrainingData && { opacity: 0.15 }}>
-            {timeframe === '1W' ? renderWeekly() : renderMonthly()}
-          </View>
-
-          {!hasTrainingData && (
-            <View style={s.overlayContainer}>
-              <TrendingUp size={28} color={T.colors.forge} style={{ marginBottom: 8 }} />
-              <Text style={s.overlayTitle} maxFontSizeMultiplier={1.2}>No Training Data</Text>
-              <Text style={s.overlaySub} maxFontSizeMultiplier={1.2}>
-                Log a workout in the chat box to automatically track your volume and progressive overload stats.
+          {/* Header */}
+          <View style={[s.chartHeader, !hasTrainingData && { opacity: 0.15 }]}>
+            <View style={{ flex: 1 }}>
+              <Text style={s.chartTitle} maxFontSizeMultiplier={1.2}>Total Volume</Text>
+              <Text style={s.chartSub} maxFontSizeMultiplier={1.2}>
+                {currentVolume === 0
+                  ? "No volume today"
+                  : `${currentVolume.toLocaleString()} ${weightUnit} today`
+                }
               </Text>
             </View>
-          )}
+            <View style={[s.deltaBadge, isUp ? s.deltaBadgeUp : s.deltaBadgeDown]}>
+              {isUp
+                ? <TrendingUp size={12} color={T.colors.forge} />
+                : <TrendingDown size={12} color={T.colors.t3} />}
+              <Text style={[s.deltaBadgeText, volumeDiff <= 0 ? { color: T.colors.t3 } : { color: T.colors.forge }]} maxFontSizeMultiplier={1.2}>
+                {volumeDiff > 0 ? '+' : ''}{volumeDiff.toLocaleString()} {weightUnit}
+              </Text>
+            </View>
+          </View>
+
+          {/* Timeframe toggle */}
+          <View style={[s.toggle, !hasTrainingData && { opacity: 0.15 }]}>
+            {(['1W', '1M'] as const).map(t => (
+              <TouchableOpacity
+                key={t}
+                style={[s.toggleBtn, timeframe === t && s.toggleBtnActive]}
+                onPress={() => setTimeframe(t)}
+                disabled={!hasTrainingData}
+              >
+                <Text style={[s.toggleText, timeframe === t && s.toggleTextActive]}>
+                  {t === '1W' ? 'Week' : 'Month'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <View style={{ position: 'relative' }}>
+            <View style={!hasTrainingData && { opacity: 0.15 }}>
+              {timeframe === '1W' ? renderWeekly() : renderMonthly()}
+            </View>
+
+            {!hasTrainingData && (
+              <View style={s.overlayContainer}>
+                <TrendingUp size={28} color={T.colors.forge} style={{ marginBottom: 8 }} />
+                <Text style={s.overlayTitle} maxFontSizeMultiplier={1.2}>No Training Data</Text>
+                <Text style={s.overlaySub} maxFontSizeMultiplier={1.2}>
+                  Log a workout in the chat box to automatically track your volume and progressive overload stats.
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
       </View>
     </View>
   );
