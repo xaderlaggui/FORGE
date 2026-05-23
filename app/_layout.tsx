@@ -2,12 +2,13 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import 'react-native-url-polyfill/auto';
 
 import { supabase } from '@/services/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useForgeTheme } from '@/hooks/useForgeTheme';
 import { ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
@@ -30,12 +31,28 @@ export default function RootLayout() {
   });
 
   const { setUser, setLoading } = useAuthStore();
+  const [onboardingSeen, setOnboardingSeen] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      const seen = await AsyncStorage.getItem('onboarding_seen');
+      setOnboardingSeen(seen === 'true');
+    };
+    checkOnboarding();
+  }, []);
 
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
   useEffect(() => {
+    // Explicitly restore session on app start
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        setLoading(false);
+      }
+    });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         if (session?.user) {
@@ -69,14 +86,14 @@ export default function RootLayout() {
     if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
-  if (!loaded) return null;
+  if (!loaded || onboardingSeen === null) return null;
 
-  return <RootLayoutNav />;
+  return <RootLayoutNav onboardingSeen={onboardingSeen} />;
 }
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-function RootLayoutNav() {
+function RootLayoutNav({ onboardingSeen }: { onboardingSeen: boolean }) {
   const { user, isLoading } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
@@ -108,19 +125,30 @@ function RootLayoutNav() {
     // The splash screen is the sole gatekeeper for initial navigation.
     if (inSplash || !segments[0]) return;
 
-    if (!user && !inAuthGroup) {
-      router.replace('/(auth)/welcome');
+    if (!user) {
+      if (!inAuthGroup) {
+        if (!onboardingSeen) {
+          router.replace('/(auth)/onboarding');
+        } else {
+          router.replace('/(auth)/welcome');
+        }
+      }
     } else if (user) {
       const currentRoute = segments.join('/');
-      const isSignupFlow = currentRoute.includes('password') || currentRoute.includes('hooray') || currentRoute.includes('otp');
+      const isSignupFlow = currentRoute.includes('password') || currentRoute.includes('hooray') || currentRoute.includes('otp') || currentRoute.includes('signup');
 
-      if (inAuthGroup) {
+      // Do not navigate away if the user is in the middle of signup
+      if (isSignupFlow) {
+        return;
+      }
+
+      if (!user.isOnboarded && currentRoute !== 'personalize') {
+        router.replace('/personalize');
+      } else if (user.isOnboarded && inAuthGroup) {
         router.replace('/(tabs)');
-      } else if (!user.bmi && !isSignupFlow && currentRoute !== 'personalize') {
-        router.push('/personalize');
       }
     }
-  }, [user, isLoading, segments]);
+  }, [user, isLoading, segments, onboardingSeen]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -130,7 +158,7 @@ function RootLayoutNav() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="splash" />
             <Stack.Screen name="(auth)" />
-            <Stack.Screen name="personalize" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="personalize" options={{ presentation: 'modal', gestureEnabled: false }} />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="+not-found" />
             <Stack.Screen name="addMeal"      options={{ presentation: 'formSheet', sheetAllowedDetents: 'fitToContents', sheetGrabberVisible: true }} />
