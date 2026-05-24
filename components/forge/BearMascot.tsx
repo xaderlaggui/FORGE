@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { ImageStyle, StyleProp, ViewStyle } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
-import { BEAR, BearKey } from '../../constants/bearAssets';
+import { BEAR, BearKey } from '../../features/sprites/bearAssets';
 
 interface BearMascotProps {
   variant: BearKey;
