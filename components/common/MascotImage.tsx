@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleProp, ImageStyle } from 'react-native';
-import { MascotImages, MascotKey } from '../../constants/mascotImages';
+import { MascotImages, MascotKey } from '../../features/sprites/mascotImages';
 
 interface MascotImageProps {
   mascot: MascotKey;
