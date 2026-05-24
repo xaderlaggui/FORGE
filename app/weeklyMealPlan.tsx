@@ -29,6 +29,7 @@ export default function WeeklyMealPlanScreen() {
         .from('generated_meal_plan_weekly')
         .select('plan')
         .eq('user_id', user!.uid)
+        .eq('status', 'active')
         .order('saved_at', { ascending: false })
         .limit(1)
         .single();
