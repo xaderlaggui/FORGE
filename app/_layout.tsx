@@ -129,8 +129,8 @@ function RootLayoutNav() {
         return;
       }
 
-      if (!user.isOnboarded && currentRoute !== 'personalize') {
-        router.replace('/personalize');
+      if (!user.isOnboarded && currentRoute !== '(profile)/personalize') {
+        router.replace('/(profile)/personalize');
       } else if (user.isOnboarded && inAuthGroup) {
         router.replace('/(tabs)');
       }
@@ -144,21 +144,23 @@ function RootLayoutNav() {
           <StatusBar style={isDark ? 'light' : 'dark'} />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(auth)" />
-            <Stack.Screen name="personalize" options={{ gestureEnabled: false, animation: 'fade' }} />
+            <Stack.Screen name="(profile)/personalize" options={{ gestureEnabled: false, animation: 'fade' }} />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="+not-found" />
-            <Stack.Screen name="addMeal"      options={{ presentation: 'formSheet', sheetAllowedDetents: 'fitToContents', sheetGrabberVisible: true }} />
-            <Stack.Screen name="measurements" options={{ presentation: 'formSheet', sheetAllowedDetents: 'fitToContents', sheetGrabberVisible: true }} />
-            <Stack.Screen name="chat"         options={{ presentation: 'modal', sheetGrabberVisible: true }} />
-            <Stack.Screen name="activeWorkout" />
-            <Stack.Screen name="workoutHistory" />
-            <Stack.Screen name="workoutDetail" />
-            <Stack.Screen name="editProfile" />
-            <Stack.Screen name="privacySecurity" />
-            <Stack.Screen name="aiPlan" />
-            <Stack.Screen name="buildRoutine" />
-            <Stack.Screen name="plan-generator" />
-            <Stack.Screen name="routinePreview" options={{ presentation: 'formSheet', sheetAllowedDetents: 'fitToContents', sheetGrabberVisible: true }} />
+            <Stack.Screen name="(nutrition)/addMeal"      options={{ presentation: 'formSheet', sheetAllowedDetents: 'fitToContents', sheetGrabberVisible: true }} />
+            <Stack.Screen name="(profile)/measurements" options={{ presentation: 'formSheet', sheetAllowedDetents: 'fitToContents', sheetGrabberVisible: true }} />
+            <Stack.Screen name="(ai)/chat"         options={{ presentation: 'modal', sheetGrabberVisible: true }} />
+            <Stack.Screen name="(workout)/activeWorkout" />
+            <Stack.Screen name="(workout)/workoutHistory" />
+            <Stack.Screen name="(workout)/workoutDetail" />
+            <Stack.Screen name="(profile)/editProfile" />
+            <Stack.Screen name="(profile)/privacySecurity" />
+            <Stack.Screen name="(ai)/aiPlan" />
+            <Stack.Screen name="(workout)/buildRoutine" />
+            <Stack.Screen name="(ai)/plan-generator" />
+            <Stack.Screen name="(workout)/routinePreview" options={{ presentation: 'formSheet', sheetAllowedDetents: 'fitToContents', sheetGrabberVisible: true }} />
+            <Stack.Screen name="(nutrition)/analyzeMeal" />
+            <Stack.Screen name="(nutrition)/weeklyMealPlan" />
           </Stack>
         </ThemeProvider>
       </QueryClientProvider>
