@@ -2,10 +2,10 @@ import { useForgeTheme } from '@/hooks/useForgeTheme';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
-import { AlertTriangle, Apple, Target } from 'lucide-react-native';
+import { AlertTriangle, Apple, Check, ChevronLeft, Sparkles, Target } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { BearMascot } from '../components/forge/BearMascot';
+import { MascotImage } from '../components/common/MascotImage';
 import { ForgeButton } from '../components/forge/ForgeButton';
 import { ForgeSkeleton } from '../components/forge/ForgeSkeleton';
 import { WeeklyCalendar } from '../features/planner/components/WeeklyCalendar';
@@ -42,18 +42,18 @@ function MealGeneratorSkeleton({ T }: { T: any }) {
             <ForgeSkeleton width={60} height={16} radius={4} />
           </View>
           <View style={{ backgroundColor: T.colors.bg1, borderRadius: 16, borderWidth: 0.5, borderColor: T.colors.b1, padding: 16 }}>
-             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-               <View style={{ gap: 6, flex: 1 }}>
-                 <ForgeSkeleton width="70%" height={14} radius={4} />
-                 <ForgeSkeleton width="40%" height={10} radius={4} />
-               </View>
-               <ForgeSkeleton width={40} height={14} radius={4} />
-             </View>
-             <View style={{ borderTopWidth: 0.5, borderTopColor: T.colors.b0, marginTop: 12, paddingTop: 12, flexDirection: 'row', gap: 12 }}>
-                <ForgeSkeleton width={40} height={12} radius={4} />
-                <ForgeSkeleton width={40} height={12} radius={4} />
-                <ForgeSkeleton width={40} height={12} radius={4} />
-             </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+              <View style={{ gap: 6, flex: 1 }}>
+                <ForgeSkeleton width="70%" height={14} radius={4} />
+                <ForgeSkeleton width="40%" height={10} radius={4} />
+              </View>
+              <ForgeSkeleton width={40} height={14} radius={4} />
+            </View>
+            <View style={{ borderTopWidth: 0.5, borderTopColor: T.colors.b0, marginTop: 12, paddingTop: 12, flexDirection: 'row', gap: 12 }}>
+              <ForgeSkeleton width={40} height={12} radius={4} />
+              <ForgeSkeleton width={40} height={12} radius={4} />
+              <ForgeSkeleton width={40} height={12} radius={4} />
+            </View>
           </View>
         </View>
       ))}
@@ -63,131 +63,169 @@ function MealGeneratorSkeleton({ T }: { T: any }) {
 
 // ─── AI Rationale Card ────────────────────────────────────────────────────────
 function CoachMessageCard({ message, T }: { message: string, T: any }) {
+
   return (
-    <View style={{
-      flexDirection: 'row',
-      backgroundColor: T.colors.bg1, ...T.shadows.lift,
-      borderRadius: 16,
-      overflow: 'hidden',
-      borderWidth: 1,
-      borderColor: T.colors.b1,
-      marginBottom: 24,
-      shadowColor: T.colors.forge,
-      shadowOpacity: 0.06,
-      shadowRadius: 12,
-      elevation: 3,
-    }}>
-      <View style={{
-        width: 90,
-        backgroundColor: T.colors.forgeDim,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        paddingTop: 16
-      }}>
-        <BearMascot variant="SMUG" size="xl" style={{ position: 'absolute', bottom: -30, left: -70 }} />
+    <View style={{ flexDirection: 'row', marginBottom: 24, marginTop: 16, alignItems: 'center' }}>
+      <View style={{ marginRight: 12, zIndex: 2, alignItems: 'center', justifyContent: 'center', width: 76 }}>
+        <MascotImage mascot="nutrition" width={100} height={100} accessibilityLabel="Nutrition Coach Mascot" />
       </View>
-      <View style={{ flex: 1, padding: 16 }}>
-        <Text style={{ fontSize: 14, fontWeight: '800', color: T.colors.forge, marginBottom: 6 }}>Coach AI</Text>
-        <Text numberOfLines={8} style={{ fontSize: 13, color: T.colors.t1, lineHeight: 20, fontWeight: '500' }}>{message}</Text>
+
+      <View style={{ flex: 1, position: 'relative' }}>
+        <View style={{
+          position: 'absolute', left: -9, top: 23, width: 0, height: 0,
+          backgroundColor: 'transparent', borderStyle: 'solid', borderTopWidth: 9, borderBottomWidth: 9, borderRightWidth: 10,
+          borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: T.colors.b1, zIndex: 0,
+        }} />
+        <View style={{
+          position: 'absolute', left: -7, top: 24, width: 0, height: 0,
+          backgroundColor: 'transparent', borderStyle: 'solid', borderTopWidth: 8, borderBottomWidth: 8, borderRightWidth: 9,
+          borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: T.colors.bg1, zIndex: 2,
+        }} />
+        <View style={{
+          backgroundColor: T.colors.bg1, ...T.shadows.lift, borderRadius: 16, padding: 16,
+          borderWidth: 1, borderColor: T.colors.b1, zIndex: 1,
+        }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+            <Sparkles size={14} color={T.colors.forge} />
+            <Text style={{ fontSize: 12, fontWeight: '800', color: T.colors.t1, letterSpacing: 0.5 }}>AI COACH TIP</Text>
+          </View>
+          <Text style={{ fontSize: 13, color: T.colors.t2, lineHeight: 18 }}>{message}</Text>
+        </View>
       </View>
     </View>
   );
 }
 
 // ─── Generated Plan Preview ───────────────────────────────────────────────────
-function PlanPreview({ plan, onApply, onSaveDraft, isApplying, T }: {
+function PlanPreview({ plan, onApply, onSaveDraft, isApplying, isSavingDraft, T }: {
   plan: GeneratedPlan;
   onApply: () => void;
   onSaveDraft: () => void;
   isApplying: boolean;
+  isSavingDraft: boolean;
   T: any;
 }) {
-  const [selectedDayIdx, setSelectedDayIdx] = React.useState(0);
   const isWeekly = Array.isArray(plan.mealPlan.days) && plan.mealPlan.days.length > 0;
-  const days = isWeekly ? plan.mealPlan.days : [{ dayOfWeek: 'Preview', meals: plan.mealPlan.meals }];
-  const currentDay = days?.[selectedDayIdx];
+
+  // Generate 7 days starting from Monday
+  const weekDays = React.useMemo(() => {
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const todayPH = new Date(utc + (3600000 * 8)); // UTC+8
+
+    const dayOfWeek = todayPH.getDay();
+    const currentIdx = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Mon=0, Sun=6
+
+    const startOfWeek = new Date(todayPH);
+    startOfWeek.setDate(todayPH.getDate() - currentIdx);
+
+    return Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date(startOfWeek);
+      d.setDate(startOfWeek.getDate() + i);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const date = String(d.getDate()).padStart(2, '0');
+      const label = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i];
+      const fullName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][i];
+      return { label, fullName, date: d.getDate(), fullDate: `${year}-${month}-${date}` };
+    });
+  }, []);
+
+  const [selectedDayIdx, setSelectedDayIdx] = React.useState(() => {
+    // Start with today's index
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const todayPH = new Date(utc + (3600000 * 8));
+    const dayOfWeek = todayPH.getDay();
+    return dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  });
+
+  const selectedDayName = weekDays[selectedDayIdx].fullName;
+  const currentDay = isWeekly
+    ? plan.mealPlan.days.find((d: any) => d.dayOfWeek === selectedDayName)
+    : { dayOfWeek: 'Preview', meals: plan.mealPlan.meals };
 
   return (
-    <View style={{ gap: 12 }}>
-      {plan.coachMessage && (
-        <CoachMessageCard message={plan.coachMessage} T={T} />
-      )}
-      {isWeekly && (
-        <WeeklyCalendar
-          days={plan.mealPlan.days.map((d: any, idx: number) => {
-            const dateObj = dayjs().startOf('week').add(1, 'day').add(idx, 'day');
-            return {
-              label: d.dayOfWeek.substring(0, 3),
-              date: dateObj.date(),
-              fullDate: dateObj.format('YYYY-MM-DD'),
-            };
-          })}
-          activeDayIdx={selectedDayIdx}
-          onSelectDay={setSelectedDayIdx}
-        />
-      )}
-
-      <Text style={{ fontSize: 18, fontWeight: '800', color: T.colors.t1, marginBottom: 4 }}>
-        Meal Plan Preview ({currentDay?.dayOfWeek})
-      </Text>
-      <Text style={{ fontSize: 14, color: T.colors.t2, marginBottom: 8, fontWeight: '600' }}>
-        Targets: {plan.mealPlan.targetCalories} kcal • {plan.mealPlan.targetProtein}g P • {plan.mealPlan.targetCarbs}g C • {plan.mealPlan.targetFat}g F
-      </Text>
-      {(currentDay?.meals || []).map((meal: any, i: number) => (
-        <View
-          key={i}
-          style={{
-            backgroundColor: T.colors.bg1, ...T.shadows.lift, borderRadius: 14,
-            padding: 16, borderWidth: 0.5, borderColor: T.colors.b1,
-            flexDirection: 'row', alignItems: 'center', gap: 14,
-          }}
-        >
-          <View style={{
-            width: 44, height: 44, borderRadius: 10,
-            backgroundColor: T.colors.forgeDim,
-            alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Text style={{
-              fontSize: 11, fontWeight: '800', letterSpacing: 0.5,
-              color: T.colors.forge,
-            }}>{meal.name.substring(0, 3).toUpperCase()}</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 15, fontWeight: '700', color: T.colors.t1 }}>{meal.name}</Text>
-            <Text style={{ fontSize: 13, color: T.colors.t2, marginTop: 2, lineHeight: 18 }}>
-              {meal.description}
-            </Text>
-            <Text style={{ fontSize: 12, fontWeight: '600', color: T.colors.t3, marginTop: 4 }}>
-              {meal.calories} kcal • {meal.protein}g P • {meal.carbs}g C • {meal.fat}g F
-            </Text>
-          </View>
-        </View>
-      ))}
-
-      <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+    <View style={{ flex: 1 }}>
+      {/* Header matching Weekly Meal Plan */}
+      <View style={{
+        flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between',
+        paddingTop: 60, paddingBottom: 16, paddingHorizontal: 16,
+        backgroundColor: T.colors.bg1, ...T.shadows.lift, borderBottomWidth: 0.5, borderBottomColor: T.colors.b1,
+      }}>
         <TouchableOpacity
+          style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginLeft: -8 }}
           onPress={onSaveDraft}
-          style={{
-            flex: 1, paddingVertical: 16, borderRadius: 14, alignItems: 'center',
-            backgroundColor: T.colors.bg2, borderWidth: 1, borderColor: T.colors.b1,
-          }}
+          disabled={isSavingDraft || isApplying}
         >
-          <Text style={{ fontSize: 15, fontWeight: '700', color: T.colors.t1 }}>Save as Draft</Text>
+          {isSavingDraft ? <ActivityIndicator color={T.colors.t1} /> : <ChevronLeft size={28} color={T.colors.t1} />}
         </TouchableOpacity>
+
+        <View style={{ alignItems: 'center', paddingBottom: 8 }}>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: T.colors.t1 }}>Generated Plan</Text>
+        </View>
+
         <TouchableOpacity
+          style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginRight: -8 }}
           onPress={onApply}
-          disabled={isApplying}
-          style={{
-            flex: 1, paddingVertical: 16, borderRadius: 14, alignItems: 'center',
-            backgroundColor: T.colors.forge, opacity: isApplying ? 0.6 : 1,
-          }}
+          disabled={isApplying || isSavingDraft}
         >
-          {isApplying
-            ? <ActivityIndicator color="#000" />
-            : <Text style={{ fontSize: 15, fontWeight: '800', color: '#000' }}>Apply to Planner</Text>
-          }
+          {isApplying ? <ActivityIndicator color={T.colors.forge} /> : <Check size={28} color={T.colors.forge} />}
         </TouchableOpacity>
       </View>
+
+      {isWeekly && (
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, backgroundColor: T.colors.bg0, borderBottomWidth: 0.5, borderBottomColor: T.colors.b1, paddingBottom: 12 }}>
+          <WeeklyCalendar
+            days={weekDays}
+            activeDayIdx={selectedDayIdx}
+            onSelectDay={setSelectedDayIdx}
+          />
+        </View>
+      )}
+
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
+        <Text style={{ fontSize: 14, color: T.colors.t2, marginBottom: 8, fontWeight: '600' }}>
+          Targets: {plan.mealPlan.targetCalories} kcal • {plan.mealPlan.targetProtein}g P • {plan.mealPlan.targetCarbs}g C • {plan.mealPlan.targetFat}g F
+        </Text>
+
+        {(currentDay?.meals || []).map((meal: any, i: number) => (
+          <View
+            key={i}
+            style={{
+              backgroundColor: T.colors.bg1, ...T.shadows.lift, borderRadius: 14,
+              padding: 16, borderWidth: 0.5, borderColor: T.colors.b1,
+              flexDirection: 'row', alignItems: 'center', gap: 14,
+              marginBottom: 12,
+            }}
+          >
+            <View style={{
+              width: 44, height: 44, borderRadius: 10,
+              backgroundColor: T.colors.forgeDim,
+              alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Text style={{
+                fontSize: 11, fontWeight: '800', letterSpacing: 0.5,
+                color: T.colors.forge,
+              }}>{meal.name.substring(0, 3).toUpperCase()}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: T.colors.t1 }}>{meal.name}</Text>
+              <Text style={{ fontSize: 13, color: T.colors.t2, marginTop: 2, lineHeight: 18 }}>
+                {meal.description}
+              </Text>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: T.colors.t3, marginTop: 4 }}>
+                {meal.calories} kcal • {meal.protein}g P • {meal.carbs}g C • {meal.fat}g F
+              </Text>
+            </View>
+          </View>
+        ))}
+
+        {plan.coachMessage && (
+          <CoachMessageCard message={plan.coachMessage} T={T} />
+        )}
+
+      </ScrollView>
     </View>
   );
 }
@@ -209,6 +247,58 @@ export default function AIPlanScreen() {
   const [generating, setGenerating] = useState(false);
   const [plan, setPlan] = useState<GeneratedPlan | null>(null);
   const [applying, setApplying] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
+
+  // Refs for auto-save on unmount
+  const planRef = React.useRef<GeneratedPlan | null>(null);
+  const appliedRef = React.useRef(false);
+
+  React.useEffect(() => { planRef.current = plan; }, [plan]);
+
+  // Check for existing draft on mount
+  React.useEffect(() => {
+    async function checkDraft() {
+      if (!user) return;
+      const { data } = await supabase
+        .from('generated_meal_plan_weekly')
+        .select('plan')
+        .eq('user_id', user.uid)
+        .eq('status', 'draft')
+        .order('saved_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (data && data.plan) {
+        Alert.alert(
+          'Draft Found',
+          'You have a saved meal plan draft. Would you like to resume it?',
+          [
+            { text: 'Start Fresh', style: 'cancel' },
+            { text: 'Resume Draft', onPress: () => setPlan(data.plan as GeneratedPlan) }
+          ]
+        );
+      }
+    }
+    checkDraft();
+
+    // Auto-save draft on unmount if not applied
+    return () => {
+      const currentPlan = planRef.current;
+      const hasApplied = appliedRef.current;
+
+      if (currentPlan && !hasApplied && user) {
+        supabase.from('generated_meal_plan_weekly').upsert({
+          user_id: user.uid,
+          date: dayjs().format('YYYY-MM-DD'),
+          plan: currentPlan,
+          saved_at: new Date().toISOString(),
+          status: 'draft'
+        }, { onConflict: 'user_id,date' }).then(() => {
+          Alert.alert('Draft Saved', 'Your unapplied plan was automatically saved as a draft.');
+        });
+      }
+    };
+  }, [user]);
 
   const toggleGoal = (g: string) => setSelectedGoals([g]);
 
@@ -251,11 +341,14 @@ export default function AIPlanScreen() {
         date: dayjs().format('YYYY-MM-DD'),
         plan: plan,
         saved_at: new Date().toISOString(),
+        status: 'active'
       }, { onConflict: 'user_id,date' });
       if (error) throw error;
 
       // Invalidate the activeMealPlan query so the Dashboard and Planner instantly update
       await queryClient.invalidateQueries({ queryKey: ['activeMealPlan', user.uid] });
+
+      appliedRef.current = true; // Mark as applied so unmount doesn't auto-save it as draft again
 
       Alert.alert('Plan Activated!', 'Your personalized plan is now live in the Planner.', [
         { text: "Let's go!", onPress: () => router.back() },
@@ -267,8 +360,28 @@ export default function AIPlanScreen() {
     }
   };
 
-  const handleSaveDraft = () => {
-    Alert.alert('Saved', 'Your plan has been saved as a draft.');
+  const handleSaveDraft = async () => {
+    if (!plan || !user) return;
+    setSavingDraft(true);
+    try {
+      const { error } = await supabase.from('generated_meal_plan_weekly').upsert({
+        user_id: user.uid,
+        date: dayjs().format('YYYY-MM-DD'),
+        plan: plan,
+        saved_at: new Date().toISOString(),
+        status: 'draft'
+      }, { onConflict: 'user_id,date' });
+      if (error) throw error;
+
+      appliedRef.current = true; // Mark as handled to prevent duplicate auto-save
+      Alert.alert('Saved as Draft', 'Your plan has been saved. You can resume it later.', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    } catch (e: any) {
+      Alert.alert('Error saving draft', e.message);
+    } finally {
+      setSavingDraft(false);
+    }
   };
 
   const renderOption = (label: string, isSelected: boolean, onPress: () => void) => (
@@ -284,10 +397,12 @@ export default function AIPlanScreen() {
   return (
     <View style={s.container}>
 
-      <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
-        {generating ? (
+      {generating ? (
+        <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
           <MealGeneratorSkeleton T={T} />
-        ) : !plan ? (
+        </ScrollView>
+      ) : !plan ? (
+        <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
           <>
             <View style={s.hero}>
               <Text style={s.heroTitle}>Build Your Meal Plan</Text>
@@ -342,16 +457,17 @@ export default function AIPlanScreen() {
               />
             </View>
           </>
-        ) : (
-          <PlanPreview
-            plan={plan}
-            onApply={handleApply}
-            onSaveDraft={handleSaveDraft}
-            isApplying={applying}
-            T={T}
-          />
-        )}
-      </ScrollView>
+        </ScrollView>
+      ) : (
+        <PlanPreview
+          plan={plan}
+          onApply={handleApply}
+          onSaveDraft={handleSaveDraft}
+          isApplying={applying}
+          isSavingDraft={savingDraft}
+          T={T}
+        />
+      )}
 
       {!plan && (
         <View style={s.footer}>
