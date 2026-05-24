@@ -18,7 +18,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
-import { MascotImages } from '../../constants/mascotImages';
+import { MascotImages } from '../../features/sprites/mascotImages';
 import { SpriteMascot } from '../../components/forge/SpriteMascot';
 import { onboardingSpriteSequence } from '../../features/sprites/OnboardingSpriteSequence';
 import { supabase } from '../../services/supabase';
