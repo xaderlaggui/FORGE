@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { MapPin, Timer, Flame, User as UserIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { MascotImages } from '../../../../features/sprites/mascotImages';
+import { Flame, MapPin, Timer, User as UserIcon } from 'lucide-react-native';
+import React from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { SpriteMascot } from '../../../../components/forge/SpriteMascot';
 import { TypewriterText } from '../../../../components/forge/TypewriterText';
 import { chatbotSpriteController } from '../../../../features/sprites/ChatbotSpriteController';
 import { getSpriteForActivity } from '../../../../features/sprites/activity-sprite-map';
+import { MascotImages } from '../../../../features/sprites/mascotImages';
 import { Message } from '../../hooks/useChat';
 
 export function ChatMessage({ item, s, T, user, animatedIds }: { item: Message, s: any, T: any, user: any, animatedIds: React.MutableRefObject<Set<string>> }) {

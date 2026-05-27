@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text } from 'react-native';
 import { Sparkles } from 'lucide-react-native';
+import React from 'react';
+import { Text, View } from 'react-native';
 import { MascotImage } from '../../../../components/common/MascotImage';
 
 export function CoachMessageCard({ message, T }: { message: string, T: any }) {

@@ -69,7 +69,7 @@ export function useChat() {
           { role: 'system', content: dynamicPrompt },
           ...historyRef.current,
         ],
-        { max_tokens: 200, temperature: 0.75 }
+        { max_tokens: 500, temperature: 0.75 }
       );
 
       let displayText = raw;

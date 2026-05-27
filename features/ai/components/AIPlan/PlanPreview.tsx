@@ -82,7 +82,17 @@ export function PlanPreview({ plan, onApply, onSaveDraft, isApplying, isSavingDr
       </View>
 
       {isWeekly && (
-        <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+        <View style={{
+          paddingHorizontal: 16,
+          paddingTop: 16,
+          backgroundColor: T.colors.bg0,
+          ...T.shadows.lift,
+          shadowOffset: { width: 0, height: 4 }, // Shadow points downward
+          paddingBottom: 3,
+          borderBottomLeftRadius: 20,
+          borderBottomRightRadius: 20,
+          zIndex: 10, // Ensure it floats above the ScrollView
+        }}>
           <WeeklyCalendar
             days={weekDays}
             activeDayIdx={selectedDayIdx}
@@ -129,11 +139,23 @@ export function PlanPreview({ plan, onApply, onSaveDraft, isApplying, isSavingDr
           </View>
         ))}
 
-        {plan.coachMessage && (
-          <CoachMessageCard message={plan.coachMessage} T={T} />
-        )}
-
       </ScrollView>
+
+      {/* Sticky Coach Message at the bottom */}
+      {plan.coachMessage && (
+        <View style={{
+          paddingHorizontal: 16,
+          backgroundColor: T.colors.bg0,
+          ...T.shadows.lift,
+          shadowOffset: { width: 0, height: -4 }, // Shadow points upward
+          paddingBottom: 8, // Push up slightly for breathing room
+          paddingTop: 8,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+        }}>
+          <CoachMessageCard message={plan.coachMessage} T={T} />
+        </View>
+      )}
     </View>
   );
 }
