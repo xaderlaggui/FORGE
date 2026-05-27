@@ -1,7 +1,7 @@
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { Activity, AlertTriangle, CalendarDays, Target } from 'lucide-react-native';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { ForgeButton } from '../../components/forge/ForgeButton';
 import { PlanGeneratorPreview } from '../../features/ai/components/PlanGenerator/PlanGeneratorPreview';
 import { PlanGeneratorSkeleton } from '../../features/ai/components/PlanGenerator/PlanGeneratorSkeleton';
@@ -51,81 +51,86 @@ export default function PlanGeneratorScreen() {
   }
 
   return (
-    <View style={s.container}>
-      <ScrollView style={s.scroll} contentContainerStyle={s.content} bounces={false}>
-        {isGenerating ? (
-          <PlanGeneratorSkeleton T={T} />
-        ) : (
-          <>
-            <View style={s.hero}>
-              <Text style={s.heroTitle}>Build Your Routine</Text>
-              <Text style={s.heroSubtitle}>Let the AI pick specific exercises from the library tailored to your goals.</Text>
-            </View>
+    <KeyboardAvoidingView
+      style={s.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={s.body}>
+          {isGenerating ? (
+            <PlanGeneratorSkeleton T={T} />
+          ) : (
+            <>
+              <View style={s.hero}>
+                <Text style={s.heroTitle}>Build Your Routine</Text>
+                <Text style={s.heroSubtitle}>Let AI tailor exercises to your goals.</Text>
+              </View>
 
-            <View style={s.section}>
-              <View style={s.sectionHeader}>
-                <Target size={18} color={T.colors.t2} />
-                <Text style={s.sectionTitle}>Primary Goal</Text>
+              <View style={s.section}>
+                <View style={s.sectionHeader}>
+                  <Target size={16} color={T.colors.t2} />
+                  <Text style={s.sectionTitle}>Primary Goal</Text>
+                </View>
+                <View style={s.row}>
+                  {renderOption('Shred Fat', goal === 'cut', () => setGoal('cut'))}
+                  {renderOption('Recomp', goal === 'maintain', () => setGoal('maintain'))}
+                  {renderOption('Build Muscle', goal === 'bulk', () => setGoal('bulk'))}
+                </View>
               </View>
-              <View style={s.row}>
-                {renderOption('Shred Fat', goal === 'cut', () => setGoal('cut'))}
-                {renderOption('Recomp', goal === 'maintain', () => setGoal('maintain'))}
-                {renderOption('Build Muscle', goal === 'bulk', () => setGoal('bulk'))}
-              </View>
-            </View>
 
-            <View style={s.section}>
-              <View style={s.sectionHeader}>
-                <Activity size={18} color={T.colors.t2} />
-                <Text style={s.sectionTitle}>Daily Activity Level</Text>
+              <View style={s.section}>
+                <View style={s.sectionHeader}>
+                  <Activity size={16} color={T.colors.t2} />
+                  <Text style={s.sectionTitle}>Daily Activity Level</Text>
+                </View>
+                <View style={s.row}>
+                  {renderOption('Desk Job', activity === 'sedentary', () => setActivity('sedentary'))}
+                  {renderOption('Light Activity', activity === 'light', () => setActivity('light'))}
+                </View>
+                <View style={s.row}>
+                  {renderOption('Active', activity === 'active', () => setActivity('active'))}
+                  {renderOption('Very Active', activity === 'very_active', () => setActivity('very_active'))}
+                </View>
               </View>
-              <View style={s.row}>
-                {renderOption('Desk Job', activity === 'sedentary', () => setActivity('sedentary'))}
-                {renderOption('Light Activity', activity === 'light', () => setActivity('light'))}
-              </View>
-              <View style={s.row}>
-                {renderOption('Active', activity === 'active', () => setActivity('active'))}
-                {renderOption('Very Active', activity === 'very_active', () => setActivity('very_active'))}
-              </View>
-            </View>
 
-            <View style={s.section}>
-              <View style={s.sectionHeader}>
-                <CalendarDays size={18} color={T.colors.t2} />
-                <Text style={s.sectionTitle}>Training Frequency</Text>
+              <View style={s.section}>
+                <View style={s.sectionHeader}>
+                  <CalendarDays size={16} color={T.colors.t2} />
+                  <Text style={s.sectionTitle}>Training Frequency</Text>
+                </View>
+                <View style={s.freqRow}>
+                  {[3, 4, 5, 6].map(num => (
+                    <TouchableOpacity
+                      key={num}
+                      style={[s.freqCircle, days === num && s.freqCircleActive]}
+                      onPress={() => setDays(num as any)}
+                    >
+                      <Text style={[s.freqText, days === num && s.freqTextActive]}>{num}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-              <View style={s.freqRow}>
-                {[3, 4, 5, 6].map(num => (
-                  <TouchableOpacity
-                    key={num}
-                    style={[s.freqCircle, days === num && s.freqCircleActive]}
-                    onPress={() => setDays(num as any)}
-                  >
-                    <Text style={[s.freqText, days === num && s.freqTextActive]}>{num}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
 
-            <View style={s.section}>
-              <View style={s.sectionHeader}>
-                <AlertTriangle size={18} color={T.colors.t2} />
-                <Text style={s.sectionTitle}>Injuries or Limitations (Optional)</Text>
+              <View style={s.section}>
+                <View style={s.sectionHeader}>
+                  <AlertTriangle size={16} color={T.colors.t2} />
+                  <Text style={s.sectionTitle}>Injuries or Limitations (Optional)</Text>
+                </View>
+                <TextInput
+                  style={s.textarea}
+                  value={injuries}
+                  onChangeText={setInjuries}
+                  placeholder="e.g. bad lower back, shoulder impingement..."
+                  placeholderTextColor={T.colors.t3}
+                  multiline
+                  numberOfLines={3}
+                  textAlignVertical="top"
+                />
               </View>
-              <TextInput
-                style={s.textarea}
-                value={injuries}
-                onChangeText={setInjuries}
-                placeholder="e.g. bad lower back, shoulder impingement..."
-                placeholderTextColor={T.colors.t3}
-                multiline
-                numberOfLines={3}
-                textAlignVertical="top"
-              />
-            </View>
-          </>
-        )}
-      </ScrollView>
+            </>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
 
       <View style={s.footer}>
         <ForgeButton
@@ -135,7 +140,7 @@ export default function PlanGeneratorScreen() {
           pulse
         />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -151,8 +156,7 @@ const useS = (T: any) => StyleSheet.create({
   iconBtn: { padding: 8, marginLeft: -8 },
   headerTitle: { fontSize: T.typography.sizes.h3, fontWeight: '700', color: T.colors.t1 },
 
-  scroll: { flex: 1 },
-  content: { padding: T.spacing.page, paddingBottom: 100 },
+  body: { flex: 1, padding: T.spacing.page, justifyContent: 'center' },
 
   hero: { alignItems: 'center', marginVertical: 16 },
   heroTitle: { fontSize: 28, fontWeight: '800', color: T.colors.t1, marginTop: 30, marginBottom: 8 },
@@ -202,7 +206,6 @@ const useS = (T: any) => StyleSheet.create({
   },
 
   footer: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
     backgroundColor: T.colors.bg1,
     padding: T.spacing.page, paddingBottom: 40,
     borderTopWidth: 0.5, borderTopColor: T.colors.b1,
@@ -235,4 +238,3 @@ const useS = (T: any) => StyleSheet.create({
   },
   addBtnText: { fontSize: 15, fontWeight: '700', color: T.colors.forge }
 });
-
