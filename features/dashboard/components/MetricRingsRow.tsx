@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { MacroDonutRing } from '../../../components/forge/MacroDonutRing';
-import { StreakWidget } from '../../../components/forge/StreakWidget';
+import { MacroDonutRing } from '../../../features/nutrition/components/MacroDonutRing';
+import { StreakWidget } from '../../../features/dashboard/components/StreakWidget';
 import { SkeletonMetricRow } from '../../../components/forge/ForgeSkeleton';
 import { useForgeTheme } from "@/hooks/useForgeTheme";
 
