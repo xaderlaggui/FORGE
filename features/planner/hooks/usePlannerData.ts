@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 // Removed dayjs from top import since we are using raw Date math for timezone accuracy
 import { useMemo, useState } from 'react';
-import { useWorkouts } from '../../../hooks/useWorkouts';
+import { useWorkouts } from '../../../features/workout/hooks/useWorkouts';
 import type { GeneratedPlan } from '../../../services/GeneratorEngine';
 import { supabase } from '../../../services/supabase';
 import type { Exercise } from '../../../types';
