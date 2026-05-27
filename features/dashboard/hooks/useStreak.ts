@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
-import { supabase } from '../services/supabase';
-import { useAuthStore } from '../stores/authStore';
-import { useWorkouts } from './useWorkouts';
+import { supabase } from '../../../services/supabase';
+import { useAuthStore } from '../../../stores/authStore';
+import { useWorkouts } from '../../workout/hooks/useWorkouts';
 
 /**
  * Calculates a smart streak that:

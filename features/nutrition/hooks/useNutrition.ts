@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import { supabase } from '../services/supabase';
-import { useAuthStore } from '../stores/authStore';
-import type { NutritionLog } from '../types';
+import { supabase } from '../../../services/supabase';
+import { useAuthStore } from '../../../stores/authStore';
+import type { NutritionLog } from '../../../types';
 
 export function useNutrition(dateStr: string = dayjs().format('YYYY-MM-DD')) {
   const { user } = useAuthStore();
@@ -60,3 +60,4 @@ export function useNutrition(dateStr: string = dayjs().format('YYYY-MM-DD')) {
 
   return { ...query, updateNutrition: mutation.mutateAsync };
 }
+

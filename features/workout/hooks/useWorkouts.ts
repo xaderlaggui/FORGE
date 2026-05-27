@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../services/supabase';
-import { useAuthStore } from '../stores/authStore';
-import type { Workout } from '../types';
+import { supabase } from '../../../services/supabase';
+import { useAuthStore } from '../../../stores/authStore';
+import type { Workout } from '../../../types';
 
 export function useWorkouts() {
   const { user } = useAuthStore();
@@ -51,3 +51,4 @@ export function useWorkouts() {
     updateWorkout: updateWorkout.mutateAsync,
   };
 }
+

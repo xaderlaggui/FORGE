@@ -1,4 +1,4 @@
-import { BEAR, BearKey } from '../constants/bearAssets';
+import { BEAR, BearKey } from '../features/sprites/bearAssets';
 
 export type AppContext =
   | 'welcome'
