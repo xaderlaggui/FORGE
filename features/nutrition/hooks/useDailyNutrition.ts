@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useNutrition } from '../../../hooks/useNutrition';
+import { useNutrition } from '../../../features/nutrition/hooks/useNutrition';
 import type { GeneratedPlan } from '../../../services/GeneratorEngine';
 import { supabase } from '../../../services/supabase';
 import { useAuthStore } from '../../../stores/authStore';
