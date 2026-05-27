@@ -1,10 +1,10 @@
+import { useForgeTheme } from "@/hooks/useForgeTheme";
+import { Activity, AlertTriangle, CalendarDays, Target } from 'lucide-react-native';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Activity, AlertTriangle, CalendarDays, Target } from 'lucide-react-native';
-import { useForgeTheme } from "@/hooks/useForgeTheme";
 import { ForgeButton } from '../../components/forge/ForgeButton';
-import { PlanGeneratorSkeleton } from '../../features/ai/components/PlanGenerator/PlanGeneratorSkeleton';
 import { PlanGeneratorPreview } from '../../features/ai/components/PlanGenerator/PlanGeneratorPreview';
+import { PlanGeneratorSkeleton } from '../../features/ai/components/PlanGenerator/PlanGeneratorSkeleton';
 import { usePlanGenerator } from '../../features/ai/hooks/usePlanGenerator';
 
 export default function PlanGeneratorScreen() {
