@@ -7,7 +7,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { BearMascot } from '../../../components/forge/BearMascot';
 import { ForgeButton } from '../../../components/forge/ForgeButton';
 import { SkeletonHeroCard } from '../../../components/forge/ForgeSkeleton';
-import { MuscleTagChip } from '../../../components/forge/WorkoutAtoms';
+import { MuscleTagChip } from '../../../features/workout/components/WorkoutAtoms';
 import { useBearMood } from '../../../hooks/useBearMood';
 import { classifyWorkoutFromExercises } from '../../../utils/workoutClassifier';
 
