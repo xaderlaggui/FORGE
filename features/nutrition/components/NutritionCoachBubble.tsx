@@ -73,8 +73,8 @@ const useStyles = (T: any) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     paddingHorizontal: T.spacing.page,
-    marginTop: 16,
-    marginBottom: 24,
+    marginTop: 20,
+    marginBottom: 20,
     alignItems: 'center'
   },
   mascotContainer: {
